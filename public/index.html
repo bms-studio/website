@@ -2157,7 +2157,12 @@ function uploadBanner(input) {
       console.log('Banner upload check: user='+JSON.stringify({id:APP.user?.id,role:APP.user?.role,verified_tag:APP.user?.verified_tag}), 'xp='+xp, 'isVerified='+isVerified);
       if (!isVerified && xp < 20) { showToast('XP kamu '+xp+', butuh 20 XP (atau punya verified badge). Checkout 2x atau minta admin verified!', 'error'); return; }
       const d = await api('/admin/profile', { method: 'PUT', body: { banner: dataUrl, xp: xp } });
-      if (d.user) { APP.user = d.user; renderProfile(); showToast('Banner updated!', 'success'); }
+      if (d.user) { 
+        APP.user = d.user;
+        localStorage.setItem('bms_banner_'+(APP.user?.id||''), dataUrl);
+        renderProfile();
+        showToast('Banner updated!', 'success');
+      }
     } catch(err) { showToast(err.message || 'Failed', 'error'); }
   };
   reader.readAsDataURL(file);
@@ -2178,7 +2183,9 @@ function renderProfile() {
   else { avatarImg.style.display = 'none'; avatarText.style.display = 'block'; avatarText.textContent = (savedName||u.email||'U').charAt(0).toUpperCase(); document.getElementById('profileAvatarWrap').style.background = ''; }
   // banner
   const bannerEl = document.getElementById('profileBanner');
-  if (u.banner) { bannerEl.style.backgroundImage = 'url('+u.banner+')'; bannerEl.style.background = 'none'; }
+  const localBanner = localStorage.getItem('bms_banner_'+(u.id||''));
+  const bannerUrl = u.banner || localBanner || '';
+  if (bannerUrl) { bannerEl.style.backgroundImage = 'url('+bannerUrl+')'; bannerEl.style.backgroundSize = 'cover'; bannerEl.style.backgroundPosition = 'center'; }
   else { bannerEl.style.backgroundImage = ''; bannerEl.style.background = 'var(--gradient-1)'; }
   // verified badge
   const verifiedEl = document.getElementById('profileVerified');
