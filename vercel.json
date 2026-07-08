@@ -8,5 +8,16 @@
   ],
   "routes": [
     { "src": "/(.*)", "dest": "server.js" }
-  ]
+  ],
+  "env": {
+    "TURSO_DB_URL": "libsql://website-bms-studio-and-store-bms-studio.aws-ap-northeast-1.turso.io",
+    "TURSO_DB_TOKEN": "eyJhbGciOiJFZERTQSIsInR5cCI6IkpXVCJ9.eyJhIjoicnciLCJpYXQiOjE3ODM1MDY1MDIsImlkIjoiMDE5ZjQxM2YtMzcwMS03M2Q2LTkwZTctMzU3YmIxN2Q2YTA2Iiwia2lkIjoiRDl2OW5zS3NtTXRBa1dIM1pTSHB5TXctQ2N0cWpUa3NmMnd3OHc1STg0WSIsInJpZCI6IjFiODFiNWQzLTQ5Y2YtNDY4ZS1hM2M0LWE5YjQ3NTJlOTc0MCJ9.VMRuVopyYDcHrJVc2lQT0kKdu5M3DiYNfKx3888seOZsZqMvxCGbKwej9rvDfYVPYbtfTH54rJRl7iBUYHk1CQ",
+    "ADMIN_EMAIL": "Bamsj37@gmail.com",
+    "ADMIN_PASSWORD": "Zxasqw_12345",
+    "SMTP_HOST": "smtp.gmail.com",
+    "SMTP_PORT": "587",
+    "SMTP_USER": "Bamsj60@gmail.com",
+    "SMTP_PASS": "abkc ngsn bbbc zjlb",
+    "SMTP_FROM": "noreply@bmsstudio.com"
+  }
 }
