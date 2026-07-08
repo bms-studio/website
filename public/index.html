@@ -1463,11 +1463,12 @@ function updateAuthUI() {
   const adminBtn = document.getElementById('adminBtn');
   const mobileAdminBtn = document.getElementById('mobileAdminBtn');
   const mobileProfileBtn = document.getElementById('mobileProfileBtn');
+  const isAdmin = APP.user?.role === 'admin';
   if (APP.isLoggedIn) {
     loginBtn.style.display = 'none';
     profileBtn.style.display = 'inline-flex';
-    adminBtn.style.display = 'inline-flex';
-    if (mobileAdminBtn) mobileAdminBtn.style.display = 'flex';
+    if (isAdmin) { adminBtn.style.display = 'inline-flex'; if (mobileAdminBtn) mobileAdminBtn.style.display = 'flex'; }
+    else { adminBtn.style.display = 'none'; if (mobileAdminBtn) mobileAdminBtn.style.display = 'none'; }
     if (mobileProfileBtn) mobileProfileBtn.style.display = 'block';
   } else {
     loginBtn.style.display = 'inline-flex';
