@@ -18,7 +18,7 @@ router.post('/', authenticateSession, async (req, res) => {
     if (!user.rows.length) return res.status(401).json({ error: 'User not found' });
     const u = user.rows[0];
     await q('INSERT INTO public_chats (user_id, user_name, user_role, user_avatar, text) VALUES (?, ?, ?, ?, ?)',
-      [u.id, u.name || u.email, u.verified_tag ? 'official' : (u.role === 'admin' ? 'admin' : 'user'), u.avatar || '', text.trim()]);
+      [u.id, u.name || u.email, u.role === 'admin' ? 'admin' : 'user', u.avatar || '', text.trim()]);
     res.json({ success: true });
   } catch { res.status(500).json({ error: 'Server error' }); }
 });

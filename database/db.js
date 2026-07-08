@@ -160,7 +160,7 @@ async function seedData(client) {
     if (users.rows[0].count === 0) {
       const adminEmail = process.env.ADMIN_EMAIL || 'Bamsj37@gmail.com';
       const adminPass = bcrypt.hashSync(process.env.ADMIN_PASSWORD || 'Zxasqw_12345', 10);
-      await client.execute('INSERT INTO users (email, name, password, role, verified, verified_tag) VALUES (?, ?, ?, ?, ?, ?)', [adminEmail, 'Official BMS Platform', adminPass, 'admin', 1, 1]);
+      await client.execute('INSERT INTO users (email, name, password, role, verified, verified_tag) VALUES (?, ?, ?, ?, ?, ?)', [adminEmail, 'Admin BMS', adminPass, 'admin', 1, 1]);
       await client.execute('INSERT INTO users (email, name, password, role, verified) VALUES (?, ?, ?, ?, ?)', ['user@demo.com', 'Demo User', bcrypt.hashSync('user123', 10), 'user', 1]);
     }
   } catch {}

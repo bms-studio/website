@@ -91,9 +91,7 @@ ul{list-style:none}
 .public-chat-msg .pc-name:hover{color:var(--primary)}
 .public-chat-msg .pc-text{color:var(--text-muted);font-size:11px;line-height:1.4;word-break:break-word}
 .public-chat-msg .pc-tag{display:inline-block;padding:1px 6px;border-radius:3px;font-size:9px;font-weight:600;margin-left:4px}
-.pc-tag.official{background:rgba(251,191,36,0.15);color:#fbbf24}
 .pc-tag.admin{background:rgba(56,189,248,0.12);color:#38bdf8}
-.pc-tag.verified{background:rgba(56,189,248,0.12);color:#38bdf8}
 .public-chat-input{display:flex;gap:6px;padding:8px 12px;border-top:1px solid var(--glass-border)}
 .public-chat-input input{flex:1;padding:8px 12px;border-radius:var(--radius);border:1px solid var(--glass-border);background:var(--bg);color:var(--text);font-size:12px;outline:none;font-family:'Inter',sans-serif}
 .public-chat-input input:focus{border-color:var(--primary)}
@@ -1022,7 +1020,7 @@ textarea.form-input{resize:vertical;min-height:100px}
             <div style="display:flex;align-items:center;gap:8px">
               <h3 style="font-size:18px;font-weight:700" id="profileName">User</h3>
               <span id="profileVerified" style="display:none;padding:2px 8px;border-radius:5px;font-size:10px;font-weight:600;background:rgba(56,189,248,0.12);color:#38bdf8"><i class="fas fa-check-circle"></i> Verified</span>
-              <span id="profileOfficialTag" style="display:none;padding:2px 10px;border-radius:5px;font-size:10px;font-weight:600;background:linear-gradient(135deg,rgba(251,191,36,0.15),rgba(251,191,36,0.05));color:#fbbf24;border:1px solid rgba(251,191,36,0.2)"><i class="fas fa-crown"></i> Official BMS Platform</span>
+
             </div>
             <p style="font-size:12px;color:var(--text-muted)" id="profileEmail">email@example.com</p>
           </div>
@@ -2117,9 +2115,7 @@ async function loadPC() {
     }
     if (container && box.classList.contains('open')) {
       container.innerHTML = (d.chats||[]).map(c => {
-        const isOfficial = c.user_role === 'official' || (c.user_name === 'Official BMS Platform');
-        const isAdmin = c.user_role === 'admin' && !isOfficial;
-        const tagHtml = isOfficial ? '<span class="pc-tag official"><i class="fas fa-crown"></i> Official</span>' : (isAdmin ? '<span class="pc-tag admin">Admin</span>' : '');
+        const tagHtml = c.user_role === 'admin' ? '<span class="pc-tag admin"><i class="fas fa-check-circle"></i> Admin</span>' : '';
         const avatarStyle = c.user_avatar ? `background-image:url(${c.user_avatar})` : '';
         return '<div class="public-chat-msg" data-pcid="'+c.id+'"><div class="pc-avatar" style="'+avatarStyle+'">'+(c.user_avatar?'':(c.user_name||'?').charAt(0).toUpperCase())+'</div><div style="flex:1;min-width:0"><div><span class="pc-name" onclick="viewPublicProfile('+c.user_id+')">'+c.user_name+'</span>'+tagHtml+'</div><div class="pc-text">'+c.text+'</div></div></div>';
       }).join('');
@@ -2183,12 +2179,9 @@ function renderProfile() {
   const bannerEl = document.getElementById('profileBanner');
   if (u.banner) { bannerEl.style.backgroundImage = 'url('+u.banner+')'; bannerEl.style.background = 'none'; }
   else { bannerEl.style.backgroundImage = ''; bannerEl.style.background = 'var(--gradient-1)'; }
-  // verified / official
+  // verified badge
   const verifiedEl = document.getElementById('profileVerified');
-  const officialEl = document.getElementById('profileOfficialTag');
-  if (u.role === 'admin' && u.verified_tag) { officialEl.style.display = 'inline-flex'; verifiedEl.style.display = 'none'; }
-  else if (u.role === 'admin') { verifiedEl.style.display = 'inline-flex'; officialEl.style.display = 'none'; }
-  else { verifiedEl.style.display = 'none'; officialEl.style.display = 'none'; }
+  if (verifiedEl) verifiedEl.style.display = u.role === 'admin' ? 'inline-flex' : 'none';
   // XP, Level
   let xp = parseInt(localStorage.getItem('bms_xp_'+u.id) || '0');
   const levelNames = ['Basic','Bronze','Silver','Gold','Platinum','Diamond','Elite','Legendary'];
