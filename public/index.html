@@ -1011,9 +1011,9 @@ textarea.form-input{resize:vertical;min-height:100px}
         <input type="file" id="bannerInput" accept="image/*" style="display:none" onchange="uploadBanner(this)">
         <input type="file" id="avatarInput" accept="image/*" style="display:none" onchange="uploadAvatar(this)">
         <div style="padding:0 24px 24px;display:flex;align-items:flex-end;gap:16px;margin-top:-32px;position:relative;z-index:2">
-          <div id="profileAvatarWrap" style="width:72px;height:72px;border-radius:50%;border:3px solid var(--bg);background:var(--gradient-1);display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:700;color:#fff;flex-shrink:0;overflow:hidden;background-size:cover;background-position:center;cursor:pointer;position:relative" onclick="document.getElementById('avatarInput').click()" title="Click to change avatar">
-            <span id="profileAvatarText">U</span>
-            <img id="profileAvatarImg" style="display:none;width:100%;height:100%;object-fit:cover" alt="">
+          <div id="profileAvatarWrap" style="width:72px;height:72px;border-radius:50%;border:3px solid var(--bg);background-color:#8b7cfc;background-image:var(--gradient-1);display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:700;color:#fff;flex-shrink:0;overflow:hidden;cursor:pointer;position:relative" onclick="document.getElementById('avatarInput').click()" title="Click to change avatar">
+            <span id="profileAvatarText" style="line-height:1">U</span>
+            <img id="profileAvatarImg" style="display:none;width:100%;height:100%;object-fit:cover;position:absolute;top:0;left:0" alt="">
             <div style="position:absolute;bottom:0;right:0;width:22px;height:22px;border-radius:50%;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;color:#fff;font-size:9px"><i class="fas fa-camera"></i></div>
           </div>
           <div style="flex:1;min-width:150px;padding-top:20px">
@@ -1049,7 +1049,10 @@ textarea.form-input{resize:vertical;min-height:100px}
           <div style="font-size:11px;color:var(--text-muted);margin-top:6px">Bagikan kode ini, dapatkan <strong>5 XP</strong> per referral!</div>
         </div>
       </div>
-      <button class="btn btn-outline btn-sm" onclick="showEditProfile()" style="margin-bottom:16px"><i class="fas fa-edit"></i> Edit Profile</button>
+      <div style="display:flex;gap:8px;margin-bottom:16px">
+        <button class="btn btn-outline btn-sm" onclick="showEditProfile()"><i class="fas fa-edit"></i> Edit Profile</button>
+        <button class="btn btn-outline btn-sm" onclick="handleLogout()" style="color:var(--accent);border-color:var(--accent)"><i class="fas fa-sign-out-alt"></i> Logout</button>
+      </div>
       <h3 style="font-size:16px;font-weight:700;margin-bottom:12px">Your Testimonial</h3>
       <div style="display:flex;gap:8px;margin-bottom:20px">
         <input class="form-input" id="testimonialInput" placeholder="Tulis testimoni kamu..." style="flex:1">
