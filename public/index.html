@@ -7,6 +7,7 @@
 <meta name="description" content="BMS Platform - Premium Roblox Development, Digital Products & Creative Solutions.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@400;500;600;700;800;900&family=Syne:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>@font-face{font-family:'Ease Bold';src:url('/font/ease_bold/Ease%20Bold%20Demo.otf') format('opentype');font-weight:700;font-style:normal;font-display:swap}</style>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <style>
@@ -74,6 +75,29 @@ ul{list-style:none}
 /* REVEAL LINES */
 .reveal-line{display:inline-block;opacity:0;transform:translateY(20px);animation:revealUp 0.7s forwards cubic-bezier(0.16,1,0.3,1)}
 @keyframes revealUp{to{opacity:1;transform:translateY(0)}}
+
+/* PUBLIC CHAT */
+.public-chat-btn{position:fixed;bottom:28px;right:28px;width:52px;height:52px;border-radius:50%;background:var(--gradient-1);color:#fff;font-size:20px;cursor:pointer;z-index:998;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 24px rgba(139,124,252,0.25);transition:transform 0.3s}
+.public-chat-btn:hover{transform:scale(1.05)}
+.public-chat-btn .badge{position:absolute;top:-2px;right:-2px;width:18px;height:18px;background:var(--accent);border-radius:50%;font-size:9px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700}
+.public-chat-box{position:fixed;bottom:92px;right:28px;width:340px;max-height:460px;border-radius:var(--radius-xl);background:var(--bg-3);border:1px solid var(--glass-border);box-shadow:0 8px 40px rgba(0,0,0,0.3);z-index:997;display:none;flex-direction:column;overflow:hidden;backdrop-filter:blur(20px)}
+.public-chat-box.open{display:flex}
+.public-chat-header{display:flex;justify-content:space-between;align-items:center;padding:14px 16px;border-bottom:1px solid var(--glass-border);background:var(--bg-2)}
+.public-chat-header h4{font-size:14px;font-weight:700}
+.public-chat-msgs{flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:8px;min-height:200px;max-height:320px}
+.public-chat-msg{display:flex;gap:8px;align-items:flex-start;padding:8px;border-radius:var(--radius);background:var(--glass);font-size:12px}
+.public-chat-msg .pc-avatar{width:28px;height:28px;border-radius:50%;flex-shrink:0;background:var(--gradient-1);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff;background-size:cover;background-position:center}
+.public-chat-msg .pc-name{font-weight:600;font-size:11px;cursor:pointer}
+.public-chat-msg .pc-name:hover{color:var(--primary)}
+.public-chat-msg .pc-text{color:var(--text-muted);font-size:11px;line-height:1.4;word-break:break-word}
+.public-chat-msg .pc-tag{display:inline-block;padding:1px 6px;border-radius:3px;font-size:9px;font-weight:600;margin-left:4px}
+.pc-tag.official{background:rgba(251,191,36,0.15);color:#fbbf24}
+.pc-tag.admin{background:rgba(56,189,248,0.12);color:#38bdf8}
+.pc-tag.verified{background:rgba(56,189,248,0.12);color:#38bdf8}
+.public-chat-input{display:flex;gap:6px;padding:8px 12px;border-top:1px solid var(--glass-border)}
+.public-chat-input input{flex:1;padding:8px 12px;border-radius:var(--radius);border:1px solid var(--glass-border);background:var(--bg);color:var(--text);font-size:12px;outline:none;font-family:'Inter',sans-serif}
+.public-chat-input input:focus{border-color:var(--primary)}
+.public-chat-input button{padding:8px 14px;border-radius:var(--radius);border:none;background:var(--gradient-1);color:#fff;font-size:12px;cursor:pointer;font-weight:600}
 
 /* BACK TO TOP */
 .back-to-top{position:fixed;bottom:28px;right:28px;width:44px;height:44px;border-radius:50%;background:var(--bg-3);border:1px solid var(--glass-border);color:var(--text-muted);font-size:16px;cursor:pointer;opacity:0;transform:translateY(12px);transition:all 0.3s var(--ease-out);z-index:999;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(12px)}
@@ -154,9 +178,9 @@ textarea.form-input{resize:vertical;min-height:100px}
 [data-theme="light"] .particle{background:#7c6cf0}
 [data-theme="light"] .hero-badge{background:rgba(124,108,240,0.1);border-color:rgba(124,108,240,0.2);color:#5a4dd0}
 .nav-inner{max-width:1200px;margin:0 auto;padding:0 20px;height:100%;display:flex;align-items:center;justify-content:space-between}
-.nav-brand{display:flex;align-items:center;gap:8px;font-family:'Syne',sans-serif;font-weight:700;font-size:24px;letter-spacing:-0.02em;background:var(--gradient-1);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;cursor:pointer;text-shadow:0 0 40px rgba(139,124,252,0.2);animation:brandGlow 3s ease-in-out infinite}
+.nav-brand{display:flex;align-items:center;gap:8px;font-family:'Ease Bold','Syne',sans-serif;font-weight:700;font-size:26px;letter-spacing:-0.01em;background:var(--gradient-1);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;cursor:pointer;text-shadow:0 0 40px rgba(139,124,252,0.2);animation:brandGlow 3s ease-in-out infinite}
 @keyframes brandGlow{0%,100%{filter:brightness(1)}50%{filter:brightness(1.3)}}
-.nav-brand span{font-weight:600;font-size:22px}
+.nav-brand span{font-weight:500;font-size:22px}
 .nav-brand i{font-size:20px;-webkit-text-fill-color:initial;color:var(--primary)}
 .nav-links{display:flex;align-items:center;gap:2px}
 .nav-tab{padding:7px 14px;border-radius:var(--radius);font-size:12px;font-weight:500;color:var(--text-muted);cursor:pointer;transition:var(--transition);white-space:nowrap}
@@ -982,12 +1006,21 @@ textarea.form-input{resize:vertical;min-height:100px}
   </div>
   <section class="section" style="padding-top:32px">
     <div style="max-width:800px;margin:0 auto">
-      <div class="glass" style="padding:24px;border-radius:var(--radius-lg);border:1px solid var(--glass-border);display:flex;align-items:center;gap:20px;flex-wrap:wrap;margin-bottom:20px">
-        <div style="width:64px;height:64px;border-radius:50%;background:var(--gradient-1);display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:700;color:#fff;flex-shrink:0" id="profileAvatar">B</div>
-        <div style="flex:1;min-width:150px">
-          <h3 style="font-size:18px;font-weight:700" id="profileName">User</h3>
-          <p style="font-size:12px;color:var(--text-muted)" id="profileEmail">email@example.com</p>
-        </div>
+      <div class="glass" style="padding:0;border-radius:var(--radius-lg);border:1px solid var(--glass-border);overflow:hidden;margin-bottom:20px">
+        <div id="profileBanner" style="height:120px;background:var(--gradient-1);background-size:cover;background-position:center;position:relative"></div>
+        <div style="padding:0 24px 24px;display:flex;align-items:flex-end;gap:16px;margin-top:-32px;position:relative;z-index:2">
+          <div id="profileAvatarWrap" style="width:72px;height:72px;border-radius:50%;border:3px solid var(--bg);background:var(--gradient-1);display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:700;color:#fff;flex-shrink:0;overflow:hidden;background-size:cover;background-position:center;cursor:pointer" onclick="document.getElementById('avatarInput').click()" title="Click to change avatar">
+            <span id="profileAvatarText">U</span>
+            <img id="profileAvatarImg" style="display:none;width:100%;height:100%;object-fit:cover" alt="">
+          </div>
+          <div style="flex:1;min-width:150px;padding-top:20px">
+            <div style="display:flex;align-items:center;gap:8px">
+              <h3 style="font-size:18px;font-weight:700" id="profileName">User</h3>
+              <span id="profileVerified" style="display:none;padding:2px 8px;border-radius:5px;font-size:10px;font-weight:600;background:rgba(56,189,248,0.12);color:#38bdf8"><i class="fas fa-check-circle"></i> Verified</span>
+              <span id="profileOfficialTag" style="display:none;padding:2px 10px;border-radius:5px;font-size:10px;font-weight:600;background:linear-gradient(135deg,rgba(251,191,36,0.15),rgba(251,191,36,0.05));color:#fbbf24;border:1px solid rgba(251,191,36,0.2)"><i class="fas fa-crown"></i> Official BMS Platform</span>
+            </div>
+            <p style="font-size:12px;color:var(--text-muted)" id="profileEmail">email@example.com</p>
+          </div>
         <div style="display:flex;gap:20px;flex-wrap:wrap;align-items:center">
           <div style="text-align:center"><div style="font-size:20px;font-weight:800" id="profileXP">0</div><div style="font-size:11px;color:var(--text-muted)">XP</div></div>
           <div style="text-align:center"><div style="font-size:20px;font-weight:800" id="profileOrders">0</div><div style="font-size:11px;color:var(--text-dim)">Orders</div></div>
@@ -1055,6 +1088,7 @@ textarea.form-input{resize:vertical;min-height:100px}
       <div class="admin-sidebar-item" data-tab="orders" onclick="switchAdminTab('orders')"><i class="fas fa-shopping-bag"></i> Orders</div>
       <div class="admin-sidebar-item" data-tab="chats" onclick="switchAdminTab('chats')"><i class="fas fa-comments"></i> Chats</div>
       <div class="admin-sidebar-item" data-tab="promos" onclick="switchAdminTab('promos')"><i class="fas fa-tag"></i> Promos</div>
+      <div class="admin-sidebar-item" data-tab="users" onclick="switchAdminTab('users')"><i class="fas fa-users-cog"></i> Users</div>
       <div class="admin-sidebar-item" data-tab="settings" onclick="switchAdminTab('settings')"><i class="fas fa-cog"></i> Settings</div>
       <div style="flex:1"></div>
       <div class="admin-sidebar-item" onclick="handleLogout()" style="color:var(--accent)"><i class="fas fa-sign-out-alt"></i> Logout</div>
@@ -1185,6 +1219,15 @@ textarea.form-input{resize:vertical;min-height:100px}
           </table>
         </div>
       </div>
+      <div class="admin-section" id="admin-users">
+        <h2 style="font-size:20px;font-weight:700;margin-bottom:20px">User Management</h2>
+        <div style="overflow-x:auto">
+          <table class="admin-table">
+            <thead><tr><th>ID</th><th>Email</th><th>Name</th><th>Role</th><th>Verified</th><th>Actions</th></tr></thead>
+            <tbody id="adminUsersTable"></tbody>
+          </table>
+        </div>
+      </div>
       <div class="admin-section" id="admin-settings">
         <h2 style="font-size:20px;font-weight:700;margin-bottom:20px">Settings</h2>
         <div class="settings-card">
@@ -1214,13 +1257,29 @@ textarea.form-input{resize:vertical;min-height:100px}
   </div>
 </div>
 
+<button class="public-chat-btn" id="publicChatBtn" onclick="togglePublicChat()" title="Public Chat">
+  <i class="fas fa-comments"></i>
+  <span class="badge" id="pcBadge" style="display:none">0</span>
+</button>
+<div class="public-chat-box" id="publicChatBox">
+  <div class="public-chat-header">
+    <h4><i class="fas fa-globe" style="font-size:12px;color:var(--secondary)"></i> Public Chat</h4>
+    <button class="modal-close" onclick="togglePublicChat()">&times;</button>
+  </div>
+  <div class="public-chat-msgs" id="publicChatMsgs"></div>
+  <div class="public-chat-input">
+    <input type="text" id="pcInput" placeholder="Type a message..." onkeydown="if(event.key==='Enter')sendPC()">
+    <button onclick="sendPC()">Send</button>
+  </div>
+</div>
+
 <button class="back-to-top" id="backToTop" onclick="window.scrollTo({top:0,behavior:'smooth'})" aria-label="Back to top"><i class="fas fa-chevron-up"></i></button>
 
 <!-- FOOTER -->
 <div id="mainFooter">
   <div class="footer-inner">
     <div class="footer-brand">
-      <h3 class="logo-3d" style="font-family:'Syne',sans-serif;font-weight:700;font-size:24px;letter-spacing:-0.02em;display:flex;align-items:center;gap:6px">BMS <span style="font-weight:600;color:var(--secondary);font-size:20px">Platform</span></h3>
+      <h3 class="logo-3d" style="font-family:'Ease Bold','Syne',sans-serif;font-weight:700;font-size:26px;letter-spacing:-0.01em;display:flex;align-items:center;gap:6px">BMS <span style="font-weight:500;color:var(--secondary);font-size:22px">Platform</span></h3>
       <p>Build Better. Develop Better. Play Better.</p>
     </div>
     <div class="footer-col">
@@ -1259,6 +1318,13 @@ textarea.form-input{resize:vertical;min-height:100px}
       <input class="form-input" id="editProfileName" placeholder="Your name">
       <label style="font-size:12px;color:var(--text-muted)">Bio</label>
       <textarea class="form-input" id="editProfileBio" placeholder="Tell us about yourself" rows="3" style="resize:vertical"></textarea>
+      <label style="font-size:12px;color:var(--text-muted)">Avatar</label>
+      <input type="file" id="avatarInput" accept="image/*" style="display:none" onchange="uploadAvatar(this)">
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-outline btn-sm" onclick="document.getElementById('avatarInput').click()" style="flex:1"><i class="fas fa-image"></i> Upload Avatar</button>
+        <button class="btn btn-outline btn-sm" onclick="document.getElementById('bannerInput').click()" style="flex:1"><i class="fas fa-image"></i> Upload Banner</button>
+      </div>
+      <input type="file" id="bannerInput" accept="image/*" style="display:none" onchange="uploadBanner(this)">
       <button class="btn btn-primary" onclick="saveProfile()">Save</button>
     </div>
   </div>
@@ -1460,45 +1526,7 @@ async function handleLogout() {
   APP.isLoggedIn = false; APP.user = null; updateAuthUI();
   showToast('Berhasil logout', 'info'); navigateTo('home');
 }
-function renderProfile() {
-  if (!APP.isLoggedIn || !APP.user) { navigateTo('login'); return; }
-  const u = APP.user;
-  const savedName = localStorage.getItem('bms_name_'+u.id) || u.name || '';
-  const savedBio = localStorage.getItem('bms_bio_'+u.id) || '';
-  document.getElementById('profileAvatar').textContent = (savedName || u.email || 'U').charAt(0).toUpperCase();
-  document.getElementById('profileName').textContent = savedName || 'User';
-  document.getElementById('profileEmail').textContent = u.email || '';
-  // XP, Level (using localStorage for persistence across sessions)
-  let xp = parseInt(localStorage.getItem('bms_xp_'+u.id) || '0');
-  const levelNames = ['Basic','Bronze','Silver','Gold','Platinum','Diamond','Elite','Legendary'];
-  const levelThresholds = [0,100,300,600,1000,1600,2400,3500];
-  let level = 0;
-  for (let i = levelThresholds.length - 1; i >= 0; i--) { if (xp >= levelThresholds[i]) { level = i; break; } }
-  const nextXP = level < levelThresholds.length - 1 ? levelThresholds[level + 1] : xp;
-  const prevXP = levelThresholds[level];
-  const progress = nextXP > prevXP ? ((xp - prevXP) / (nextXP - prevXP)) * 100 : 100;
-  document.getElementById('profileXP').textContent = xp;
-  document.getElementById('profileLevel').textContent = levelNames[level];
-  // rank tag colors
-  const rankColors = ['#a1a1aa','#cd7f32','#c0c0c0','#ffd700','#e5e4e2','#b9f2ff','#ff6ec7','#ff4500'];
-  const rankTag = document.getElementById('profileRankTag');
-  if (rankTag) { rankTag.textContent = levelNames[level]; rankTag.style.background = rankColors[level] + '22'; rankTag.style.color = rankColors[level]; rankTag.style.border = '1px solid ' + rankColors[level] + '44'; }
-  document.getElementById('profileLevelBar').style.width = Math.min(progress, 100) + '%';
-  document.getElementById('profileLevelNext').textContent = level < levelThresholds.length - 1 ? `${xp - prevXP} / ${nextXP - prevXP} XP` : 'Max Level';
-  // Referral code
-  const refCode = u.ref_code || (u.email ? u.email.split('@')[0].toUpperCase() + (u.id || '') : 'BMS' + Math.floor(Math.random()*1000));
-  document.getElementById('profileRefCode').value = refCode;
-  // Orders
-  const ordersList = document.getElementById('profileOrdersList');
-  try {
-    const cartOrders = JSON.parse(localStorage.getItem('bms_orders_' + u.id) || '[]');
-    if (cartOrders.length) {
-      ordersList.innerHTML = cartOrders.slice().reverse().map((o,i) => '<div class="glass" style="padding:14px 18px;border-radius:var(--radius-lg);border:1px solid var(--glass-border);display:flex;justify-content:space-between;align-items:center;font-size:13px"><div><div style="font-weight:600">'+ (o.items?.[0]?.name || 'Order') +'</div><div style="font-size:11px;color:var(--text-dim)">'+ (o.createdAt || new Date().toLocaleDateString()) +'</div></div><div style="display:flex;gap:6px;align-items:center"><span style="padding:3px 10px;border-radius:5px;font-size:10px;font-weight:600;background:rgba(16,185,129,0.12);color:#34d399">'+ (o.status || 'Completed') +'</span><button class="btn btn-outline btn-sm" style="padding:4px 8px;font-size:10px" onclick="openChat('+(o.id || i)+')"><i class="fas fa-comment"></i></button></div></div>').join('');
-    } else {
-      ordersList.innerHTML = '<div class="empty-state" style="padding:32px"><i class="fas fa-shopping-bag" style="font-size:28px"></i><h3 style="font-size:16px">Belum ada pesanan</h3><p style="font-size:13px">Pesan pertama kamu akan muncul di sini.</p></div>';
-    }
-  } catch { ordersList.innerHTML = '<div class="empty-state" style="padding:32px"><p style="font-size:13px">Gagal memuat pesanan.</p></div>'; }
-}
+// renderProfile is defined below in the enhanced version
 function copyRefCode() {
   const input = document.getElementById('profileRefCode');
   if (!input) return;
@@ -1809,6 +1837,7 @@ function switchAdminTab(tab) {
   if (tab === 'orders') loadOrders();
   if (tab === 'promos') loadPromos();
   if (tab === 'chats') loadAdminChats();
+  if (tab === 'users') loadAdminUsers();
 }
 async function refreshAdminData() {
   try {
@@ -2065,6 +2094,153 @@ function initThree() {
     camera.updateProjectionMatrix();
     renderer.setSize(pw, ph);
   });
+}
+
+// ============ PUBLIC CHAT ============
+let pcInterval = null;
+let pcUnread = 0;
+function togglePublicChat() {
+  const box = document.getElementById('publicChatBox');
+  const open = box.classList.toggle('open');
+  document.getElementById('pcBadge').style.display = 'none'; pcUnread = 0;
+  if (open) { loadPC(); if (pcInterval) clearInterval(pcInterval); pcInterval = setInterval(loadPC, 4000); }
+  else if (pcInterval) { clearInterval(pcInterval); pcInterval = null; }
+}
+async function loadPC() {
+  try {
+    const d = await api('/public-chats');
+    const container = document.getElementById('publicChatMsgs');
+    const box = document.getElementById('publicChatBox');
+    if (!box.classList.contains('open') && d.chats?.length) {
+      pcUnread += d.chats.filter(c => !document.querySelector(`[data-pcid="${c.id}"]`)).length;
+      const badge = document.getElementById('pcBadge');
+      if (pcUnread > 0) { badge.textContent = pcUnread; badge.style.display = 'flex'; }
+    }
+    if (container && box.classList.contains('open')) {
+      container.innerHTML = (d.chats||[]).map(c => {
+        const isOfficial = c.user_role === 'official' || (c.user_name === 'Official BMS Platform');
+        const isAdmin = c.user_role === 'admin' && !isOfficial;
+        const tagHtml = isOfficial ? '<span class="pc-tag official"><i class="fas fa-crown"></i> Official</span>' : (isAdmin ? '<span class="pc-tag admin">Admin</span>' : '');
+        const avatarStyle = c.user_avatar ? `background-image:url(${c.user_avatar})` : '';
+        return '<div class="public-chat-msg" data-pcid="'+c.id+'"><div class="pc-avatar" style="'+avatarStyle+'">'+(c.user_avatar?'':(c.user_name||'?').charAt(0).toUpperCase())+'</div><div style="flex:1;min-width:0"><div><span class="pc-name" onclick="viewPublicProfile('+c.user_id+')">'+c.user_name+'</span>'+tagHtml+'</div><div class="pc-text">'+c.text+'</div></div></div>';
+      }).join('');
+      container.scrollTop = container.scrollHeight;
+    }
+  } catch {}
+}
+async function sendPC() {
+  const input = document.getElementById('pcInput');
+  const text = input.value.trim();
+  if (!text) return;
+  input.value = '';
+  try { await api('/public-chats', { method: 'POST', body: { text } }); loadPC(); } catch { showToast('Login to chat', 'error'); }
+}
+
+// ============ AVATAR / BANNER ============
+function uploadAvatar(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = async function(e) {
+    const dataUrl = e.target.result;
+    try {
+      const d = await api('/admin/profile', { method: 'PUT', body: { avatar: dataUrl } });
+      if (d.user) { APP.user = d.user; renderProfile(); showToast('Avatar updated!', 'success'); }
+    } catch { showToast('Failed to update avatar', 'error'); }
+  };
+  reader.readAsDataURL(file);
+}
+function uploadBanner(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = async function(e) {
+    const dataUrl = e.target.result;
+    try {
+      const xp = parseInt(localStorage.getItem('bms_xp_'+(APP.user?.id||'')) || '0');
+      const d = await api('/admin/profile', { method: 'PUT', body: { banner: dataUrl }, headers: { 'X-User-XP': xp.toString() } });
+      if (d.user) { APP.user = d.user; renderProfile(); showToast('Banner updated!', 'success'); }
+    } catch(err) { showToast(err.message || 'Failed', 'error'); }
+  };
+  reader.readAsDataURL(file);
+}
+
+// ============ PROFILE (updated render) ============
+function renderProfile() {
+  if (!APP.isLoggedIn || !APP.user) { navigateTo('login'); return; }
+  const u = APP.user;
+  const savedName = localStorage.getItem('bms_name_'+u.id) || u.name || '';
+  const savedBio = localStorage.getItem('bms_bio_'+u.id) || '';
+  document.getElementById('profileName').textContent = savedName || 'User';
+  document.getElementById('profileEmail').textContent = u.email || '';
+  // avatar
+  const avatarImg = document.getElementById('profileAvatarImg');
+  const avatarText = document.getElementById('profileAvatarText');
+  if (u.avatar) { avatarImg.src = u.avatar; avatarImg.style.display = 'block'; avatarText.style.display = 'none'; document.getElementById('profileAvatarWrap').style.background = 'none'; }
+  else { avatarImg.style.display = 'none'; avatarText.style.display = 'block'; avatarText.textContent = (savedName||u.email||'U').charAt(0).toUpperCase(); document.getElementById('profileAvatarWrap').style.background = ''; }
+  // banner
+  const bannerEl = document.getElementById('profileBanner');
+  if (u.banner) { bannerEl.style.backgroundImage = 'url('+u.banner+')'; bannerEl.style.background = 'none'; }
+  else { bannerEl.style.backgroundImage = ''; bannerEl.style.background = 'var(--gradient-1)'; }
+  // verified / official
+  const verifiedEl = document.getElementById('profileVerified');
+  const officialEl = document.getElementById('profileOfficialTag');
+  if (u.role === 'admin' && u.verified_tag) { officialEl.style.display = 'inline-flex'; verifiedEl.style.display = 'none'; }
+  else if (u.role === 'admin') { verifiedEl.style.display = 'inline-flex'; officialEl.style.display = 'none'; }
+  else { verifiedEl.style.display = 'none'; officialEl.style.display = 'none'; }
+  // XP, Level
+  let xp = parseInt(localStorage.getItem('bms_xp_'+u.id) || '0');
+  const levelNames = ['Basic','Bronze','Silver','Gold','Platinum','Diamond','Elite','Legendary'];
+  const levelThresholds = [0,100,300,600,1000,1600,2400,3500];
+  let level = 0;
+  for (let i = levelThresholds.length - 1; i >= 0; i--) { if (xp >= levelThresholds[i]) { level = i; break; } }
+  const nextXP = level < levelThresholds.length - 1 ? levelThresholds[level + 1] : xp;
+  const prevXP = levelThresholds[level];
+  const progress = nextXP > prevXP ? ((xp - prevXP) / (nextXP - prevXP)) * 100 : 100;
+  document.getElementById('profileXP').textContent = xp;
+  document.getElementById('profileLevel').textContent = levelNames[level];
+  const rankColors = ['#a1a1aa','#cd7f32','#c0c0c0','#ffd700','#e5e4e2','#b9f2ff','#ff6ec7','#ff4500'];
+  const rankTag = document.getElementById('profileRankTag');
+  if (rankTag) { rankTag.textContent = levelNames[level]; rankTag.style.background = rankColors[level] + '22'; rankTag.style.color = rankColors[level]; rankTag.style.border = '1px solid ' + rankColors[level] + '44'; }
+  document.getElementById('profileLevelBar').style.width = Math.min(progress, 100) + '%';
+  document.getElementById('profileLevelNext').textContent = level < levelThresholds.length - 1 ? `${xp - prevXP} / ${nextXP - prevXP} XP` : 'Max Level';
+  // Referral code
+  const refCode = u.ref_code || (u.email ? u.email.split('@')[0].toUpperCase() + (u.id || '') : 'BMS' + Math.floor(Math.random()*1000));
+  document.getElementById('profileRefCode').value = refCode;
+  // Orders
+  const ordersList = document.getElementById('profileOrdersList');
+  try {
+    const cartOrders = JSON.parse(localStorage.getItem('bms_orders_' + u.id) || '[]');
+    if (cartOrders.length) {
+      ordersList.innerHTML = cartOrders.slice().reverse().map(o => '<div class="glass" style="padding:14px 18px;border-radius:var(--radius-lg);border:1px solid var(--glass-border);display:flex;justify-content:space-between;align-items:center;font-size:13px"><div><div style="font-weight:600">'+ (o.items?.[0]?.name || 'Order') +'</div><div style="font-size:11px;color:var(--text-dim)">'+ (o.createdAt || new Date().toLocaleDateString()) +'</div></div><div style="display:flex;gap:6px;align-items:center"><span style="padding:3px 10px;border-radius:5px;font-size:10px;font-weight:600;background:rgba(16,185,129,0.12);color:#34d399">'+ (o.status || 'Completed') +'</span><button class="btn btn-outline btn-sm" style="padding:4px 8px;font-size:10px" onclick="openChat('+(o.id || i)+')"><i class="fas fa-comment"></i></button></div></div>').join('');
+    } else {
+      ordersList.innerHTML = '<div class="empty-state" style="padding:32px"><i class="fas fa-shopping-bag" style="font-size:28px"></i><h3 style="font-size:16px">Belum ada pesanan</h3><p style="font-size:13px">Pesan pertama kamu akan muncul di sini.</p></div>';
+    }
+  } catch { ordersList.innerHTML = '<div class="empty-state" style="padding:32px"><p style="font-size:13px">Gagal memuat pesanan.</p></div>'; }
+}
+
+// ============ PUBLIC PROFILE VIEWER ============
+async function viewPublicProfile(userId) {
+  try {
+    const d = await api('/admin/public/' + userId);
+    if (!d.profile) return showToast('User not found', 'error');
+    const p = d.profile;
+    showToast(JSON.stringify(p), 'info');
+  } catch { showToast('User not found', 'error'); }
+}
+
+// ============ ADMIN USERS ============
+async function loadAdminUsers() {
+  const tbody = document.getElementById('adminUsersTable');
+  if (!tbody) return;
+  try {
+    const d = await api('/admin/users'); const users = d.users||[];
+    tbody.innerHTML = users.map(u => '<tr><td>'+u.id+'</td><td>'+u.email+'</td><td>'+u.name+'</td><td><span style="color:'+(u.role==='admin'?'#38bdf8':'var(--text-muted)')+'">'+u.role+'</span></td><td>'+(u.verified_tag?'<span style="color:#34d399"><i class="fas fa-check-circle"></i></span>':'-')+'</td><td>'+(u.role==='admin'?'<button class="table-btn table-btn-del" onclick="setUserRole('+u.id+',\'user\')">Demote</button>':'<button class="table-btn table-btn-edit" onclick="setUserRole('+u.id+',\'admin\')">Make Admin</button>')+'</td></tr>').join('');
+  } catch {}
+}
+async function setUserRole(userId, role) {
+  if (!confirm('Change this user to '+role+'?')) return;
+  try { await api('/admin/set-role', { method: 'POST', body: { userId, role } }); loadAdminUsers(); showToast('Role updated!', 'success'); } catch {}
 }
 
 // ============ INIT ============

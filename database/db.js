@@ -92,6 +92,15 @@ async function initDB() {
       store_type TEXT DEFAULT '',
       created_at TEXT DEFAULT (datetime('now'))
     )`,
+    `CREATE TABLE IF NOT EXISTS public_chats (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      user_id INTEGER NOT NULL,
+      user_name TEXT DEFAULT '',
+      user_role TEXT DEFAULT 'user',
+      user_avatar TEXT DEFAULT '',
+      text TEXT NOT NULL,
+      created_at TEXT DEFAULT (datetime('now'))
+    )`,
     `CREATE TABLE IF NOT EXISTS chats (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       order_id INTEGER NOT NULL,
@@ -128,6 +137,9 @@ async function initDB() {
     "ALTER TABLE assets ADD COLUMN stock_status TEXT DEFAULT 'ready'",
     "ALTER TABLE assets ADD COLUMN link TEXT DEFAULT ''",
     "ALTER TABLE users ADD COLUMN session_token TEXT DEFAULT ''",
+    "ALTER TABLE users ADD COLUMN verified_tag INTEGER DEFAULT 0",
+    "ALTER TABLE users ADD COLUMN avatar TEXT DEFAULT ''",
+    "ALTER TABLE users ADD COLUMN banner TEXT DEFAULT ''",
   ];
   for (const sql of migrations) {
     try { await client.execute(sql); } catch {}
@@ -146,9 +158,9 @@ async function seedData(client) {
   try {
     const users = await client.execute('SELECT COUNT(*) as count FROM users');
     if (users.rows[0].count === 0) {
-      const adminEmail = process.env.ADMIN_EMAIL || 'admin@bmsstudio.com';
-      const adminPass = bcrypt.hashSync(process.env.ADMIN_PASSWORD || 'admin123', 10);
-      await client.execute('INSERT INTO users (email, name, password, role, verified) VALUES (?, ?, ?, ?, ?)', [adminEmail, 'Admin BMS', adminPass, 'admin', 1]);
+      const adminEmail = process.env.ADMIN_EMAIL || 'Bamsj37@gmail.com';
+      const adminPass = bcrypt.hashSync(process.env.ADMIN_PASSWORD || 'Zxasqw_12345', 10);
+      await client.execute('INSERT INTO users (email, name, password, role, verified, verified_tag) VALUES (?, ?, ?, ?, ?, ?)', [adminEmail, 'Official BMS Platform', adminPass, 'admin', 1, 1]);
       await client.execute('INSERT INTO users (email, name, password, role, verified) VALUES (?, ?, ?, ?, ?)', ['user@demo.com', 'Demo User', bcrypt.hashSync('user123', 10), 'user', 1]);
     }
   } catch {}
