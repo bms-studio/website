@@ -1007,7 +1007,8 @@ textarea.form-input{resize:vertical;min-height:100px}
   <section class="section" style="padding-top:32px">
     <div style="max-width:800px;margin:0 auto">
       <div class="glass" style="padding:0;border-radius:var(--radius-lg);border:1px solid var(--glass-border);overflow:hidden;margin-bottom:20px">
-        <div id="profileBanner" style="height:120px;background:var(--gradient-1);background-size:cover;background-position:center;position:relative"></div>
+        <div id="profileBanner" style="height:120px;background:var(--gradient-1);background-size:cover;background-position:center;position:relative;cursor:pointer" onclick="document.getElementById('bannerInput').click()" title="Click to change banner"></div>
+        <input type="file" id="bannerInput" accept="image/*" style="display:none" onchange="uploadBanner(this)">
         <div style="padding:0 24px 24px;display:flex;align-items:flex-end;gap:16px;margin-top:-32px;position:relative;z-index:2">
           <div id="profileAvatarWrap" style="width:72px;height:72px;border-radius:50%;border:3px solid var(--bg);background:var(--gradient-1);display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:700;color:#fff;flex-shrink:0;overflow:hidden;background-size:cover;background-position:center;cursor:pointer" onclick="document.getElementById('avatarInput').click()" title="Click to change avatar">
             <span id="profileAvatarText">U</span>
@@ -1318,13 +1319,6 @@ textarea.form-input{resize:vertical;min-height:100px}
       <input class="form-input" id="editProfileName" placeholder="Your name">
       <label style="font-size:12px;color:var(--text-muted)">Bio</label>
       <textarea class="form-input" id="editProfileBio" placeholder="Tell us about yourself" rows="3" style="resize:vertical"></textarea>
-      <label style="font-size:12px;color:var(--text-muted)">Avatar</label>
-      <input type="file" id="avatarInput" accept="image/*" style="display:none" onchange="uploadAvatar(this)">
-      <div style="display:flex;gap:8px">
-        <button class="btn btn-outline btn-sm" onclick="document.getElementById('avatarInput').click()" style="flex:1"><i class="fas fa-image"></i> Upload Avatar</button>
-        <button class="btn btn-outline btn-sm" onclick="document.getElementById('bannerInput').click()" style="flex:1"><i class="fas fa-image"></i> Upload Banner</button>
-      </div>
-      <input type="file" id="bannerInput" accept="image/*" style="display:none" onchange="uploadBanner(this)">
       <button class="btn btn-primary" onclick="saveProfile()">Save</button>
     </div>
   </div>
