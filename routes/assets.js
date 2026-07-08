@@ -44,11 +44,11 @@ router.get('/:id', async (req, res) => {
 
 router.post('/', authenticateSession, requireAdmin, async (req, res) => {
   try {
-    const { name, price, original_price, description, tags, category, store_type, image, video_enabled, video_url, stock_status } = req.body;
+    const { name, price, original_price, description, tags, category, store_type, image, video_enabled, video_url, stock_status, link } = req.body;
     if (!name) return res.status(400).json({ error: 'Nama asset diperlukan' });
     const r = await q(
-      'INSERT INTO assets (name, price, original_price, description, tags, category, store_type, image, video_enabled, video_url, stock_status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
-      [name, price || 'Gratis', original_price || '', description || '', tags || '', category || 'other', store_type || 'store', image || '', video_enabled ? 1 : 0, video_url || '', stock_status || 'ready']
+      'INSERT INTO assets (name, price, original_price, description, tags, category, store_type, image, video_enabled, video_url, stock_status, link) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+      [name, price || 'Gratis', original_price || '', description || '', tags || '', category || 'other', store_type || 'store', image || '', video_enabled ? 1 : 0, video_url || '', stock_status || 'ready', link || '']
     );
     const asset = await q('SELECT * FROM assets WHERE id = ?', [r.lastInsertRowid]);
     res.json({ asset: asset.rows[0] });
@@ -61,10 +61,10 @@ router.put('/:id', authenticateSession, requireAdmin, async (req, res) => {
   try {
     const existing = await q('SELECT id FROM assets WHERE id = ?', [req.params.id]);
     if (!existing.rows.length) return res.status(404).json({ error: 'Asset not found' });
-    const { name, price, original_price, description, tags, category, store_type, image, video_enabled, video_url, stock_status } = req.body;
+    const { name, price, original_price, description, tags, category, store_type, image, video_enabled, video_url, stock_status, link } = req.body;
     await q(
-      'UPDATE assets SET name=?, price=?, original_price=?, description=?, tags=?, category=?, store_type=?, image=?, video_enabled=?, video_url=?, stock_status=? WHERE id=?',
-      [name, price || 'Gratis', original_price || '', description || '', tags || '', category || 'other', store_type || 'store', image || '', video_enabled ? 1 : 0, video_url || '', stock_status || 'ready', req.params.id]
+      'UPDATE assets SET name=?, price=?, original_price=?, description=?, tags=?, category=?, store_type=?, image=?, video_enabled=?, video_url=?, stock_status=?, link=? WHERE id=?',
+      [name, price || 'Gratis', original_price || '', description || '', tags || '', category || 'other', store_type || 'store', image || '', video_enabled ? 1 : 0, video_url || '', stock_status || 'ready', link || '', req.params.id]
     );
     const asset = await q('SELECT * FROM assets WHERE id = ?', [req.params.id]);
     res.json({ asset: asset.rows[0] });

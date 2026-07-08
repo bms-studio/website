@@ -1138,6 +1138,7 @@ textarea.form-input{resize:vertical;min-height:100px}
             <div id="adminVideoUrl" style="display:none">
               <input class="form-input" type="text" name="video_url" placeholder="YouTube/Vimeo URL">
             </div>
+            <input class="form-input" type="text" name="link" placeholder="External Link (opsional - user bisa klik buka tab baru)">
             <button class="btn btn-primary" type="submit">Save Asset</button>
           </form>
         </div>
@@ -1302,6 +1303,7 @@ textarea.form-input{resize:vertical;min-height:100px}
           <option value="studio">BMS STUDIO</option>
         </select>
         <input class="form-input" type="text" name="image" placeholder="Image URL">
+        <input class="form-input" type="text" name="link" placeholder="External Link (opsional)">
         <button class="btn btn-primary" type="submit">Save</button>
       </form>
     </div>
@@ -1312,7 +1314,7 @@ textarea.form-input{resize:vertical;min-height:100px}
 // ============ API CLIENT ============
 const API = '/api';
 async function api(path, options = {}) {
-  const config = { headers: { 'Content-Type': 'application/json', ...options.headers }, ...options };
+  const config = { headers: { 'Content-Type': 'application/json', ...options.headers }, credentials: 'include', ...options };
   if (config.body && typeof config.body === 'object') config.body = JSON.stringify(config.body);
   try {
     const res = await fetch(API + path, config);
@@ -1599,7 +1601,7 @@ async function renderAssets() {
       const isFree = a.price === 'Gratis' || a.price === '0' || !a.price;
       const tags = (a.tags || '').split(',').filter(Boolean);
       const hasDiscount = a.original_price && a.original_price !== a.price && a.original_price !== '';
-      return '<div class="asset-card reveal"><div class="asset-thumb">'+(a.image ? '<img src="'+a.image+'" alt="" loading="lazy">' : '<i class="fas fa-cube"></i>')+(a.video_enabled ? '<div class="play-btn" onclick="event.stopPropagation();openVideoModal(\''+(a.video_url||'')+'\')"><i class="fas fa-play"></i></div>' : '')+'</div><div class="asset-body"><h3>'+a.name+'</h3><div class="tags">'+tags.slice(0,3).map(t => '<span>'+t.trim()+'</span>').join('')+'</div><div class="desc">'+(a.description||'')+'</div></div><div class="asset-footer"><div><span class="asset-price">'+(isFree ? 'Gratis' : a.price)+'</span>'+(hasDiscount ? '<span class="asset-price-original">'+a.original_price+'</span>' : '')+'<div><span class="asset-stock '+(a.stock_status === 'limited' ? 'limited' : '')+'">'+(a.stock_status === 'limited' ? 'Limited' : a.stock_status === 'preorder' ? 'Pre-order' : 'Ready')+'</span></div></div><button class="asset-add" onclick="addToCart('+a.id+')"><i class="fas fa-plus"></i></button></div></div>';
+      return '<div class="asset-card reveal"><div class="asset-thumb">'+(a.image ? '<img src="'+a.image+'" alt="" loading="lazy">' : '<i class="fas fa-cube"></i>')+(a.video_enabled ? '<div class="play-btn" onclick="event.stopPropagation();openVideoModal(\''+(a.video_url||'')+'\')"><i class="fas fa-play"></i></div>' : '')+'</div><div class="asset-body"><h3>'+a.name+'</h3><div class="tags">'+tags.slice(0,3).map(t => '<span>'+t.trim()+'</span>').join('')+'</div><div class="desc">'+(a.description||'')+'</div></div><div class="asset-footer"><div><span class="asset-price">'+(isFree ? 'Gratis' : a.price)+'</span>'+(hasDiscount ? '<span class="asset-price-original">'+a.original_price+'</span>' : '')+'<div><span class="asset-stock '+(a.stock_status === 'limited' ? 'limited' : '')+'">'+(a.stock_status === 'limited' ? 'Limited' : a.stock_status === 'preorder' ? 'Pre-order' : 'Ready')+'</span></div></div><div style="display:flex;gap:4px">'+(a.link ? '<a href="'+a.link+'" target="_blank" rel="noopener" class="asset-add" onclick="event.stopPropagation()" title="Open link"><i class="fas fa-external-link-alt"></i></a>' : '')+'<button class="asset-add" onclick="addToCart('+a.id+')"><i class="fas fa-plus"></i></button></div></div></div>';
     }).join('');
     setTimeout(initRevealObserver, 100);
   } catch { grid.innerHTML = '<div class="empty-state"><i class="fas fa-exclamation-triangle"></i><h3>Gagal memuat</h3></div>'; empty.style.display = 'none'; }
@@ -1842,7 +1844,8 @@ async function submitAdminAsset(e) {
     description: fd.get('description') || '', tags: fd.get('tags') || '', category: fd.get('category') || 'other',
     store_type: fd.get('store_type') || 'store', image: fd.get('image') || '',
     video_enabled: fd.get('video_enabled') === 'on', video_url: fd.get('video_url') || '',
-    stock_status: fd.get('stock_status') || 'ready'
+    stock_status: fd.get('stock_status') || 'ready',
+    link: fd.get('link') || ''
   };
   const btn = e.target.querySelector('button');
   btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
@@ -1875,7 +1878,7 @@ function closeAssetForm() { document.getElementById('assetFormModal').classList.
 async function submitAssetForm(e) {
   e.preventDefault();
   const fd = new FormData(e.target);
-  const data = { name: fd.get('name'), price: fd.get('price')||'Gratis', description: fd.get('description')||'', tags: fd.get('tags')||'', category: fd.get('category')||'other', store_type: fd.get('store_type')||'store', image: fd.get('image')||'', video_enabled: fd.get('video_enabled')==='on', video_url: fd.get('video_url')||'' };
+  const data = { name: fd.get('name'), price: fd.get('price')||'Gratis', description: fd.get('description')||'', tags: fd.get('tags')||'', category: fd.get('category')||'other', store_type: fd.get('store_type')||'store', image: fd.get('image')||'', video_enabled: fd.get('video_enabled')==='on', video_url: fd.get('video_url')||'', link: fd.get('link')||'' };
   try {
     if (APP.editingAssetId) { await api('/assets/'+APP.editingAssetId,{method:'PUT',body:data}); APP.editingAssetId=null; }
     else { await api('/assets',{method:'POST',body:data}); }

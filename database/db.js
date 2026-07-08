@@ -67,6 +67,7 @@ async function initDB() {
       video_enabled INTEGER DEFAULT 0,
       video_url TEXT DEFAULT '',
       stock_status TEXT DEFAULT 'ready',
+      link TEXT DEFAULT '',
       created_at TEXT DEFAULT (datetime('now'))
     )`,
     `CREATE TABLE IF NOT EXISTS messages (
@@ -125,6 +126,7 @@ async function initDB() {
     "ALTER TABLE assets ADD COLUMN store_type TEXT NOT NULL DEFAULT 'store'",
     "ALTER TABLE assets ADD COLUMN original_price TEXT DEFAULT ''",
     "ALTER TABLE assets ADD COLUMN stock_status TEXT DEFAULT 'ready'",
+    "ALTER TABLE assets ADD COLUMN link TEXT DEFAULT ''",
     "ALTER TABLE users ADD COLUMN session_token TEXT DEFAULT ''",
   ];
   for (const sql of migrations) {
