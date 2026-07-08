@@ -939,12 +939,12 @@ textarea.form-input{resize:vertical;min-height:100px}
         <a class="btn btn-primary" onclick="navigateTo('store')" style="margin-top:14px">Browse Store</a>
       </div>
       <div id="cartSummary" class="cart-summary" style="display:none">
-        <div class="cart-summary-row"><span>Subtotal</span><span id="cartSubtotal">Rp 0</span></div>
-        <div style="display:flex;gap:8px;margin:12px 0">
-          <input class="form-input" type="text" id="promoInput" placeholder="Kode promo" style="flex:1">
+        <div style="display:flex;gap:8px;margin-bottom:12px">
+          <input class="form-input" type="text" id="promoInput" placeholder="Kode promo" style="flex:1;text-transform:uppercase">
           <button class="btn btn-outline btn-sm" onclick="applyPromoCode()">Apply</button>
         </div>
         <div id="promoApplied" style="display:none;padding:8px 12px;border-radius:var(--radius);background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.2);font-size:12px;color:#34d399;margin-bottom:10px"><i class="fas fa-check-circle"></i> Promo applied!</div>
+        <div class="cart-summary-row"><span>Subtotal</span><span id="cartSubtotal">Rp 0</span></div>
         <div class="cart-summary-row total"><span>Total</span><span id="cartTotal">Rp 0</span></div>
         <button class="btn btn-primary btn-lg" onclick="checkout()">Checkout</button>
       </div>
@@ -988,10 +988,10 @@ textarea.form-input{resize:vertical;min-height:100px}
           <h3 style="font-size:18px;font-weight:700" id="profileName">User</h3>
           <p style="font-size:12px;color:var(--text-muted)" id="profileEmail">email@example.com</p>
         </div>
-        <div style="display:flex;gap:20px;flex-wrap:wrap">
+        <div style="display:flex;gap:20px;flex-wrap:wrap;align-items:center">
           <div style="text-align:center"><div style="font-size:20px;font-weight:800" id="profileXP">0</div><div style="font-size:11px;color:var(--text-muted)">XP</div></div>
-          <div style="text-align:center"><div style="font-size:20px;font-weight:800" id="profileCoins">0</div><div style="font-size:11px;color:var(--text-dim)">Coins</div></div>
           <div style="text-align:center"><div style="font-size:20px;font-weight:800" id="profileOrders">0</div><div style="font-size:11px;color:var(--text-dim)">Orders</div></div>
+          <span id="profileRankTag" style="padding:4px 14px;border-radius:100px;font-size:11px;font-weight:600"></span>
         </div>
       </div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px" id="profileLevelSection">
@@ -1010,11 +1010,36 @@ textarea.form-input{resize:vertical;min-height:100px}
             <input class="form-input" id="profileRefCode" readonly style="font-size:13px;font-weight:700;text-align:center">
             <button class="btn btn-outline btn-sm" onclick="copyRefCode()"><i class="fas fa-copy"></i></button>
           </div>
-          <div style="font-size:11px;color:var(--text-muted);margin-top:6px">Bagikan kode ini, dapatkan <strong>50 coins</strong> per referral!</div>
+          <div style="font-size:11px;color:var(--text-muted);margin-top:6px">Bagikan kode ini, dapatkan <strong>5 XP</strong> per referral!</div>
         </div>
+      </div>
+      <button class="btn btn-outline btn-sm" onclick="showEditProfile()" style="margin-bottom:16px"><i class="fas fa-edit"></i> Edit Profile</button>
+      <h3 style="font-size:16px;font-weight:700;margin-bottom:12px">Your Testimonial</h3>
+      <div style="display:flex;gap:8px;margin-bottom:20px">
+        <input class="form-input" id="testimonialInput" placeholder="Tulis testimoni kamu..." style="flex:1">
+        <button class="btn btn-primary btn-sm" onclick="submitTestimonial()">Send</button>
       </div>
       <h3 style="font-size:16px;font-weight:700;margin-bottom:12px">Order History</h3>
       <div id="profileOrdersList" style="display:flex;flex-direction:column;gap:8px"></div>
+    </div>
+  </section>
+</div>
+
+<!-- CHAT -->
+<div class="page" id="page-chat">
+  <div class="banner-page" style="min-height:200px">
+    <div class="overlay"></div>
+    <div class="content">
+      <h1 class="hero-title" style="font-size:30px">Order <span class="text-gradient">Chat</span></h1>
+    </div>
+  </div>
+  <section class="section" style="padding-top:24px">
+    <div style="max-width:700px;margin:0 auto">
+      <div id="chatMessages" style="display:flex;flex-direction:column;gap:8px;max-height:400px;overflow-y:auto;padding:16px;border-radius:var(--radius-lg);border:1px solid var(--glass-border);margin-bottom:12px;background:var(--bg-2)"></div>
+      <div style="display:flex;gap:8px">
+        <input class="form-input" id="chatInput" placeholder="Type a message..." style="flex:1" onkeydown="if(event.key==='Enter')sendChatMessage()">
+        <button class="btn btn-primary btn-sm" onclick="sendChatMessage()">Send</button>
+      </div>
     </div>
   </section>
 </div>
@@ -1028,6 +1053,7 @@ textarea.form-input{resize:vertical;min-height:100px}
       <div class="admin-sidebar-item" data-tab="add-asset" onclick="switchAdminTab('add-asset')"><i class="fas fa-plus-circle"></i> Add Asset</div>
       <div class="admin-sidebar-item" data-tab="messages" onclick="switchAdminTab('messages')"><i class="fas fa-envelope"></i> Messages</div>
       <div class="admin-sidebar-item" data-tab="orders" onclick="switchAdminTab('orders')"><i class="fas fa-shopping-bag"></i> Orders</div>
+      <div class="admin-sidebar-item" data-tab="chats" onclick="switchAdminTab('chats')"><i class="fas fa-comments"></i> Chats</div>
       <div class="admin-sidebar-item" data-tab="promos" onclick="switchAdminTab('promos')"><i class="fas fa-tag"></i> Promos</div>
       <div class="admin-sidebar-item" data-tab="settings" onclick="switchAdminTab('settings')"><i class="fas fa-cog"></i> Settings</div>
       <div style="flex:1"></div>
@@ -1134,6 +1160,15 @@ textarea.form-input{resize:vertical;min-height:100px}
         <div id="emptyOrders" class="empty-state" style="display:none"><i class="fas fa-shopping-bag"></i><h3>No Orders</h3></div>
       </div>
 
+      <div class="admin-section" id="admin-chats">
+        <h2 style="font-size:20px;font-weight:700;margin-bottom:20px">Chats</h2>
+        <div style="overflow-x:auto">
+          <table class="admin-table">
+            <thead><tr><th>Chat ID</th><th>Order ID</th><th>Messages</th><th>Date</th><th>Actions</th></tr></thead>
+            <tbody id="adminChatsTable"></tbody>
+          </table>
+        </div>
+      </div>
       <div class="admin-section" id="admin-promos">
         <h2 style="font-size:20px;font-weight:700;margin-bottom:20px">Promo Codes</h2>
         <div style="display:flex;gap:12px;margin-bottom:16px;flex-wrap:wrap">
@@ -1184,7 +1219,7 @@ textarea.form-input{resize:vertical;min-height:100px}
 <div id="mainFooter">
   <div class="footer-inner">
     <div class="footer-brand">
-      <h3 class="logo-3d" data-text="BMS Platform" style="font-family:'Syne',sans-serif;font-weight:700;font-size:24px;letter-spacing:-0.02em">BMS <span style="font-weight:600;color:var(--secondary)">Platform</span></h3>
+      <h3 class="logo-3d" style="font-family:'Syne',sans-serif;font-weight:700;font-size:24px;letter-spacing:-0.02em;display:flex;align-items:center;gap:6px">BMS <span style="font-weight:600;color:var(--secondary);font-size:20px">Platform</span></h3>
       <p>Build Better. Develop Better. Play Better.</p>
     </div>
     <div class="footer-col">
@@ -1215,6 +1250,19 @@ textarea.form-input{resize:vertical;min-height:100px}
 <div id="toast-container"></div>
 
 <!-- MODALS -->
+<div class="modal-overlay" id="profileEditModal">
+  <div class="modal-content" style="max-width:400px">
+    <div class="modal-header"><h3>Edit Profile</h3><button class="modal-close" onclick="document.getElementById('profileEditModal').classList.remove('open')">&times;</button></div>
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <label style="font-size:12px;color:var(--text-muted)">Name</label>
+      <input class="form-input" id="editProfileName" placeholder="Your name">
+      <label style="font-size:12px;color:var(--text-muted)">Bio</label>
+      <textarea class="form-input" id="editProfileBio" placeholder="Tell us about yourself" rows="3" style="resize:vertical"></textarea>
+      <button class="btn btn-primary" onclick="saveProfile()">Save</button>
+    </div>
+  </div>
+</div>
+
 <div class="modal-overlay video-modal" id="videoModal">
   <div class="modal-content">
     <div class="modal-header" style="padding:14px 18px;border-bottom:1px solid var(--glass-border)">
@@ -1324,13 +1372,15 @@ function navigateTo(page) {
   const target = document.getElementById('page-' + page);
   if (target) { target.classList.add('active'); target.style.animation = 'none'; target.offsetHeight; target.style.animation = ''; }
   document.querySelectorAll('.nav-tab').forEach(t => t.classList.toggle('active', t.dataset.page === page));
-  document.getElementById('mainFooter').style.display = (page === 'login' || page === 'admin') ? 'none' : 'block';
+  document.getElementById('mainFooter').style.display = (page === 'login' || page === 'admin' || page === 'chat') ? 'none' : 'block';
+  if (page !== 'chat' && chatPollInterval) { clearInterval(chatPollInterval); chatPollInterval = null; }
   window.scrollTo({ top: 0, behavior: 'smooth' });
   APP.currentPage = page;
   if (page === 'store') { renderAssets(); setupFilters(); }
   if (page === 'admin') refreshAdminData();
   if (page === 'cart') renderCart();
   if (page === 'profile') renderProfile();
+  if (page === 'chat' && !APP.currentOrderId) { navigateTo('profile'); showToast('Pilih order terlebih dahulu', 'error'); }
   closeMobileNav();
   setTimeout(initRevealObserver, 100);
 }
@@ -1411,12 +1461,13 @@ async function handleLogout() {
 function renderProfile() {
   if (!APP.isLoggedIn || !APP.user) { navigateTo('login'); return; }
   const u = APP.user;
-  document.getElementById('profileAvatar').textContent = (u.name || u.email || 'U').charAt(0).toUpperCase();
-  document.getElementById('profileName').textContent = u.name || 'User';
+  const savedName = localStorage.getItem('bms_name_'+u.id) || u.name || '';
+  const savedBio = localStorage.getItem('bms_bio_'+u.id) || '';
+  document.getElementById('profileAvatar').textContent = (savedName || u.email || 'U').charAt(0).toUpperCase();
+  document.getElementById('profileName').textContent = savedName || 'User';
   document.getElementById('profileEmail').textContent = u.email || '';
-  // XP, Coins, Level (using localStorage for persistence across sessions)
+  // XP, Level (using localStorage for persistence across sessions)
   let xp = parseInt(localStorage.getItem('bms_xp_'+u.id) || '0');
-  let coins = parseInt(localStorage.getItem('bms_coins_'+u.id) || '0');
   const levelNames = ['Basic','Bronze','Silver','Gold','Platinum','Diamond','Elite','Legendary'];
   const levelThresholds = [0,100,300,600,1000,1600,2400,3500];
   let level = 0;
@@ -1425,8 +1476,11 @@ function renderProfile() {
   const prevXP = levelThresholds[level];
   const progress = nextXP > prevXP ? ((xp - prevXP) / (nextXP - prevXP)) * 100 : 100;
   document.getElementById('profileXP').textContent = xp;
-  document.getElementById('profileCoins').textContent = coins;
   document.getElementById('profileLevel').textContent = levelNames[level];
+  // rank tag colors
+  const rankColors = ['#a1a1aa','#cd7f32','#c0c0c0','#ffd700','#e5e4e2','#b9f2ff','#ff6ec7','#ff4500'];
+  const rankTag = document.getElementById('profileRankTag');
+  if (rankTag) { rankTag.textContent = levelNames[level]; rankTag.style.background = rankColors[level] + '22'; rankTag.style.color = rankColors[level]; rankTag.style.border = '1px solid ' + rankColors[level] + '44'; }
   document.getElementById('profileLevelBar').style.width = Math.min(progress, 100) + '%';
   document.getElementById('profileLevelNext').textContent = level < levelThresholds.length - 1 ? `${xp - prevXP} / ${nextXP - prevXP} XP` : 'Max Level';
   // Referral code
@@ -1437,7 +1491,7 @@ function renderProfile() {
   try {
     const cartOrders = JSON.parse(localStorage.getItem('bms_orders_' + u.id) || '[]');
     if (cartOrders.length) {
-      ordersList.innerHTML = cartOrders.slice().reverse().map(o => '<div class="glass" style="padding:14px 18px;border-radius:var(--radius-lg);border:1px solid var(--glass-border);display:flex;justify-content:space-between;align-items:center;font-size:13px"><div><div style="font-weight:600">'+ (o.items?.[0]?.name || 'Order') +'</div><div style="font-size:11px;color:var(--text-dim)">'+ (o.createdAt || new Date().toLocaleDateString()) +'</div></div><span style="padding:3px 10px;border-radius:5px;font-size:10px;font-weight:600;background:rgba(16,185,129,0.12);color:#34d399">'+ (o.status || 'Completed') +'</span></div>').join('');
+      ordersList.innerHTML = cartOrders.slice().reverse().map((o,i) => '<div class="glass" style="padding:14px 18px;border-radius:var(--radius-lg);border:1px solid var(--glass-border);display:flex;justify-content:space-between;align-items:center;font-size:13px"><div><div style="font-weight:600">'+ (o.items?.[0]?.name || 'Order') +'</div><div style="font-size:11px;color:var(--text-dim)">'+ (o.createdAt || new Date().toLocaleDateString()) +'</div></div><div style="display:flex;gap:6px;align-items:center"><span style="padding:3px 10px;border-radius:5px;font-size:10px;font-weight:600;background:rgba(16,185,129,0.12);color:#34d399">'+ (o.status || 'Completed') +'</span><button class="btn btn-outline btn-sm" style="padding:4px 8px;font-size:10px" onclick="openChat('+i+')"><i class="fas fa-comment"></i></button></div></div>').join('');
     } else {
       ordersList.innerHTML = '<div class="empty-state" style="padding:32px"><i class="fas fa-shopping-bag" style="font-size:28px"></i><h3 style="font-size:16px">Belum ada pesanan</h3><p style="font-size:13px">Pesan pertama kamu akan muncul di sini.</p></div>';
     }
@@ -1651,9 +1705,7 @@ async function submitOrder() {
       orders.push({ items: [...APP.cart], total: sub, status: 'Pending', createdAt: new Date().toLocaleDateString() });
       localStorage.setItem('bms_orders_'+u.id, JSON.stringify(orders));
       const xp = parseInt(localStorage.getItem('bms_xp_'+u.id) || '0') + 10;
-      const coins = parseInt(localStorage.getItem('bms_coins_'+u.id) || '0') + 5;
       localStorage.setItem('bms_xp_'+u.id, xp.toString());
-      localStorage.setItem('bms_coins_'+u.id, coins.toString());
     }
     APP.cart = []; saveCart(); renderCart(); appliedPromo = null;
     document.getElementById('checkoutModal').classList.remove('open');
@@ -1678,6 +1730,62 @@ function closeVideoModal() { document.getElementById('videoModal').classList.rem
 function toggleFaq(el) { const a=el.querySelector('.faq-answer'); const i=el.querySelector('.fa-chevron-down'); if (!a) return; const open=a.style.maxHeight!=='0px'&&a.style.maxHeight!==''; a.style.maxHeight=open?'0':a.scrollHeight+'px'; if(i)i.style.transform=open?'rotate(0deg)':'rotate(180deg)'; }
 document.getElementById('videoModal')?.addEventListener('click', function(e) { if (e.target === this) closeVideoModal(); });
 
+// ============ CHAT ============
+let chatPollInterval = null;
+async function openChat(orderId) {
+  navigateTo('chat');
+  const container = document.getElementById('chatMessages');
+  const input = document.getElementById('chatInput');
+  container.innerHTML = '<div style="text-align:center;color:var(--text-dim);padding:20px">Loading...</div>';
+  APP.currentOrderId = orderId;
+  // local chat: use localStorage
+  const key = 'bms_chat_' + (APP.user?.id||'guest') + '_' + orderId;
+  const msgs = JSON.parse(localStorage.getItem(key) || '[]');
+  renderChatMessages(msgs);
+  if (chatPollInterval) clearInterval(chatPollInterval);
+}
+function renderChatMessages(msgs) {
+  const container = document.getElementById('chatMessages');
+  if (!container) return;
+  if (!msgs || !msgs.length) { container.innerHTML = '<div style="text-align:center;color:var(--text-dim);padding:20px">No messages yet. Start the conversation!</div>'; return; }
+  container.innerHTML = msgs.map(m => '<div style="display:flex;flex-direction:column;align-items:'+(m.role==='admin'?'flex-start':'flex-end')+'"><div style="max-width:80%;padding:10px 14px;border-radius:var(--radius-lg);background:'+(m.role==='admin'?'var(--primary)':'var(--glass2)')+';color:'+(m.role==='admin'?'#fff':'var(--text)')+';font-size:13px"><div style="font-size:10px;font-weight:600;margin-bottom:2px;opacity:0.7">'+(m.name||m.role)+'</div>'+m.text+'</div><div style="font-size:10px;color:var(--text-dim);margin-top:2px">'+new Date(m.time).toLocaleTimeString()+'</div></div>').join('');
+  container.scrollTop = container.scrollHeight;
+}
+async function sendChatMessage() {
+  const input = document.getElementById('chatInput');
+  const text = input.value.trim();
+  if (!text || APP.currentOrderId === undefined) return;
+  input.value = '';
+  const key = 'bms_chat_' + (APP.user?.id||'guest') + '_' + APP.currentOrderId;
+  const msgs = JSON.parse(localStorage.getItem(key) || '[]');
+  msgs.push({ role: 'user', text, name: APP.user?.name || 'You', time: new Date().toISOString() });
+  localStorage.setItem(key, JSON.stringify(msgs));
+  renderChatMessages(msgs);
+}
+
+// ============ TESTIMONIALS ============
+async function submitTestimonial() {
+  const input = document.getElementById('testimonialInput');
+  const text = input?.value.trim();
+  if (!text) return showToast('Tulis testimoni terlebih dahulu', 'error');
+  try { await api('/testimonials', { method: 'POST', body: { text } }); input.value = ''; showToast('Testimoni dikirim!', 'success'); } catch (err) { showToast(err.message||'Gagal', 'error'); }
+}
+
+// ============ PROFILE EDIT ============
+function showEditProfile() {
+  document.getElementById('editProfileName').value = APP.user?.name || '';
+  document.getElementById('editProfileBio').value = localStorage.getItem('bms_bio_'+(APP.user?.id||'')) || '';
+  document.getElementById('profileEditModal').classList.add('open');
+}
+function saveProfile() {
+  const name = document.getElementById('editProfileName').value.trim();
+  const bio = document.getElementById('editProfileBio').value.trim();
+  if (name && APP.user) { APP.user.name = name; localStorage.setItem('bms_bio_' + APP.user.id, bio); localStorage.setItem('bms_name_' + APP.user.id, name); }
+  document.getElementById('profileEditModal').classList.remove('open');
+  renderProfile();
+  showToast('Profile updated!', 'success');
+}
+
 // ============ ADMIN ============
 let adminFilter = 'all';
 function filterAdminAssets(type) {
@@ -1694,6 +1802,7 @@ function switchAdminTab(tab) {
   if (tab === 'messages') loadMessages();
   if (tab === 'orders') loadOrders();
   if (tab === 'promos') loadPromos();
+  if (tab === 'chats') loadAdminChats();
 }
 async function refreshAdminData() {
   try {
@@ -1815,6 +1924,16 @@ async function addPromo() {
 }
 async function togglePromo(id) { try { await api('/promos/'+id+'/toggle',{method:'POST'}); loadPromos(); } catch {} }
 async function deletePromo(id) { if (!confirm('Hapus promo ini?')) return; try { await api('/promos/'+id,{method:'DELETE'}); loadPromos(); showToast('Promo dihapus','success'); } catch {} }
+
+// ============ ADMIN CHATS ============
+async function loadAdminChats() {
+  const tbody = document.getElementById('adminChatsTable');
+  if (!tbody) return;
+  try {
+    const d = await api('/chats/admin/all'); const chats = d.chats||[];
+    tbody.innerHTML = chats.map(c => { const msgs = JSON.parse(c.messages||'[]'); return '<tr><td>#'+c.id+'</td><td>#'+c.order_id+'</td><td style="font-size:11px">'+msgs.length+' msgs</td><td style="font-size:11px;color:var(--text-dim)">'+new Date(c.created_at).toLocaleDateString()+'</td><td><button class="table-btn table-btn-edit" onclick="openChat('+c.order_id+')">View</button></td></tr>'; }).join('');
+  } catch { tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--text-dim)">No chats</td></tr>'; }
+}
 
 // ============ SETTINGS ============
 async function exportData() {

@@ -1,0 +1,22 @@
+const express = require('express');
+const { q } = require('../database/db');
+const { authenticateSession } = require('../middleware/auth');
+const router = express.Router();
+
+router.get('/', async (req, res) => {
+  try {
+    const result = await q('SELECT * FROM testimonials ORDER BY created_at DESC');
+    res.json({ testimonials: result.rows });
+  } catch { res.status(500).json({ error: 'Server error' }); }
+});
+
+router.post('/', authenticateSession, async (req, res) => {
+  try {
+    const { text } = req.body;
+    if (!text) return res.status(400).json({ error: 'Text required' });
+    await q('INSERT INTO testimonials (user_id, user_name, text) VALUES (?, ?, ?)', [req.user.id, req.user.name || req.user.email, text]);
+    res.json({ success: true });
+  } catch { res.status(500).json({ error: 'Server error' }); }
+});
+
+module.exports = router;

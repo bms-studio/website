@@ -32,12 +32,16 @@ const assetRoutes = require('./routes/assets');
 const messageRoutes = require('./routes/messages');
 const orderRoutes = require('./routes/orders');
 const promoRoutes = require('./routes/promos');
+const chatRoutes = require('./routes/chats');
+const testimonialRoutes = require('./routes/testimonials');
 
 app.use('/api/auth', authRoutes);
 app.use('/api/assets', assetRoutes);
 app.use('/api/messages', messageRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/promos', promoRoutes);
+app.use('/api/chats', chatRoutes);
+app.use('/api/testimonials', testimonialRoutes);
 
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
