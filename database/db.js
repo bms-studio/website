@@ -7,20 +7,26 @@ require('dotenv').config({ path: path.join(__dirname, '..', '.env') });
 let db = null;
 let initialized = false;
 
+function getLocalPath() {
+  if (process.env.VERCEL) return '/tmp/data.db';
+  return path.join(__dirname, 'data.db');
+}
+
 function getDB() {
   if (db) return db;
   const tursoUrl = process.env.TURSO_DB_URL;
   const tursoToken = process.env.TURSO_DB_TOKEN;
-  const localPath = path.join(__dirname, 'data.db');
 
   if (tursoUrl && tursoToken && tursoUrl.startsWith('libsql://') && tursoToken.length > 10) {
     try {
-      db = createClient({ url: tursoUrl, authToken: tursoToken });
+      const client = createClient({ url: tursoUrl, authToken: tursoToken });
+      db = client;
       return db;
     } catch (e) {
       console.log('Turso connection failed, using local database.');
     }
   }
+  const localPath = getLocalPath();
   db = createClient({ url: 'file:' + localPath });
   return db;
 }
@@ -32,10 +38,12 @@ async function initDB() {
   const isTurso = !!(process.env.TURSO_DB_URL && process.env.TURSO_DB_TOKEN);
 
   try {
-    await client.execute('SELECT 1');
+    const timeout = new Promise((_, rej) => setTimeout(() => rej(new Error('timeout')), 5000));
+    await Promise.race([client.execute('SELECT 1'), timeout]);
   } catch (e) {
     if (client === db) {
-      db = createClient({ url: 'file:' + path.join(__dirname, 'data.db') });
+      const localPath = getLocalPath();
+      db = createClient({ url: 'file:' + localPath });
       client = db;
     }
   }
