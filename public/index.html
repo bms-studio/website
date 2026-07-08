@@ -1378,7 +1378,8 @@ textarea.form-input{resize:vertical;min-height:100px}
 // ============ API CLIENT ============
 const API = '/api';
 async function api(path, options = {}) {
-  const config = { headers: { 'Content-Type': 'application/json', ...options.headers }, credentials: 'include', ...options };
+  const { headers: optHeaders, ...rest } = options;
+  const config = { headers: { 'Content-Type': 'application/json', ...optHeaders }, credentials: 'include', ...rest };
   if (config.body && typeof config.body === 'object') config.body = JSON.stringify(config.body);
   try {
     const res = await fetch(API + path, config);
@@ -2156,7 +2157,7 @@ function uploadBanner(input) {
     const dataUrl = e.target.result;
     try {
       const xp = parseInt(localStorage.getItem('bms_xp_'+(APP.user?.id||'')) || '0');
-      const d = await api('/admin/profile', { method: 'PUT', body: { banner: dataUrl }, headers: { 'X-User-XP': xp.toString() } });
+      const d = await api('/admin/profile', { method: 'PUT', body: { banner: dataUrl, xp: xp } });
       if (d.user) { APP.user = d.user; renderProfile(); showToast('Banner updated!', 'success'); }
     } catch(err) { showToast(err.message || 'Failed', 'error'); }
   };

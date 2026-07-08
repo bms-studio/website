@@ -22,14 +22,14 @@ router.post('/set-role', authenticateSession, requireAdmin, async (req, res) => 
 
 router.put('/profile', authenticateSession, async (req, res) => {
   try {
-    const { name, avatar, banner } = req.body;
+    const { name, avatar, banner, xp: userXp } = req.body;
     const updates = [];
     const params = [];
     if (name !== undefined) { updates.push('name = ?'); params.push(name); }
     if (avatar !== undefined) { updates.push('avatar = ?'); params.push(avatar); }
     if (banner !== undefined) {
-      const xp = parseInt(req.headers['x-user-xp'] || '0');
-      if (xp < 20) return res.status(400).json({ error: 'Need 20 XP for banner' });
+      const xp = parseInt(userXp || req.headers['x-user-xp'] || '0');
+      if (xp < 20) return res.status(400).json({ error: 'Butuh 20 XP untuk memasang banner. Pesan dulu 2x agar bisa!' });
       updates.push('banner = ?'); params.push(banner);
     }
     if (!updates.length) return res.json({ success: true });
