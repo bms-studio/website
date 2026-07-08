@@ -1,0 +1,1694 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BMS Platform - Premium Development & Digital Store</title>
+<meta name="description" content="BMS Platform - Premium Roblox Development, Digital Products & Creative Solutions.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@400;500;600;700;800;900&family=Syne:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<style>
+:root {
+  --bg: #08080c; --bg-2: #0c0c12; --bg-3: #12121c; --bg-4: #1a1a28;
+  --text: #ededf0; --text-muted: #94949e; --text-dim: #63636e;
+  --primary: #8b7cfc; --primary-light: #a99bff; --primary-dark: #6d5ee0;
+  --secondary: #67e8f9; --accent: #f472b6; --accent2: #fb923c; --accent3: #60a5fa;
+  --glass: rgba(255,255,255,0.02); --glass2: rgba(255,255,255,0.04);
+  --glass-border: rgba(255,255,255,0.05); --glass-border2: rgba(255,255,255,0.10);
+  --gradient-1: linear-gradient(135deg, #8b7cfc, #67e8f9);
+  --gradient-2: linear-gradient(135deg, #f472b6, #8b7cfc);
+  --gradient-3: linear-gradient(135deg, #67e8f9, #8b7cfc, #f472b6);
+  --gradient-4: linear-gradient(135deg, #fb923c, #f472b6);
+  --shadow: 0 10px 40px rgba(0,0,0,0.5);
+  --shadow-glow: 0 20px 60px rgba(139,124,252,0.08);
+  --radius: 10px; --radius-lg: 16px; --radius-xl: 20px;
+  --transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --nav-height: 68px;
+}
+[data-theme="light"] {
+  --bg: #f8f8fc; --bg-2: #f0f0f6; --bg-3: #e6e6f0; --bg-4: #d4d4e0;
+  --text: #1a1a2e; --text-muted: #52525b; --text-dim: #a1a1aa;
+  --primary: #7c6cf0; --primary-light: #9b8ffa; --primary-dark: #5a4dd0;
+  --secondary: #0cafcf; --accent: #e05090; --accent2: #d67a20; --accent3: #4a9ef0;
+  --glass: rgba(0,0,0,0.03); --glass2: rgba(0,0,0,0.06);
+  --glass-border: rgba(0,0,0,0.08); --glass-border2: rgba(0,0,0,0.14);
+  --gradient-1: linear-gradient(135deg, #7c6cf0, #0cafcf);
+  --gradient-2: linear-gradient(135deg, #e05090, #7c6cf0);
+  --gradient-3: linear-gradient(135deg, #0cafcf, #7c6cf0, #e05090);
+  --gradient-4: linear-gradient(135deg, #d67a20, #e05090);
+  --shadow: 0 10px 40px rgba(0,0,0,0.08);
+  --shadow-glow: 0 20px 60px rgba(124,108,240,0.12);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;-webkit-font-smoothing:antialiased;transition:background 0.3s,color 0.3s}
+a{text-decoration:none;color:inherit}
+img{max-width:100%;display:block}
+ul{list-style:none}
+
+/* ANIMATED BACKGROUND */
+.bg-glow{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+.bg-glow .glow{position:absolute;border-radius:50%;filter:blur(120px);opacity:0.18;animation:bgGlow 15s ease-in-out infinite}
+#threeCanvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:0;opacity:0.35}
+.bg-glow .glow:nth-child(1){width:500px;height:500px;background:var(--primary);top:-10%;left:-5%;animation-delay:0s}
+.bg-glow .glow:nth-child(2){width:400px;height:400px;background:var(--secondary);bottom:-10%;right:-5%;animation-delay:-4s}
+.bg-glow .glow:nth-child(3){width:350px;height:350px;background:var(--accent);top:40%;left:50%;animation-delay:-8s;opacity:0.15}
+@keyframes bgGlow{0%,100%{transform:translate(0,0) scale(1)}33%{transform:translate(40px,-30px) scale(1.1)}66%{transform:translate(-30px,20px) scale(0.9)}}
+
+/* PARTICLE FIELD */
+.particles{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+.particle{position:absolute;width:3px;height:3px;background:var(--primary);border-radius:50%;opacity:0;animation:particleFloat 8s ease-in-out infinite}
+@keyframes particleFloat{0%{transform:translateY(100vh) scale(0);opacity:0}20%{opacity:0.8}80%{opacity:0.4}100%{transform:translateY(-10vh) scale(1);opacity:0}}
+.particle:nth-child(1){left:10%;animation-delay:0s;animation-duration:9s}
+.particle:nth-child(2){left:20%;animation-delay:1.5s;animation-duration:11s;width:2px;height:2px}
+.particle:nth-child(3){left:35%;animation-delay:3s;animation-duration:8s}
+.particle:nth-child(4){left:50%;animation-delay:0.5s;animation-duration:10s;width:4px;height:4px}
+.particle:nth-child(5){left:65%;animation-delay:2s;animation-duration:12s}
+.particle:nth-child(6){left:75%;animation-delay:4s;animation-duration:9s;width:2px;height:2px}
+.particle:nth-child(7){left:85%;animation-delay:1s;animation-duration:7s}
+.particle:nth-child(8){left:92%;animation-delay:5s;animation-duration:10s;width:3px;height:3px}
+
+/* REVEAL LINES */
+.reveal-line{display:inline-block;opacity:0;transform:translateY(20px);animation:revealUp 0.7s forwards cubic-bezier(0.16,1,0.3,1)}
+@keyframes revealUp{to{opacity:1;transform:translateY(0)}}
+
+/* 3D LOGO */
+.logo-3d{font-size:2rem;letter-spacing:-0.02em;display:inline-block;position:relative}
+.logo-3d::after{content:attr(data-text);position:absolute;inset:0;color:transparent;-webkit-text-stroke:2px var(--primary);opacity:0.3;transform:translate(2px,2px);pointer-events:none}
+
+/* FLOATING SHAPES */
+.floating-shape{position:absolute;border-radius:50%;pointer-events:none;opacity:0.06}
+.floating-shape.s1{width:200px;height:200px;background:var(--gradient-1);top:20%;left:5%;animation:floatShape 12s ease-in-out infinite}
+.floating-shape.s2{width:150px;height:150px;background:var(--gradient-2);bottom:15%;right:8%;animation:floatShape 15s ease-in-out infinite reverse}
+.floating-shape.s3{width:120px;height:120px;background:var(--gradient-4);top:60%;left:80%;animation:floatShape 10s ease-in-out infinite 2s}
+@keyframes floatShape{0%,100%{transform:translate(0,0) rotate(0deg)}25%{transform:translate(20px,-30px) rotate(90deg)}50%{transform:translate(-15px,15px) rotate(180deg)}75%{transform:translate(10px,20px) rotate(270deg)}}
+
+/* SHIMMER GLOW */
+.shimmer{position:relative;overflow:hidden}
+.shimmer::after{content:'';position:absolute;top:0;left:-100%;width:60%;height:100%;background:linear-gradient(90deg,transparent,rgba(139,124,252,0.06),transparent);animation:shimmer 3s ease-in-out infinite}
+@keyframes shimmer{0%{left:-60%}100%{left:160%}}
+
+/* CARD FLOAT */
+@keyframes cardFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+.card-float{animation:cardFloat 4s ease-in-out infinite}
+.card-float:nth-child(2){animation-delay:1s}
+.card-float:nth-child(3){animation-delay:2s}
+
+/* SECTION GRADIENT OVERLAY */
+.section-gradient{position:relative}
+.section-gradient::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 20% 50%,rgba(139,124,252,0.06),transparent 70%),radial-gradient(ellipse at 80% 50%,rgba(103,232,249,0.04),transparent 70%);pointer-events:none}
+
+.text-gradient{background:var(--gradient-1);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+
+.glass{background:var(--glass);border:1px solid var(--glass-border);backdrop-filter:blur(12px)}
+.glass-hover:hover{background:var(--glass2);border-color:var(--glass-border2);transform:translateY(-2px);box-shadow:var(--shadow-glow)}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:10px 24px;border-radius:var(--radius);font-weight:600;font-size:13px;border:none;cursor:pointer;transition:var(--transition);position:relative;overflow:hidden;font-family:'Inter',sans-serif}
+.btn-primary{background:var(--gradient-1);color:#fff;box-shadow:0 4px 20px rgba(139,124,252,0.25)}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(139,124,252,0.35)}
+.btn-primary::before{content:'';position:absolute;top:0;left:-100%;width:60%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.12),transparent);animation:btnShimmer 3s ease-in-out infinite}
+
+/* 3D tilt cards - instant transform, no transition lag */
+.service-card.tilt-active,.asset-card.tilt-active,.portfolio-card.tilt-active{transition:box-shadow 0.3s,border-color 0.3s,background 0.3s;will-change:transform}
+@keyframes btnShimmer{0%{left:-60%}to{left:160%}}
+.btn-outline{background:transparent;border:1px solid var(--glass-border2);color:var(--text)}
+.btn-outline:hover{border-color:var(--primary);color:var(--primary);background:rgba(139,124,252,0.06)}
+.btn-danger{background:linear-gradient(135deg,#f43f5e,#fb7185);color:#fff}
+.btn-success{background:linear-gradient(135deg,#10b981,#34d399);color:#fff}
+.btn-sm{padding:7px 16px;font-size:12px}
+.btn-lg{padding:14px 32px;font-size:15px}
+
+.form-input{width:100%;padding:12px 16px;background:var(--bg-3);border:1px solid var(--glass-border);border-radius:var(--radius);color:var(--text);font-size:13px;font-family:'Inter',sans-serif;transition:var(--transition);outline:none}
+.form-input:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(139,124,252,0.08)}
+.form-input::placeholder{color:var(--text-dim)}
+textarea.form-input{resize:vertical;min-height:100px}
+
+/* LOADER */
+#loader{position:fixed;inset:0;z-index:9999;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity 0.5s,visibility 0.5s}
+#loader.hidden{opacity:0;visibility:hidden;pointer-events:none}
+.loader-logo{font-size:30px;font-weight:900;background:var(--gradient-1);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;font-family:'Plus Jakarta Sans',sans-serif;margin-bottom:14px;animation:pulse 1.5s ease-in-out infinite}
+.loader-bar{width:180px;height:2px;background:var(--bg-3);border-radius:4px;overflow:hidden}
+.loader-bar-inner{height:100%;width:0%;background:var(--gradient-1);border-radius:4px;animation:loaderFill 1.2s ease-in-out forwards}
+@keyframes loaderFill{to{width:100%}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.5}}
+
+/* NAVBAR */
+#navbar{position:fixed;top:0;left:0;right:0;height:var(--nav-height);z-index:1000;background:rgba(8,8,12,0.88);backdrop-filter:blur(20px);border-bottom:1px solid var(--glass-border);transition:var(--transition)}
+[data-theme="light"] #navbar{background:rgba(248,248,252,0.9);border-bottom-color:rgba(0,0,0,0.08)}
+[data-theme="light"] .mobile-nav{background:rgba(248,248,252,0.98)}
+[data-theme="light"] .banner-page .overlay{background:linear-gradient(135deg,rgba(248,248,252,0.92),rgba(248,248,252,0.5))}
+[data-theme="light"] .banner-page .bg-img{opacity:0.06}
+[data-theme="light"] .bg-glow .glow{opacity:0.1}
+[data-theme="light"] .particle{background:#7c6cf0}
+[data-theme="light"] .hero-badge{background:rgba(124,108,240,0.1);border-color:rgba(124,108,240,0.2);color:#5a4dd0}
+.nav-inner{max-width:1200px;margin:0 auto;padding:0 20px;height:100%;display:flex;align-items:center;justify-content:space-between}
+.nav-brand{display:flex;align-items:center;gap:8px;font-family:'Syne',sans-serif;font-weight:700;font-size:24px;letter-spacing:-0.02em;background:var(--gradient-1);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;cursor:pointer;text-shadow:0 0 40px rgba(139,124,252,0.2);animation:brandGlow 3s ease-in-out infinite}
+@keyframes brandGlow{0%,100%{filter:brightness(1)}50%{filter:brightness(1.3)}}
+.nav-brand span{font-weight:600;font-size:22px}
+.nav-brand i{font-size:20px;-webkit-text-fill-color:initial;color:var(--primary)}
+.nav-links{display:flex;align-items:center;gap:2px}
+.nav-tab{padding:7px 14px;border-radius:var(--radius);font-size:12px;font-weight:500;color:var(--text-muted);cursor:pointer;transition:var(--transition);white-space:nowrap}
+.nav-tab:hover{color:var(--text);background:var(--glass)}
+.nav-tab.active{background:color-mix(in srgb,var(--primary) 10%,transparent);color:var(--primary)}
+.nav-actions{display:flex;align-items:center;gap:6px}
+.theme-toggle{width:34px;height:34px;border-radius:var(--radius);background:var(--glass);border:1px solid var(--glass-border);color:var(--text-muted);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:var(--transition);font-size:14px}
+.theme-toggle:hover{color:var(--text);background:var(--glass2)}
+.nav-btn{padding:7px 16px;border-radius:var(--radius);font-size:12px;font-weight:600;cursor:pointer;transition:var(--transition);border:none;font-family:'Inter',sans-serif;white-space:nowrap}
+.nav-btn-outline{background:transparent;border:1px solid var(--glass-border2);color:var(--text-muted)}
+.nav-btn-outline:hover{border-color:var(--primary);color:var(--primary)}
+.nav-btn-primary{background:var(--gradient-1);color:#fff}
+.nav-btn-primary:hover{transform:translateY(-1px);box-shadow:0 4px 15px rgba(139,124,252,0.25)}
+.cart-badge{position:relative}
+.cart-badge .badge{position:absolute;top:-3px;right:-5px;width:16px;height:16px;background:var(--accent);border-radius:50%;font-size:9px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700}
+.hamburger{display:none;width:34px;height:34px;align-items:center;justify-content:center;border-radius:var(--radius);cursor:pointer;background:var(--glass);border:1px solid var(--glass-border);color:var(--text-muted);font-size:16px;transition:var(--transition)}
+.mobile-nav{display:none;position:fixed;top:var(--nav-height);left:0;right:0;bottom:0;background:rgba(8,8,12,0.98);backdrop-filter:blur(20px);z-index:999;flex-direction:column;padding:16px;overflow-y:auto;gap:2px}
+[data-theme="light"] .mobile-nav{background:rgba(248,248,252,0.98)}
+.mobile-nav.open{display:flex}
+
+/* PAGES */
+.page{display:none;min-height:100vh;padding-top:var(--nav-height);opacity:0;transform:translateY(10px)}
+.page.active{display:block;animation:pageEnter 0.5s var(--ease-out) forwards}
+@keyframes pageEnter{to{opacity:1;transform:translateY(0)}}
+
+/* HERO */
+.hero{position:relative;min-height:85vh;display:flex;align-items:center;justify-content:center;overflow:hidden;padding:0 20px}
+.hero-grid{position:absolute;inset:0;background-image:radial-gradient(rgba(139,124,252,0.05) 1px,transparent 1px);background-size:36px 36px}
+.orb{position:absolute;border-radius:50%;filter:blur(100px);opacity:0.35;pointer-events:none}
+.orb-1{width:350px;height:350px;background:var(--primary);top:-120px;right:-80px;animation:orbFloat 10s ease-in-out infinite}
+.orb-2{width:280px;height:280px;background:var(--secondary);bottom:-60px;left:-60px;animation:orbFloat 12s ease-in-out infinite reverse}
+@keyframes orbFloat{0%,100%{transform:translate(0,0) scale(1)}25%{transform:translate(25px,-25px) scale(1.03)}50%{transform:translate(-15px,15px) scale(0.97)}75%{transform:translate(15px,25px) scale(1.02)}}
+.hero-content{position:relative;z-index:2;text-align:center;max-width:720px}
+.hero-badge{display:inline-flex;align-items:center;gap:6px;padding:6px 18px;background:var(--glass);border:1px solid var(--glass-border);border-radius:100px;font-size:12px;color:var(--text-muted);margin-bottom:20px}
+.hero-badge i{color:var(--secondary)}
+.hero-title{font-family:'Outfit',sans-serif;font-size:clamp(32px,5vw,60px);font-weight:800;line-height:1.15;margin-bottom:16px;letter-spacing:-0.04em}
+.hero-desc{font-size:clamp(14px,1.8vw,18px);color:var(--text-muted);line-height:1.7;max-width:540px;margin:0 auto 28px}
+.hero-cta{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+
+/* SECTION */
+.section{padding:80px 20px;max-width:1200px;margin:0 auto}
+.section-title{font-family:'Outfit',sans-serif;font-size:clamp(24px,3vw,36px);font-weight:800;text-align:center;margin-bottom:10px;letter-spacing:-0.03em}
+.section-desc{text-align:center;color:var(--text-muted);font-size:14px;max-width:540px;margin:0 auto 40px}
+
+/* MARQUEE */
+.marquee{overflow:hidden;padding:12px 0;border-top:1px solid var(--glass-border);border-bottom:1px solid var(--glass-border);background:var(--bg-2)}
+.marquee-track{display:flex;gap:36px;animation:marquee 30s linear infinite;width:max-content}
+.marquee-track:hover{animation-play-state:paused}
+.marquee-item{display:flex;align-items:center;gap:8px;padding:6px 16px;background:var(--glass);border-radius:100px;border:1px solid var(--glass-border);white-space:nowrap;font-size:12px;font-weight:500}
+.marquee-item i{color:var(--primary-light);font-size:14px}
+@keyframes marquee{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+
+/* STATS */
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;max-width:800px;margin:0 auto}
+.stat-card{text-align:center;padding:28px 16px;border-radius:var(--radius-lg);transition:var(--transition);position:relative;overflow:hidden;background:linear-gradient(135deg,rgba(139,124,252,0.05),rgba(103,232,249,0.02));backdrop-filter:blur(24px);border:1px solid rgba(255,255,255,0.06);border-top-color:rgba(255,255,255,0.10);border-bottom-color:rgba(0,0,0,0.15);box-shadow:0 4px 24px rgba(0,0,0,0.2),0 1px 0 rgba(255,255,255,0.06) inset,0 -1px 0 rgba(0,0,0,0.15) inset}
+.stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:45%;background:linear-gradient(180deg,rgba(255,255,255,0.04) 0%,transparent 100%);pointer-events:none}
+.stat-card:hover{transform:translateY(-6px);box-shadow:0 8px 40px rgba(139,124,252,0.08),0 1px 0 rgba(255,255,255,0.08) inset,0 -1px 0 rgba(0,0,0,0.15) inset;border-color:rgba(139,124,252,0.15);border-top-color:rgba(255,255,255,0.12)}
+[data-theme="light"] .stat-card{background:linear-gradient(135deg,rgba(124,108,240,0.03),rgba(12,175,207,0.015));box-shadow:0 2px 16px rgba(0,0,0,0.04),0 1px 0 rgba(255,255,255,0.5) inset,0 -1px 0 rgba(0,0,0,0.04) inset;border-color:rgba(0,0,0,0.06);border-top-color:rgba(255,255,255,0.6);border-bottom-color:rgba(0,0,0,0.08)}
+[data-theme="light"] .stat-card:hover{box-shadow:0 4px 24px rgba(124,108,240,0.06),0 1px 0 rgba(255,255,255,0.5) inset,0 -1px 0 rgba(0,0,0,0.04) inset}
+.stat-card:nth-child(1){animation:cardFloat 4s ease-in-out infinite}
+.stat-card:nth-child(2){animation:cardFloat 4s ease-in-out infinite 1s}
+.stat-card:nth-child(3){animation:cardFloat 4s ease-in-out infinite 2s}
+.stat-card:nth-child(4){animation:cardFloat 4s ease-in-out infinite 3s}
+.stat-number{font-family:'Plus Jakarta Sans',sans-serif;font-size:30px;font-weight:800;background:var(--gradient-1);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.stat-label{color:var(--text-muted);font-size:13px;margin-top:4px}
+
+/* SERVICES */
+.services-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px}
+.service-card{padding:28px;border-radius:var(--radius-lg);transition:var(--transition);position:relative;overflow:hidden;background:linear-gradient(135deg,rgba(139,124,252,0.06),rgba(103,232,249,0.03),rgba(139,124,252,0.02));backdrop-filter:blur(24px);border:1px solid rgba(255,255,255,0.06);border-top-color:rgba(255,255,255,0.10);border-bottom-color:rgba(0,0,0,0.15);box-shadow:0 4px 24px rgba(0,0,0,0.2),0 1px 0 rgba(255,255,255,0.06) inset,0 -1px 0 rgba(0,0,0,0.15) inset}
+.service-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--gradient-1);opacity:0;transition:var(--transition);z-index:3}
+.service-card:hover::before{opacity:1}
+.service-card:hover{transform:translateY(-6px);box-shadow:0 8px 40px rgba(139,124,252,0.08),0 1px 0 rgba(255,255,255,0.08) inset,0 -1px 0 rgba(0,0,0,0.15) inset;border-color:rgba(139,124,252,0.15);border-top-color:rgba(255,255,255,0.12)}
+.service-card::after{content:'';position:absolute;inset:0;background:radial-gradient(circle at var(--mx,50%) var(--my,50%),rgba(139,124,252,0.08),transparent 60%);opacity:0;transition:opacity 0.4s;pointer-events:none;z-index:1}
+.service-card:hover::after{opacity:1}
+[data-theme="light"] .service-card{background:linear-gradient(135deg,rgba(124,108,240,0.04),rgba(12,175,207,0.02));box-shadow:0 2px 16px rgba(0,0,0,0.04),0 1px 0 rgba(255,255,255,0.5) inset,0 -1px 0 rgba(0,0,0,0.04) inset;border-color:rgba(0,0,0,0.06);border-top-color:rgba(255,255,255,0.6);border-bottom-color:rgba(0,0,0,0.08)}
+[data-theme="light"] .service-card:hover{box-shadow:0 4px 24px rgba(124,108,240,0.06),0 1px 0 rgba(255,255,255,0.5) inset,0 -1px 0 rgba(0,0,0,0.04) inset;border-color:rgba(124,108,240,0.15)}
+.service-icon{width:44px;height:44px;border-radius:var(--radius);background:rgba(139,124,252,0.12);display:flex;align-items:center;justify-content:center;font-size:18px;color:var(--primary-light);margin-bottom:14px;position:relative;z-index:2}
+.service-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--gradient-1);opacity:0;transition:var(--transition);z-index:2}
+.service-card:hover::before{opacity:1}
+.service-card:hover{transform:translateY(-6px)}
+.service-card::after{content:'';position:absolute;inset:0;background:radial-gradient(circle at var(--mx,50%) var(--my,50%),rgba(139,124,252,0.08),transparent 60%);opacity:0;transition:opacity 0.4s;pointer-events:none;z-index:1}
+.service-card:hover::after{opacity:1}
+.service-icon{width:44px;height:44px;border-radius:var(--radius);background:rgba(139,124,252,0.12);display:flex;align-items:center;justify-content:center;font-size:18px;color:var(--primary-light);margin-bottom:14px;position:relative;z-index:2}
+.service-card h3{font-size:16px;font-weight:700;margin-bottom:6px}
+.service-card p{color:var(--text-muted);font-size:13px;line-height:1.6;margin-bottom:14px}
+.service-tags{display:flex;flex-wrap:wrap;gap:4px}
+.service-tags span{padding:3px 10px;background:var(--bg-3);border-radius:5px;font-size:10px;color:var(--text-muted)}
+
+/* PORTFOLIO */
+.portfolio-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:16px}
+.portfolio-card{border-radius:var(--radius-lg);overflow:hidden;transition:var(--transition);position:relative;background:linear-gradient(135deg,rgba(139,124,252,0.05),rgba(103,232,249,0.02));backdrop-filter:blur(24px);border:1px solid rgba(255,255,255,0.06);border-top-color:rgba(255,255,255,0.10);border-bottom-color:rgba(0,0,0,0.15);box-shadow:0 4px 24px rgba(0,0,0,0.2),0 1px 0 rgba(255,255,255,0.06) inset,0 -1px 0 rgba(0,0,0,0.15) inset}
+.portfolio-card::before{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(139,124,252,0.04),transparent 50%);pointer-events:none;border-radius:inherit;z-index:0}
+.portfolio-card::after{content:'';position:absolute;top:0;left:0;right:0;height:45%;background:linear-gradient(180deg,rgba(255,255,255,0.05) 0%,rgba(255,255,255,0.01) 50%,transparent 100%);pointer-events:none;z-index:0}
+.portfolio-card:hover{transform:translateY(-6px);box-shadow:0 8px 40px rgba(139,124,252,0.08),0 1px 0 rgba(255,255,255,0.08) inset,0 -1px 0 rgba(0,0,0,0.15) inset;border-color:rgba(139,124,252,0.15);border-top-color:rgba(255,255,255,0.12)}
+.portfolio-info{position:relative;z-index:1}
+.portfolio-preview{position:relative;z-index:1}
+[data-theme="light"] .portfolio-card{background:linear-gradient(135deg,rgba(124,108,240,0.03),rgba(12,175,207,0.015));box-shadow:0 2px 16px rgba(0,0,0,0.04),0 1px 0 rgba(255,255,255,0.5) inset,0 -1px 0 rgba(0,0,0,0.04) inset;border-color:rgba(0,0,0,0.06);border-top-color:rgba(255,255,255,0.6);border-bottom-color:rgba(0,0,0,0.08)}
+[data-theme="light"] .portfolio-card:hover{box-shadow:0 4px 24px rgba(124,108,240,0.06),0 1px 0 rgba(255,255,255,0.5) inset,0 -1px 0 rgba(0,0,0,0.04) inset}
+.portfolio-preview{height:180px;display:flex;align-items:center;justify-content:center;font-size:40px;position:relative;z-index:1}
+.portfolio-info{padding:20px}
+.portfolio-info h3{font-size:16px;font-weight:700;margin-bottom:4px}
+.portfolio-info p{color:var(--text-muted);font-size:12px;line-height:1.6;margin-bottom:10px}
+.portfolio-tags{display:flex;flex-wrap:wrap;gap:4px}
+.portfolio-tags span{padding:3px 10px;background:var(--bg-3);border-radius:5px;font-size:10px;color:var(--text-muted)}
+
+/* CODE WINDOW */
+.code-window{background:var(--bg-3);border:1px solid var(--glass-border);border-radius:var(--radius-lg);overflow:hidden;max-width:540px;margin:0 auto}
+.code-header{display:flex;align-items:center;gap:8px;padding:12px 16px;background:var(--bg-4);border-bottom:1px solid var(--glass-border)}
+.code-dot{width:10px;height:10px;border-radius:50%}
+.code-dot-red{background:#ff5f57}
+.code-dot-yellow{background:#ffbd2e}
+.code-dot-green{background:#28c840}
+.code-filename{font-size:11px;color:var(--text-dim);margin-left:10px;font-family:'JetBrains Mono',monospace}
+.code-body{padding:16px;font-family:'JetBrains Mono',monospace;font-size:12px;line-height:1.8;overflow-x:auto;color:var(--text-muted)}
+.code-body .ck{color:#c792ea}.code-body .cf{color:#82aaff}.code-body .cs{color:#c3e88d}
+.code-body .cc{color:#546e7a}.code-body .cv{color:#f78c6c}.code-body .cb{color:#89ddff}
+
+/* STORE */
+.store-banner{position:relative;padding:60px 20px;text-align:center;border-bottom:1px solid var(--glass-border);overflow:hidden;background:var(--bg-2)}
+.store-type-tabs{display:flex;gap:4px;justify-content:center;margin-top:24px;background:var(--bg-3);padding:4px;border-radius:var(--radius);max-width:320px;margin-left:auto;margin-right:auto}
+.store-type-btn{padding:8px 20px;border-radius:calc(var(--radius) - 2px);border:none;background:transparent;color:var(--text-muted);cursor:pointer;transition:var(--transition);font-size:12px;font-weight:600;font-family:'Inter',sans-serif}
+.store-type-btn.active{background:var(--bg);color:var(--text);box-shadow:0 1px 4px rgba(0,0,0,0.1)}
+.store-filters{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-top:20px}
+.filter-btn{padding:6px 16px;border-radius:100px;background:var(--glass);border:1px solid var(--glass-border);color:var(--text-muted);cursor:pointer;transition:var(--transition);font-size:12px;font-weight:500;font-family:'Inter',sans-serif}
+.filter-btn:hover,.filter-btn.active{background:rgba(139,124,252,0.10);border-color:var(--primary);color:var(--primary)}
+.store-search{max-width:420px;margin:16px auto 0}
+.store-search .form-input{padding-left:40px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23a1a1aa' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cline x1='21' y1='21' x2='16.65' y2='16.65'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:14px center}
+.assets-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:16px;margin-top:28px}
+.asset-card{border-radius:var(--radius-lg);overflow:hidden;transition:var(--transition);position:relative;background:linear-gradient(135deg,rgba(139,124,252,0.05),rgba(103,232,249,0.02));backdrop-filter:blur(24px);border:1px solid rgba(255,255,255,0.06);border-top-color:rgba(255,255,255,0.10);border-bottom-color:rgba(0,0,0,0.15);box-shadow:0 4px 24px rgba(0,0,0,0.2),0 1px 0 rgba(255,255,255,0.06) inset,0 -1px 0 rgba(0,0,0,0.15) inset}
+.asset-card::before{content:'';position:absolute;top:0;left:0;right:0;height:45%;background:linear-gradient(180deg,rgba(255,255,255,0.05) 0%,rgba(255,255,255,0.01) 50%,transparent 100%);pointer-events:none}
+.asset-card:hover{transform:translateY(-6px);box-shadow:0 8px 40px rgba(139,124,252,0.08),0 1px 0 rgba(255,255,255,0.08) inset,0 -1px 0 rgba(0,0,0,0.15) inset;border-color:rgba(139,124,252,0.15);border-top-color:rgba(255,255,255,0.12)}
+.asset-thumb{height:160px;background:var(--bg-4);display:flex;align-items:center;justify-content:center;font-size:36px;color:var(--text-dim);position:relative;overflow:hidden}
+[data-theme="light"] .asset-card{background:linear-gradient(135deg,rgba(124,108,240,0.03),rgba(12,175,207,0.015));box-shadow:0 2px 16px rgba(0,0,0,0.04),0 1px 0 rgba(255,255,255,0.5) inset,0 -1px 0 rgba(0,0,0,0.04) inset;border-color:rgba(0,0,0,0.06);border-top-color:rgba(255,255,255,0.6);border-bottom-color:rgba(0,0,0,0.08)}
+[data-theme="light"] .asset-card:hover{box-shadow:0 4px 24px rgba(124,108,240,0.06),0 1px 0 rgba(255,255,255,0.5) inset,0 -1px 0 rgba(0,0,0,0.04) inset}
+.asset-thumb img{width:100%;height:100%;object-fit:cover}
+.asset-thumb .play-btn{position:absolute;width:40px;height:40px;border-radius:50%;background:rgba(0,0,0,0.6);border:2px solid rgba(255,255,255,0.15);display:flex;align-items:center;justify-content:center;color:#fff;font-size:16px;cursor:pointer;transition:var(--transition)}
+.asset-thumb .play-btn:hover{background:var(--primary);border-color:var(--primary)}
+.asset-body{padding:16px}
+.asset-body h3{font-size:14px;font-weight:700;margin-bottom:4px}
+.asset-body .tags{display:flex;flex-wrap:wrap;gap:3px;margin-bottom:8px}
+.asset-body .tags span{padding:2px 7px;background:var(--bg-4);border-radius:4px;font-size:9px;color:var(--text-muted)}
+.asset-body .desc{color:var(--text-muted);font-size:12px;line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin-bottom:10px}
+.asset-footer{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-top:1px solid var(--glass-border)}
+.asset-price{font-weight:700;font-size:14px;background:var(--gradient-1);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.asset-price-original{font-size:11px;color:var(--text-dim);text-decoration:line-through;margin-left:6px}
+.asset-stock{font-size:10px;padding:2px 8px;border-radius:4px;background:rgba(16,185,129,0.12);color:#34d399}
+.asset-stock.limited{background:rgba(251,146,60,0.12);color:#fb923c}
+.asset-add{width:32px;height:32px;border-radius:50%;background:var(--glass);border:1px solid var(--glass-border);color:var(--text);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:var(--transition);font-size:12px}
+.asset-add:hover{background:var(--primary);color:#fff;border-color:var(--primary)}
+
+.empty-state{text-align:center;padding:48px 20px}
+.empty-state i{font-size:40px;color:var(--text-dim);margin-bottom:12px}
+.empty-state h3{font-size:18px;font-weight:700;margin-bottom:6px}
+.empty-state p{color:var(--text-muted);font-size:13px}
+
+/* CART */
+.cart-section{max-width:800px;margin:0 auto;padding:32px 20px}
+.cart-items{display:flex;flex-direction:column;gap:12px}
+.cart-item{display:flex;align-items:center;gap:14px;padding:16px;border-radius:var(--radius-lg);background:linear-gradient(135deg,rgba(139,124,252,0.04),rgba(103,232,249,0.02));backdrop-filter:blur(24px);border:1px solid rgba(255,255,255,0.06);border-top-color:rgba(255,255,255,0.10);border-bottom-color:rgba(0,0,0,0.15);box-shadow:0 4px 24px rgba(0,0,0,0.2),0 1px 0 rgba(255,255,255,0.05) inset,0 -1px 0 rgba(0,0,0,0.15) inset}
+.cart-item-thumb{width:52px;height:52px;border-radius:var(--radius);background:var(--bg-4);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.cart-item-info{flex:1}
+.cart-item-info h4{font-size:14px;font-weight:600;margin-bottom:2px}
+.cart-item-info p{font-size:12px;color:var(--text-muted)}
+.cart-item-qty{display:flex;align-items:center;gap:6px}
+.cart-item-qty button{width:28px;height:28px;border-radius:50%;background:var(--glass);border:1px solid var(--glass-border);color:var(--text);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:var(--transition);font-size:11px}
+.cart-item-qty button:hover{background:var(--glass2)}
+.cart-item-qty span{min-width:20px;text-align:center;font-weight:600;font-size:14px}
+.cart-item-remove{color:var(--text-dim);cursor:pointer;font-size:13px;padding:6px;transition:var(--transition)}
+.cart-item-remove:hover{color:var(--accent)}
+.cart-summary{border-radius:var(--radius-lg);padding:20px;margin-top:20px;background:linear-gradient(135deg,rgba(139,124,252,0.04),rgba(103,232,249,0.02));backdrop-filter:blur(24px);border:1px solid rgba(255,255,255,0.06);border-top-color:rgba(255,255,255,0.10);border-bottom-color:rgba(0,0,0,0.15);box-shadow:0 4px 24px rgba(0,0,0,0.2),0 1px 0 rgba(255,255,255,0.05) inset,0 -1px 0 rgba(0,0,0,0.15) inset}
+.cart-summary-row{display:flex;justify-content:space-between;padding:6px 0;font-size:13px}
+.cart-summary-row.total{font-size:18px;font-weight:700;padding-top:14px;margin-top:10px;border-top:1px solid var(--glass-border)}
+.cart-summary .btn{width:100%;margin-top:14px}
+
+/* CONTACT */
+.contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:28px}
+.contact-info{display:flex;flex-direction:column;gap:12px}
+.contact-card{display:flex;align-items:center;gap:14px;padding:18px;border-radius:var(--radius-lg);background:linear-gradient(135deg,rgba(139,124,252,0.04),rgba(103,232,249,0.02));backdrop-filter:blur(24px);border:1px solid rgba(255,255,255,0.06);border-top-color:rgba(255,255,255,0.10);border-bottom-color:rgba(0,0,0,0.15);box-shadow:0 4px 24px rgba(0,0,0,0.2),0 1px 0 rgba(255,255,255,0.05) inset,0 -1px 0 rgba(0,0,0,0.15) inset;transition:var(--transition)}
+.contact-card:hover{border-color:rgba(139,124,252,0.12);transform:translateY(-2px)}
+[data-theme="light"] .contact-card{background:linear-gradient(135deg,rgba(124,108,240,0.03),rgba(12,175,207,0.015));box-shadow:0 2px 16px rgba(0,0,0,0.04),0 1px 0 rgba(255,255,255,0.5) inset,0 -1px 0 rgba(0,0,0,0.04) inset;border-color:rgba(0,0,0,0.06);border-top-color:rgba(255,255,255,0.6);border-bottom-color:rgba(0,0,0,0.08)}
+.contact-card-icon{width:42px;height:42px;border-radius:var(--radius);background:rgba(139,124,252,0.10);display:flex;align-items:center;justify-content:center;font-size:17px;color:var(--primary-light);flex-shrink:0}
+.contact-card h4{font-size:13px;font-weight:600;margin-bottom:2px}
+.contact-card p{font-size:12px;color:var(--text-muted)}
+
+/* AUTH */
+.auth-page{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:80px 20px;position:relative;overflow:hidden}
+.auth-card{width:100%;max-width:400px;padding:36px;border-radius:var(--radius-xl);position:relative;z-index:2;background:linear-gradient(135deg,rgba(139,124,252,0.05),rgba(103,232,249,0.02),rgba(139,124,252,0.03));backdrop-filter:blur(30px);border:1px solid rgba(255,255,255,0.06);border-top-color:rgba(255,255,255,0.10);border-bottom-color:rgba(0,0,0,0.15);box-shadow:0 8px 40px rgba(0,0,0,0.3),0 1px 0 rgba(255,255,255,0.06) inset,0 -1px 0 rgba(0,0,0,0.15) inset}
+.auth-card::before{content:'';position:absolute;top:0;left:0;right:0;height:45%;background:linear-gradient(180deg,rgba(255,255,255,0.05) 0%,transparent 100%);pointer-events:none;border-radius:var(--radius-xl) var(--radius-xl) 0 0}
+[data-theme="light"] .auth-card{background:linear-gradient(135deg,rgba(124,108,240,0.03),rgba(12,175,207,0.015));box-shadow:0 4px 24px rgba(0,0,0,0.06),0 1px 0 rgba(255,255,255,0.5) inset,0 -1px 0 rgba(0,0,0,0.04) inset;border-color:rgba(0,0,0,0.06);border-top-color:rgba(255,255,255,0.6);border-bottom-color:rgba(0,0,0,0.08)}
+.auth-card h2{font-family:'Plus Jakarta Sans',sans-serif;font-size:24px;font-weight:800;text-align:center;margin-bottom:4px}
+.auth-card .sub{text-align:center;color:var(--text-muted);font-size:13px;margin-bottom:24px}
+.auth-form{display:flex;flex-direction:column;gap:14px}
+.auth-form .input-wrap{position:relative}
+.auth-form .input-wrap i{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--text-dim);font-size:14px}
+.auth-form .input-wrap .form-input{padding-left:40px}
+.auth-divider{text-align:center;font-size:12px;color:var(--text-dim);margin:6px 0;position:relative}
+.auth-divider::before,.auth-divider::after{content:'';position:absolute;top:50%;width:44%;height:1px;background:var(--glass-border)}
+.auth-divider::before{left:0}.auth-divider::after{right:0}
+
+/* ADMIN */
+.admin-layout{display:flex;min-height:calc(100vh - var(--nav-height))}
+.admin-sidebar{width:220px;background:linear-gradient(180deg,rgba(18,18,28,0.9),rgba(139,124,252,0.02));backdrop-filter:blur(24px);border-right:1px solid rgba(255,255,255,0.06);padding:14px;flex-shrink:0;display:flex;flex-direction:column;gap:2px}
+.admin-sidebar-item{padding:10px 14px;border-radius:var(--radius);cursor:pointer;transition:var(--transition);font-size:12px;font-weight:500;color:var(--text-muted);display:flex;align-items:center;gap:8px}
+.admin-sidebar-item:hover{background:var(--glass);color:var(--text)}
+.admin-sidebar-item.active{background:rgba(139,124,252,0.10);color:var(--primary)}
+.admin-main{flex:1;padding:28px;overflow-y:auto}
+.admin-section{display:none}
+.admin-section.active{display:block}
+.admin-stats{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:14px;margin-bottom:28px}
+.admin-stat-card{padding:20px;border-radius:var(--radius-lg);background:linear-gradient(135deg,rgba(139,124,252,0.04),rgba(103,232,249,0.02));backdrop-filter:blur(24px);border:1px solid rgba(255,255,255,0.06);border-top-color:rgba(255,255,255,0.10);border-bottom-color:rgba(0,0,0,0.15);box-shadow:0 4px 24px rgba(0,0,0,0.2),0 1px 0 rgba(255,255,255,0.05) inset,0 -1px 0 rgba(0,0,0,0.15) inset}
+.admin-stat-card .num{font-size:24px;font-weight:800;background:var(--gradient-1);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.admin-stat-card .label{font-size:12px;color:var(--text-muted);margin-top:2px}
+.admin-table{width:100%;border-collapse:collapse}
+.admin-table th{padding:10px 14px;text-align:left;font-size:11px;font-weight:600;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.5px;border-bottom:1px solid var(--glass-border)}
+.admin-table td{padding:10px 14px;font-size:12px;border-bottom:1px solid var(--glass-border)}
+.admin-table tr:hover td{background:var(--glass)}
+.admin-table .thumb{width:32px;height:32px;border-radius:5px;background:var(--bg-4);object-fit:cover}
+.admin-table .badge{display:inline-block;padding:2px 8px;border-radius:5px;font-size:10px;font-weight:600}
+.badge-free{background:rgba(16,185,129,0.12);color:#34d399}
+.badge-paid{background:rgba(139,124,252,0.12);color:var(--primary)}
+.table-btn{padding:5px 10px;border-radius:5px;border:none;cursor:pointer;font-size:11px;font-weight:500;transition:var(--transition);font-family:'Inter',sans-serif}
+.table-btn-edit{background:rgba(139,124,252,0.12);color:var(--primary)}
+.table-btn-edit:hover{background:rgba(139,124,252,0.22)}
+.table-btn-del{background:rgba(244,63,94,0.12);color:#f43f5e}
+.table-btn-del:hover{background:rgba(244,63,94,0.22)}
+
+.settings-card{max-width:480px;padding:28px;border-radius:var(--radius-lg);margin-bottom:16px;background:linear-gradient(135deg,rgba(139,124,252,0.04),rgba(103,232,249,0.02));backdrop-filter:blur(24px);border:1px solid rgba(255,255,255,0.06);border-top-color:rgba(255,255,255,0.10);border-bottom-color:rgba(0,0,0,0.15);box-shadow:0 4px 24px rgba(0,0,0,0.2),0 1px 0 rgba(255,255,255,0.05) inset,0 -1px 0 rgba(0,0,0,0.15) inset}
+.settings-card h3{font-size:15px;font-weight:700;margin-bottom:14px}
+.settings-card .form-group{margin-bottom:12px}
+.settings-card .form-group label{display:block;font-size:12px;color:var(--text-muted);margin-bottom:4px}
+
+/* FOOTER */
+#mainFooter{background:var(--bg-2);border-top:1px solid var(--glass-border);padding:48px 20px 20px}
+.footer-inner{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:32px}
+.footer-brand h3{font-family:'Plus Jakarta Sans',sans-serif;font-size:20px;font-weight:800;background:var(--gradient-1);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:10px}
+.footer-brand p{font-size:12px;color:var(--text-muted);line-height:1.7}
+.footer-col h4{font-size:13px;font-weight:600;margin-bottom:14px}
+.footer-col a{display:block;font-size:12px;color:var(--text-muted);margin-bottom:6px;transition:var(--transition)}
+.footer-col a:hover{color:var(--primary-light)}
+.footer-bottom{text-align:center;padding-top:20px;margin-top:32px;border-top:1px solid var(--glass-border);font-size:12px;color:var(--text-dim)}
+
+/* TOAST */
+#toast-container{position:fixed;top:80px;right:16px;z-index:9999;display:flex;flex-direction:column;gap:8px;pointer-events:none}
+.toast{pointer-events:auto;padding:12px 18px;border-radius:var(--radius);background:linear-gradient(135deg,rgba(18,18,28,0.95),rgba(139,124,252,0.04));backdrop-filter:blur(24px);border:1px solid rgba(255,255,255,0.06);border-left:3px solid var(--primary);display:flex;align-items:center;gap:10px;font-size:12px;font-weight:500;min-width:280px;max-width:380px;box-shadow:0 8px 32px rgba(0,0,0,0.3);animation:toastIn 0.35s var(--ease-out);cursor:pointer}
+.toast.success{border-left-color:#34d399}
+.toast.error{border-left-color:#f43f5e}
+.toast i{font-size:16px}
+.toast.success i{color:#34d399}
+.toast.error i{color:#f43f5e}
+.toast.info i{color:var(--primary)}
+@keyframes toastIn{from{transform:translateX(100%);opacity:0}to{transform:translateX(0);opacity:1}}
+
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;z-index:9998;background:rgba(0,0,0,0.6);backdrop-filter:blur(6px);display:none;align-items:center;justify-content:center;padding:20px}
+.modal-overlay.open{display:flex}
+.modal-content{border-radius:var(--radius-xl);max-width:540px;width:100%;max-height:85vh;overflow-y:auto;padding:28px;animation:modalIn 0.25s var(--ease-out);background:linear-gradient(135deg,rgba(18,18,28,0.98),rgba(139,124,252,0.04),rgba(103,232,249,0.02));backdrop-filter:blur(30px);border:1px solid rgba(255,255,255,0.06);border-top-color:rgba(255,255,255,0.10);border-bottom-color:rgba(0,0,0,0.15);box-shadow:0 8px 40px rgba(0,0,0,0.3),0 1px 0 rgba(255,255,255,0.06) inset,0 -1px 0 rgba(0,0,0,0.15) inset}
+[data-theme="light"] .modal-content{background:linear-gradient(135deg,rgba(248,248,252,0.98),rgba(124,108,240,0.02),rgba(12,175,207,0.01));box-shadow:0 4px 24px rgba(0,0,0,0.06),0 1px 0 rgba(255,255,255,0.5) inset,0 -1px 0 rgba(0,0,0,0.04) inset;border-color:rgba(0,0,0,0.06);border-top-color:rgba(255,255,255,0.6);border-bottom-color:rgba(0,0,0,0.08)}
+@keyframes modalIn{from{transform:scale(0.96);opacity:0}to{transform:scale(1);opacity:1}}
+.modal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
+.modal-header h3{font-size:18px;font-weight:700}
+.modal-close{width:32px;height:32px;border-radius:50%;background:var(--glass);border:1px solid var(--glass-border);color:var(--text-muted);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;transition:var(--transition)}
+.modal-close:hover{background:var(--glass2);color:var(--text)}
+.video-modal .modal-content{max-width:720px;padding:0;overflow:hidden;background:var(--bg)}
+.video-modal iframe{width:100%;aspect-ratio:16/9;border:none;display:block}
+
+/* REVEAL */
+.reveal{opacity:0;transform:translateY(24px);transition:opacity 0.7s var(--ease-out),transform 0.7s var(--ease-out)}
+.reveal.visible{opacity:1;transform:translateY(0)}
+
+/* ABOUT */
+.banner-page{position:relative;padding:48px 20px;text-align:center;border-bottom:1px solid var(--glass-border);overflow:hidden;min-height:280px;display:flex;align-items:center;justify-content:center}
+.banner-page .bg-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0.2}
+.banner-page .overlay{position:absolute;inset:0;background:linear-gradient(135deg,rgba(8,8,12,0.92),rgba(8,8,12,0.5))}
+.banner-page .content{position:relative;z-index:2}
+.timeline{max-width:600px;margin:0 auto;position:relative;padding:16px 0}
+.timeline::before{content:'';position:absolute;left:22px;top:0;bottom:0;width:2px;background:var(--gradient-1)}
+.timeline-item{padding-left:52px;position:relative;padding-bottom:28px}
+.timeline-item:last-child{padding-bottom:0}
+.timeline-dot{position:absolute;left:14px;top:3px;width:16px;height:16px;border-radius:50%;background:var(--gradient-1);border:3px solid var(--bg)}
+.timeline-item h4{font-size:15px;font-weight:700;margin-bottom:2px}
+.timeline-item p{font-size:12px;color:var(--text-muted)}
+.tech-grid{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;max-width:640px;margin:0 auto}
+.tech-pill{padding:8px 18px;background:var(--glass);border:1px solid var(--glass-border);border-radius:100px;font-size:12px;font-weight:500;transition:var(--transition)}
+.tech-pill:hover{background:var(--glass2);border-color:var(--primary);color:var(--primary);transform:translateY(-1px)}
+
+/* TESTIMONIALS */
+.testi-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px}
+.testi-card{padding:24px;background:var(--glass);border:1px solid var(--glass-border);border-radius:var(--radius-lg)}
+.testi-stars{color:#fb923c;font-size:12px;margin-bottom:10px}
+.testi-text{font-size:13px;line-height:1.7;color:var(--text-muted);margin-bottom:14px;font-style:italic}
+.testi-author{display:flex;align-items:center;gap:10px}
+.testi-avatar{width:36px;height:36px;border-radius:50%;background:var(--gradient-1);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;color:#fff}
+.testi-name{font-size:13px;font-weight:600}
+.testi-role{font-size:11px;color:var(--text-muted)}
+
+/* SKELETON */
+.skeleton{background:linear-gradient(90deg,var(--bg-3) 25%,var(--bg-4) 50%,var(--bg-3) 75%);background-size:200% 100%;animation:skeleton 1.5s ease-in-out infinite;border-radius:6px}
+@keyframes skeleton{0%{background-position:200% 0}100%{background-position:-200% 0}}
+
+/* RESPONSIVE */
+@media(max-width:1024px){
+  .footer-inner{grid-template-columns:1fr 1fr}
+  .contact-grid{grid-template-columns:1fr}
+  .stats-grid{grid-template-columns:repeat(2,1fr)}
+  .admin-sidebar{width:180px}
+}
+@media(max-width:768px){
+  .nav-links{display:none}
+  .hamburger{display:flex}
+  .nav-actions .nav-btn-outline{display:none}
+  .hero-cta{flex-direction:column;align-items:center}
+  .stats-grid{grid-template-columns:repeat(2,1fr)}
+  .admin-layout{flex-direction:column}
+  .admin-sidebar{width:100%;flex-direction:row;overflow-x:auto;padding:10px;border-right:none;border-bottom:1px solid var(--glass-border)}
+  .admin-sidebar-item{white-space:nowrap;flex-shrink:0;font-size:11px}
+  .admin-main{padding:14px}
+  .services-grid,.portfolio-grid,.assets-grid{grid-template-columns:1fr}
+}
+@media(max-width:480px){
+  .stats-grid{grid-template-columns:1fr}
+  .footer-inner{grid-template-columns:1fr}
+  .section{padding:48px 14px}
+  .auth-card{padding:24px}
+}
+</style>
+</head>
+<body>
+
+<div class="bg-glow">
+  <div class="glow"></div>
+  <div class="glow"></div>
+  <div class="glow"></div>
+</div>
+
+<div id="loader">
+  <div class="loader-logo" style="font-family:'Syne',sans-serif;font-weight:700;letter-spacing:-0.02em">BMS <span style="font-weight:600;color:var(--secondary)">Platform</span></div>
+  <div class="loader-bar"><div class="loader-bar-inner"></div></div>
+</div>
+
+<nav id="navbar">
+  <div class="nav-inner">
+    <div class="nav-brand" onclick="navigateTo('home')">BMS <span style="font-weight:500;color:var(--secondary)">Platform</span></div>
+    <div class="nav-links">
+      <a class="nav-tab active" data-page="home" onclick="navigateTo('home')">Home</a>
+      <a class="nav-tab" data-page="about" onclick="navigateTo('about')">About</a>
+      <a class="nav-tab" data-page="services" onclick="navigateTo('services')">Services</a>
+      <a class="nav-tab" data-page="portfolio" onclick="navigateTo('portfolio')">Portfolio</a>
+      <a class="nav-tab" data-page="store" onclick="navigateTo('store')">Store</a>
+      <a class="nav-tab" data-page="contact" onclick="navigateTo('contact')">Contact</a>
+    </div>
+    <div class="nav-actions">
+      <button class="theme-toggle" onclick="toggleTheme()" title="Toggle theme"><i class="fas fa-moon" id="themeIcon"></i></button>
+      <a class="cart-badge nav-btn nav-btn-outline" onclick="navigateTo('cart')"><i class="fas fa-shopping-cart"></i><span id="cartCount" class="badge" style="display:none">0</span></a>
+      <a class="nav-btn nav-btn-outline" id="loginBtn" onclick="navigateTo('login')">Login</a>
+      <a class="nav-btn nav-btn-primary" id="adminBtn" style="display:none" onclick="navigateTo('admin')">Admin</a>
+      <div class="hamburger" onclick="toggleMobileNav()"><i class="fas fa-bars"></i></div>
+    </div>
+  </div>
+  <div class="mobile-nav" id="mobileNav">
+    <a class="nav-tab" data-page="home" onclick="navigateTo('home')">Home</a>
+    <a class="nav-tab" data-page="about" onclick="navigateTo('about')">About</a>
+    <a class="nav-tab" data-page="services" onclick="navigateTo('services')">Services</a>
+    <a class="nav-tab" data-page="portfolio" onclick="navigateTo('portfolio')">Portfolio</a>
+    <a class="nav-tab" data-page="store" onclick="navigateTo('store')">Store</a>
+    <a class="nav-tab" data-page="contact" onclick="navigateTo('contact')">Contact</a>
+    <a class="nav-tab" data-page="cart" onclick="navigateTo('cart')">Cart <span id="mobileCartCount" style="color:var(--primary)"></span></a>
+    <a class="nav-tab" data-page="login" onclick="navigateTo('login')">Login</a>
+    <a class="nav-tab" id="mobileAdminBtn" style="display:none" data-page="admin" onclick="navigateTo('admin')">Admin Panel</a>
+    <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--glass-border)">
+      <button class="btn btn-outline btn-sm" onclick="toggleTheme()" style="width:100%"><i class="fas" id="mobileThemeIcon"></i> Toggle Theme</button>
+    </div>
+  </div>
+</nav>
+
+<!-- HOME -->
+<div class="page active" id="page-home">
+  <section class="hero">
+    <div class="hero-grid"></div>
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="floating-shape s1"></div>
+    <div class="floating-shape s2"></div>
+    <div class="floating-shape s3"></div>
+    <div class="particles">
+      <div class="particle"></div><div class="particle"></div><div class="particle"></div>
+      <div class="particle"></div><div class="particle"></div><div class="particle"></div>
+      <div class="particle"></div><div class="particle"></div>
+    </div>
+    <canvas id="threeCanvas"></canvas>
+    <div class="hero-content">
+      <div class="hero-badge"><i class="fas fa-bolt"></i> BMS Platform</div>
+      <h1 class="hero-title">
+        <span class="reveal-line" style="animation-delay:0.2s">Develop. </span>
+        <span class="reveal-line text-gradient" style="animation-delay:0.6s">Deliver. </span>
+        <span class="reveal-line" style="animation-delay:1s">Dominate.</span>
+      </h1>
+      <p class="hero-desc">Premium Roblox Development & Digital Store — under one <span class="text-gradient">BMS Platform</span>.</p>
+      <div class="hero-cta">
+        <a class="btn btn-primary btn-lg" onclick="navigateTo('services')">Our Services</a>
+        <a class="btn btn-outline btn-lg" onclick="navigateTo('store')">Explore Store</a>
+      </div>
+    </div>
+  </section>
+
+  <div class="marquee">
+    <div class="marquee-track" id="marqueeTrack">
+      <span class="marquee-item"><i class="fas fa-code"></i> Web Development</span>
+      <span class="marquee-item"><i class="fas fa-gamepad"></i> Roblox Game Dev</span>
+      <span class="marquee-item"><i class="fas fa-mobile-alt"></i> Mobile App</span>
+      <span class="marquee-item"><i class="fas fa-paint-brush"></i> UI/UX Design</span>
+      <span class="marquee-item"><i class="fas fa-robot"></i> Discord Bot</span>
+      <span class="marquee-item"><i class="fas fa-server"></i> Backend & API</span>
+      <span class="marquee-item"><i class="fas fa-cube"></i> 3D Modeling</span>
+      <span class="marquee-item"><i class="fas fa-code-branch"></i> Game Scripting</span>
+      <span class="marquee-item"><i class="fas fa-music"></i> Audio Production</span>
+      <span class="marquee-item"><i class="fas fa-database"></i> Server Management</span>
+      <span class="marquee-item"><i class="fas fa-chalkboard-teacher"></i> Consultation</span>
+    </div>
+  </div>
+
+  <section class="section">
+    <h2 class="section-title">Why <span class="text-gradient">BMS STUDIO</span>?</h2>
+    <p class="section-desc">Tim profesional dengan pengalaman bertahun-tahun dalam pengembangan game dan layanan digital.</p>
+    <div class="stats-grid">
+      <div class="stat-card reveal"><div class="stat-number" data-count="150">0+</div><div class="stat-label">Projects Completed</div></div>
+      <div class="stat-card reveal"><div class="stat-number" data-count="98">0%</div><div class="stat-label">Client Satisfaction</div></div>
+      <div class="stat-card reveal"><div class="stat-number" data-count="50">0+</div><div class="stat-label">Team Members</div></div>
+      <div class="stat-card reveal"><div class="stat-number" data-count="5">0+</div><div class="stat-label">Years Experience</div></div>
+    </div>
+  </section>
+
+  <section class="section section-gradient" style="background:var(--bg-2);padding:80px 20px;max-width:none">
+    <div style="max-width:1200px;margin:0 auto">
+      <h2 class="section-title">Featured <span class="text-gradient">Services</span></h2>
+      <p class="section-desc">Layanan pengembangan Roblox unggulan dari BMS STUDIO.</p>
+      <div class="services-grid" id="featuredServices"></div>
+    </div>
+  </section>
+
+  <section class="section">
+    <h2 class="section-title">From <span class="text-gradient">BMS STORE</span></h2>
+    <p class="section-desc">Produk digital terbaru dan terlaris.</p>
+    <div class="assets-grid" id="featuredProducts"></div>
+    <div style="text-align:center;margin-top:28px">
+      <a class="btn btn-outline" onclick="navigateTo('store')">Lihat Semua Produk</a>
+    </div>
+  </section>
+
+  <section class="section" style="background:var(--bg-2);padding:80px 20px;max-width:none">
+    <div style="max-width:1200px;margin:0 auto">
+      <h2 class="section-title">What Our <span class="text-gradient">Clients Say</span></h2>
+      <p class="section-desc">Testimonial dari klien yang telah bekerja sama dengan kami.</p>
+      <div class="testi-grid" id="testimonialsGrid"></div>
+    </div>
+  </section>
+
+  <section class="section" style="text-align:center">
+    <h2 class="section-title">Ready to Start <span class="text-gradient">Your Project</span>?</h2>
+    <p class="section-desc">Hubungi kami dan wujudkan ide Anda.</p>
+    <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+      <a class="btn btn-primary btn-lg" onclick="navigateTo('contact')">Contact Us</a>
+      <a class="btn btn-outline btn-lg" onclick="navigateTo('store')">Browse Store</a>
+    </div>
+  </section>
+</div>
+
+<!-- ABOUT -->
+<div class="page" id="page-about">
+  <div class="banner-page">
+    <img class="bg-img" src="https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3MDhhYnNnbG04MTg1dHE5MTEwZmIwZjRobnNweWp1NmtybWQ3N2l4cCZlcD12MV9naWZzX3NlYXJjaCZjdD1n/Q7vD5H5xSBkp2rca4F/giphy.gif" alt="" onerror="this.style.display='none'">
+    <div class="overlay"></div>
+    <div class="floating-shape s1"></div>
+    <div class="floating-shape s2"></div>
+    <div class="content">
+      <h1 class="hero-title" style="font-size:30px">About <span class="text-gradient">BMS STUDIO</span></h1>
+      <p style="color:var(--text-muted);max-width:460px;margin:10px auto 0">Kenali lebih dekat tentang kami, visi, dan proses kerja.</p>
+    </div>
+  </div>
+
+  <section class="section" style="padding-top:48px">
+    <h2 class="section-title" style="font-size:20px;margin-bottom:28px">Our <span class="text-gradient">Profile</span></h2>
+    <div class="code-window" style="margin-bottom:40px">
+      <div class="code-header">
+        <span class="code-dot code-dot-red"></span>
+        <span class="code-dot code-dot-yellow"></span>
+        <span class="code-dot code-dot-green"></span>
+        <span class="code-filename">bms-studio.json</span>
+      </div>
+      <pre class="code-body">{
+  <span class="ck">"studio"</span>: <span class="cs">"BMS STUDIO"</span>,
+  <span class="ck">"since"</span>: <span class="cv">2020</span>,
+  <span class="ck">"specialty"</span>: <span class="cs">"Roblox Development & Digital Services"</span>,
+  <span class="ck">"team"</span>: {
+    <span class="ck">"developers"</span>: <span class="cv">25</span>,
+    <span class="ck">"designers"</span>: <span class="cv">12</span>
+  },
+  <span class="ck">"mission"</span>: <span class="cs">"Building better digital experiences"</span>,
+  <span class="ck">"status"</span>: <span class="cs">"Active & Growing"</span>
+}</pre>
+    </div>
+
+    <h2 class="section-title" style="font-size:20px;margin-bottom:28px">How We <span class="text-gradient">Work</span></h2>
+    <div class="timeline">
+      <div class="timeline-item reveal">
+        <div class="timeline-dot"></div>
+        <h4>Consultation & Planning</h4>
+        <p>Kami mendengarkan ide dan menyusun rencana pengembangan yang detail.</p>
+      </div>
+      <div class="timeline-item reveal">
+        <div class="timeline-dot"></div>
+        <h4>Design & Prototyping</h4>
+        <p>Tim desainer membuat mockup dan prototipe untuk visualisasi project Anda.</p>
+      </div>
+      <div class="timeline-item reveal">
+        <div class="timeline-dot"></div>
+        <h4>Development & Testing</h4>
+        <p>Pengembangan dengan standar kualitas tinggi dan pengujian menyeluruh.</p>
+      </div>
+      <div class="timeline-item reveal">
+        <div class="timeline-dot"></div>
+        <h4>Launch & Support</h4>
+        <p>Peluncuran project dengan dukungan penuh dan pemeliharaan.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" style="background:var(--bg-2);padding:80px 20px;max-width:none">
+    <div style="max-width:1200px;margin:0 auto">
+      <h2 class="section-title">Tech <span class="text-gradient">Stack</span></h2>
+      <p class="section-desc">Teknologi yang kami kuasai untuk hasil terbaik.</p>
+      <div class="tech-grid">
+        <span class="tech-pill">Lua</span>
+        <span class="tech-pill">Luau</span>
+        <span class="tech-pill">Roblox Studio</span>
+        <span class="tech-pill">JavaScript</span>
+        <span class="tech-pill">React</span>
+        <span class="tech-pill">Node.js</span>
+        <span class="tech-pill">Python</span>
+        <span class="tech-pill">SQL</span>
+        <span class="tech-pill">Blender</span>
+        <span class="tech-pill">Figma</span>
+        <span class="tech-pill">Git</span>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- SERVICES -->
+<div class="page" id="page-services">
+  <div class="banner-page">
+    <img class="bg-img" src="https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3ZDRqYTNhZHpzYXU1aDBiOGUxdzU5a2xnYjFlaTBxZzQ4ZHV4MDRueCZlcD12MV9naWZzX3NlYXJjaCZjdD1n/KBE31lPz2CqDMYoA6k/giphy.gif" alt="" onerror="this.style.display='none'">
+    <div class="overlay"></div>
+    <div class="floating-shape s3"></div>
+    <div class="content">
+      <h1 class="hero-title" style="font-size:30px">Our <span class="text-gradient">Services</span></h1>
+      <p style="color:var(--text-muted);max-width:460px;margin:10px auto 0">11 layanan profesional untuk kebutuhan project Anda.</p>
+    </div>
+  </div>
+  <section class="section"><div class="services-grid" id="allServices"></div></section>
+</div>
+
+<!-- PORTFOLIO -->
+<div class="page" id="page-portfolio">
+  <div class="banner-page">
+    <img class="bg-img" src="https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3aXRvamN6a2Z3b2IxdWlleGhiejI0cnB6bmozbGJuOXdjeWFkeGtieSZlcD12MV9naWZzX3NlYXJjaCZjdD1n/iIkpxu3ZteQVxPQiaC/giphy.gif" alt="" onerror="this.style.display='none'">
+    <div class="overlay"></div>
+    <div class="floating-shape s2"></div>
+    <div class="content">
+      <h1 class="hero-title" style="font-size:30px">Our <span class="text-gradient">Portfolio</span></h1>
+      <p style="color:var(--text-muted);max-width:460px;margin:10px auto 0">Beberapa project yang telah kami kerjakan.</p>
+    </div>
+  </div>
+  <section class="section"><div class="portfolio-grid" id="portfolioGrid"></div></section>
+</div>
+
+<!-- STORE -->
+<div class="page" id="page-store">
+  <div class="store-banner">
+    <img src="https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3amhub2ltZ3pmcG5sbHQ5NWppcGY3czVheTNwdGRlMjZ6bHQyYTd6aSZlcD12MV9naWZzX3NlYXJjaCZjdD1n/jsrEC3RoSTEkijz85J/giphy.gif" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0.12" onerror="this.style.display='none'">
+    <div class="orb orb-1" style="width:300px;height:300px;opacity:0.2"></div>
+    <div style="position:relative;z-index:2">
+      <h1 class="hero-title" style="font-size:30px">BMS <span class="text-gradient">STORE</span></h1>
+      <p style="color:var(--text-muted);max-width:460px;margin:0 auto">Produk digital dan tools pengembangan Roblox.</p>
+      <div class="store-type-tabs">
+        <button class="store-type-btn active" data-type="store" onclick="switchStoreType('store')">BMS STORE</button>
+        <button class="store-type-btn" data-type="studio" onclick="switchStoreType('studio')">BMS STUDIO</button>
+      </div>
+      <div class="store-filters" id="storeFilters"></div>
+      <div class="store-search">
+        <input class="form-input" type="text" placeholder="Cari produk..." id="storeSearch" oninput="renderAssets()">
+      </div>
+    </div>
+  </div>
+  <section class="section" style="padding-top:32px">
+    <div id="assetsGrid" class="assets-grid"></div>
+    <div id="emptyState" class="empty-state" style="display:none">
+      <i class="fas fa-box-open"></i>
+      <h3>No Products Found</h3>
+      <p>Tidak ada produk dengan filter tersebut.</p>
+    </div>
+  </section>
+</div>
+
+<!-- CONTACT -->
+<div class="page" id="page-contact">
+  <div class="banner-page">
+    <img class="bg-img" src="https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3OXZiZGhuYnRodzR0bmtrb28zbW52OXAxb3BqanV0dDlibXRqb2FwciZlcD12MV9naWZzX3NlYXJjaCZjdD1n/eHdZZgmLheaqRT6kVX/giphy.gif" alt="" onerror="this.style.display='none'">
+    <div class="overlay"></div>
+    <div class="floating-shape s1"></div>
+    <div class="content">
+      <h1 class="hero-title" style="font-size:30px">Contact <span class="text-gradient">Us</span></h1>
+      <p style="color:var(--text-muted);max-width:460px;margin:10px auto 0">Hubungi kami untuk konsultasi atau pertanyaan.</p>
+    </div>
+  </div>
+  <section class="section">
+    <div class="contact-grid">
+      <div class="contact-info">
+        <div class="contact-card reveal">
+          <div class="contact-card-icon"><i class="fas fa-envelope"></i></div>
+          <div><h4>Email</h4><p>Bamsj60@gmail.com</p></div>
+        </div>
+        <div class="contact-card reveal">
+          <div class="contact-card-icon"><i class="fab fa-whatsapp"></i></div>
+          <div><h4>WhatsApp</h4><p>+62 812-3456-7890</p></div>
+        </div>
+        <div class="contact-card reveal">
+          <div class="contact-card-icon"><i class="fab fa-discord"></i></div>
+          <div><h4>Discord</h4><p>bms_studio</p></div>
+        </div>
+        <div class="contact-card reveal">
+          <div class="contact-card-icon"><i class="fas fa-map-marker-alt"></i></div>
+          <div><h4>Location</h4><p>Jakarta, Indonesia</p></div>
+        </div>
+      </div>
+      <div>
+        <div class="glass" style="padding:28px;border-radius:var(--radius-lg);border:1px solid var(--glass-border)">
+          <h3 style="font-size:16px;font-weight:700;margin-bottom:16px">Send a Message</h3>
+          <form id="contactForm" onsubmit="submitContact(event)" style="display:flex;flex-direction:column;gap:12px">
+            <input class="form-input" type="text" name="name" placeholder="Your Name" required>
+            <input class="form-input" type="email" name="email" placeholder="Your Email" required>
+            <select class="form-input" name="project">
+              <option value="">Project Type</option>
+              <option>Website Development</option>
+              <option>Roblox Game Development</option>
+              <option>Mobile App</option>
+              <option>UI/UX Design</option>
+              <option>Discord Bot</option>
+              <option>Backend & API</option>
+              <option>Other</option>
+            </select>
+            <select class="form-input" name="budget">
+              <option value="">Budget Range</option>
+              <option>Rp 500rb - Rp 1jt</option>
+              <option>Rp 1jt - Rp 5jt</option>
+              <option>Rp 5jt - Rp 15jt</option>
+              <option>Rp 15jt - Rp 50jt</option>
+              <option>> Rp 50jt</option>
+            </select>
+            <textarea class="form-input" name="message" placeholder="Tell us about your project..." required></textarea>
+            <button class="btn btn-primary" type="submit">Send Message</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- LOGIN -->
+<div class="page" id="page-login">
+  <div class="auth-page">
+    <div class="orb orb-1" style="width:300px;height:300px;top:-80px;right:-80px"></div>
+    <div class="orb orb-2" style="width:220px;height:220px;bottom:-60px;left:-60px"></div>
+    <div class="auth-card">
+      <h2>Welcome Back</h2>
+      <p class="sub">Sign in to your account</p>
+      <form class="auth-form" id="loginForm" onsubmit="handleLogin(event)">
+        <div class="input-wrap">
+          <i class="fas fa-envelope"></i>
+          <input class="form-input" type="email" placeholder="Email" required>
+        </div>
+        <div class="input-wrap">
+          <i class="fas fa-lock"></i>
+          <input class="form-input" type="password" placeholder="Password" required>
+        </div>
+        <button class="btn btn-primary" type="submit" id="loginBtnSubmit">Sign In</button>
+      </form>
+      <div class="auth-divider">or</div>
+      <p style="text-align:center;font-size:12px;color:var(--text-muted)">Belum punya akun? <a href="#" onclick="switchAuthTab('register');return false" style="color:var(--primary)">Register</a></p>
+
+      <div id="registerSection" style="display:none;margin-top:16px">
+        <form class="auth-form" id="registerForm" onsubmit="handleRegister(event)">
+          <div class="input-wrap">
+            <i class="fas fa-user"></i>
+            <input class="form-input" type="text" placeholder="Full Name" required>
+          </div>
+          <div class="input-wrap">
+            <i class="fas fa-envelope"></i>
+            <input class="form-input" type="email" placeholder="Email" required>
+          </div>
+          <div class="input-wrap">
+            <i class="fas fa-lock"></i>
+            <input class="form-input" type="password" placeholder="Password (min 6 chars)" required minlength="6">
+          </div>
+          <button class="btn btn-primary" type="submit">Register</button>
+        </form>
+        <div id="otpSection" style="display:none;margin-top:16px;padding:16px;background:var(--bg-3);border-radius:var(--radius);text-align:center">
+          <p style="font-size:13px;margin-bottom:12px">Kode OTP telah dikirim ke email Anda.</p>
+          <form class="auth-form" onsubmit="verifyOTP(event)">
+            <div class="input-wrap">
+              <i class="fas fa-key"></i>
+              <input class="form-input" type="text" placeholder="Masukkan kode OTP" id="otpInput" maxlength="6" required>
+            </div>
+            <button class="btn btn-primary" type="submit">Verifikasi</button>
+          </form>
+          <p style="font-size:11px;color:var(--text-muted);margin-top:8px">Tidak terima? <a href="#" onclick="resendOTP();return false" style="color:var(--primary)">Kirim ulang</a></p>
+        </div>
+        <p style="text-align:center;font-size:12px;color:var(--text-muted);margin-top:12px">Sudah punya akun? <a href="#" onclick="switchAuthTab('login');return false" style="color:var(--primary)">Sign In</a></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CART -->
+<div class="page" id="page-cart">
+  <section class="section" style="padding-top:32px">
+    <h1 class="section-title" style="font-size:24px">Shopping <span class="text-gradient">Cart</span></h1>
+    <div class="cart-section">
+      <div id="cartItems" class="cart-items"></div>
+      <div id="cartEmpty" class="empty-state">
+        <i class="fas fa-shopping-cart"></i>
+        <h3>Cart is Empty</h3>
+        <p>Belum ada item di keranjang. Mulai belanja!</p>
+        <a class="btn btn-primary" onclick="navigateTo('store')" style="margin-top:14px">Browse Store</a>
+      </div>
+      <div id="cartSummary" class="cart-summary" style="display:none">
+        <div class="cart-summary-row"><span>Subtotal</span><span id="cartSubtotal">Rp 0</span></div>
+        <div class="cart-summary-row total"><span>Total</span><span id="cartTotal">Rp 0</span></div>
+        <button class="btn btn-primary btn-lg" onclick="checkout()">Checkout</button>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- ADMIN -->
+<div class="page" id="page-admin">
+  <div class="admin-layout">
+    <div class="admin-sidebar">
+      <div class="admin-sidebar-item active" data-tab="dashboard" onclick="switchAdminTab('dashboard')"><i class="fas fa-chart-pie"></i> Dashboard</div>
+      <div class="admin-sidebar-item" data-tab="assets" onclick="switchAdminTab('assets')"><i class="fas fa-box"></i> Assets</div>
+      <div class="admin-sidebar-item" data-tab="add-asset" onclick="switchAdminTab('add-asset')"><i class="fas fa-plus-circle"></i> Add Asset</div>
+      <div class="admin-sidebar-item" data-tab="messages" onclick="switchAdminTab('messages')"><i class="fas fa-envelope"></i> Messages</div>
+      <div class="admin-sidebar-item" data-tab="orders" onclick="switchAdminTab('orders')"><i class="fas fa-shopping-bag"></i> Orders</div>
+      <div class="admin-sidebar-item" data-tab="settings" onclick="switchAdminTab('settings')"><i class="fas fa-cog"></i> Settings</div>
+      <div style="flex:1"></div>
+      <div class="admin-sidebar-item" onclick="handleLogout()" style="color:var(--accent)"><i class="fas fa-sign-out-alt"></i> Logout</div>
+    </div>
+    <div class="admin-main">
+      <div class="admin-section active" id="admin-dashboard">
+        <h2 style="font-size:20px;font-weight:700;margin-bottom:20px">Dashboard</h2>
+        <div class="admin-stats" id="adminStats">
+          <div class="admin-stat-card"><div class="num" id="statAssets">0</div><div class="label">Total Assets</div></div>
+          <div class="admin-stat-card"><div class="num" id="statMessages">0</div><div class="label">Messages</div></div>
+          <div class="admin-stat-card"><div class="num" id="statOrders">0</div><div class="label">Orders</div></div>
+          <div class="admin-stat-card"><div class="num" id="statUsers">0</div><div class="label">Users</div></div>
+        </div>
+        <div class="glass" style="padding:20px;border-radius:var(--radius-lg);border:1px solid var(--glass-border);margin-bottom:20px">
+          <h3 style="font-size:14px;font-weight:700;margin-bottom:12px">Recent Assets</h3>
+          <table class="admin-table"><tbody id="recentAssets"></tbody></table>
+        </div>
+        <div class="glass" style="padding:20px;border-radius:var(--radius-lg);border:1px solid var(--glass-border)">
+          <h3 style="font-size:14px;font-weight:700;margin-bottom:12px">Recent Messages</h3>
+          <table class="admin-table"><tbody id="recentMessages"></tbody></table>
+        </div>
+      </div>
+
+      <div class="admin-section" id="admin-assets">
+        <h2 style="font-size:20px;font-weight:700;margin-bottom:20px">Manage Assets</h2>
+        <div style="display:flex;gap:6px;margin-bottom:16px">
+          <button class="store-type-btn active" data-list="all" onclick="filterAdminAssets('all')">All</button>
+          <button class="store-type-btn" data-list="store" onclick="filterAdminAssets('store')">BMS STORE</button>
+          <button class="store-type-btn" data-list="studio" onclick="filterAdminAssets('studio')">BMS STUDIO</button>
+        </div>
+        <div style="overflow-x:auto">
+          <table class="admin-table">
+            <thead><tr><th>Image</th><th>Name</th><th>Store</th><th>Price</th><th>Stock</th><th>Actions</th></tr></thead>
+            <tbody id="adminAssetsTable"></tbody>
+          </table>
+        </div>
+        <div id="emptyAdminAssets" class="empty-state" style="display:none;padding:24px"><h3>No Assets Yet</h3></div>
+      </div>
+
+      <div class="admin-section" id="admin-add-asset">
+        <h2 style="font-size:20px;font-weight:700;margin-bottom:20px">Add New Asset</h2>
+        <div class="glass" style="padding:28px;border-radius:var(--radius-lg);border:1px solid var(--glass-border);max-width:540px">
+          <form id="adminAssetForm" onsubmit="submitAdminAsset(event)" style="display:flex;flex-direction:column;gap:12px">
+            <input class="form-input" type="text" name="name" placeholder="Asset Name" required>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+              <input class="form-input" type="text" name="price" placeholder="Price" value="Gratis">
+              <input class="form-input" type="text" name="original_price" placeholder="Original Price (optional)">
+            </div>
+            <textarea class="form-input" name="description" placeholder="Description" rows="3"></textarea>
+            <input class="form-input" type="text" name="tags" placeholder="Tags (comma separated)">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+              <select class="form-input" name="category">
+                <option value="3d-model">3D Model</option>
+                <option value="ui-kit">UI Kit</option>
+                <option value="script">Script / Code</option>
+                <option value="roblox">Roblox</option>
+                <option value="texture">Texture</option>
+                <option value="audio">Audio</option>
+                <option value="icon">Icon</option>
+                <option value="font">Font</option>
+                <option value="template">Template</option>
+                <option value="other">Other</option>
+              </select>
+              <select class="form-input" name="store_type">
+                <option value="store">BMS STORE</option>
+                <option value="studio">BMS STUDIO</option>
+              </select>
+            </div>
+            <input class="form-input" type="text" name="image" placeholder="Image URL (optional)">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+              <select class="form-input" name="stock_status">
+                <option value="ready">Ready Stock</option>
+                <option value="limited">Limited</option>
+                <option value="preorder">Pre-order</option>
+              </select>
+              <div style="display:flex;align-items:center;gap:8px">
+                <label style="font-size:12px;color:var(--text-muted)">Video</label>
+                <input type="checkbox" name="video_enabled" onchange="document.getElementById('adminVideoUrl').style.display=this.checked?'block':'none'">
+              </div>
+            </div>
+            <div id="adminVideoUrl" style="display:none">
+              <input class="form-input" type="text" name="video_url" placeholder="YouTube/Vimeo URL">
+            </div>
+            <button class="btn btn-primary" type="submit">Save Asset</button>
+          </form>
+        </div>
+      </div>
+
+      <div class="admin-section" id="admin-messages">
+        <h2 style="font-size:20px;font-weight:700;margin-bottom:20px">Messages</h2>
+        <div id="messagesList"></div>
+        <div id="emptyMessages" class="empty-state" style="display:none"><i class="fas fa-inbox"></i><h3>No Messages</h3></div>
+      </div>
+
+      <div class="admin-section" id="admin-orders">
+        <h2 style="font-size:20px;font-weight:700;margin-bottom:20px">Orders</h2>
+        <div style="overflow-x:auto">
+          <table class="admin-table">
+            <thead><tr><th>ID</th><th>Customer</th><th>Items</th><th>Total</th><th>Status</th><th>Date</th><th>Action</th></tr></thead>
+            <tbody id="adminOrdersTable"></tbody>
+          </table>
+        </div>
+        <div id="emptyOrders" class="empty-state" style="display:none"><i class="fas fa-shopping-bag"></i><h3>No Orders</h3></div>
+      </div>
+
+      <div class="admin-section" id="admin-settings">
+        <h2 style="font-size:20px;font-weight:700;margin-bottom:20px">Settings</h2>
+        <div class="settings-card">
+           <h3>Database Sync</h3>
+           <p style="color:var(--text-muted);font-size:12px;margin-bottom:8px">Database terhubung ke Turso. Data tersinkronasi secara real-time.</p>
+           <div style="display:inline-flex;align-items:center;gap:8px;padding:10px 16px;border-radius:var(--radius);background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.2)">
+             <i class="fas fa-check-circle" style="color:#34d399"></i>
+             <span style="font-size:12px;font-weight:600;color:#34d399">Turso Connected</span>
+           </div>
+        </div>
+        <div class="settings-card">
+          <h3>Data Management</h3>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <button class="btn btn-outline btn-sm" onclick="exportData()">Export JSON</button>
+            <button class="btn btn-outline btn-sm" onclick="document.getElementById('importFile').click()">Import JSON</button>
+            <input type="file" id="importFile" accept=".json" style="display:none" onchange="importData(event)">
+            <button class="btn btn-danger btn-sm" onclick="clearAllData()">Clear All</button>
+          </div>
+        </div>
+        <div class="settings-card">
+          <h3>Account</h3>
+          <p style="font-size:12px;color:var(--text-muted);margin-bottom:10px">Logged in as: <strong id="adminEmailDisplay">Admin</strong></p>
+          <button class="btn btn-danger btn-sm" onclick="handleLogout()">Logout</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<div id="mainFooter">
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <h3 class="logo-3d" data-text="BMS Platform" style="font-family:'Syne',sans-serif;font-weight:700;font-size:24px;letter-spacing:-0.02em">BMS <span style="font-weight:600;color:var(--secondary)">Platform</span></h3>
+      <p>Build Better. Develop Better. Play Better.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Services</h4>
+      <a onclick="navigateTo('services')">Web Development</a>
+      <a onclick="navigateTo('services')">Roblox Game Dev</a>
+      <a onclick="navigateTo('services')">Mobile App</a>
+      <a onclick="navigateTo('services')">UI/UX Design</a>
+      <a onclick="navigateTo('services')">Discord Bot</a>
+    </div>
+    <div class="footer-col">
+      <h4>Company</h4>
+      <a onclick="navigateTo('about')">About Us</a>
+      <a onclick="navigateTo('portfolio')">Portfolio</a>
+      <a onclick="navigateTo('store')">Store</a>
+      <a onclick="navigateTo('contact')">Contact</a>
+    </div>
+    <div class="footer-col">
+      <h4>Resources</h4>
+      <a onclick="navigateTo('contact')">Support</a>
+      <a href="#">Privacy Policy</a>
+      <a href="#">Terms of Service</a>
+    </div>
+  </div>
+  <div class="footer-bottom">2026 BMS Platform. All rights reserved.</div>
+</div>
+
+<div id="toast-container"></div>
+
+<!-- MODALS -->
+<div class="modal-overlay video-modal" id="videoModal">
+  <div class="modal-content">
+    <div class="modal-header" style="padding:14px 18px;border-bottom:1px solid var(--glass-border)">
+      <h3 style="font-size:14px">Video Preview</h3>
+      <button class="modal-close" onclick="closeVideoModal()"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="modal-body"><div id="videoEmbed"></div></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="assetFormModal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3 id="assetFormTitle">Edit Asset</h3>
+      <button class="modal-close" onclick="closeAssetForm()"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="modal-body">
+      <form id="assetForm" onsubmit="submitAssetForm(event)" style="display:flex;flex-direction:column;gap:12px">
+        <input class="form-input" type="text" name="name" placeholder="Asset Name" required>
+        <input class="form-input" type="text" name="price" placeholder="Price" value="Gratis">
+        <textarea class="form-input" name="description" placeholder="Description" rows="3"></textarea>
+        <input class="form-input" type="text" name="tags" placeholder="Tags">
+        <select class="form-input" name="category">
+          <option value="3d-model">3D Model</option>
+          <option value="ui-kit">UI Kit</option>
+          <option value="script">Script</option>
+          <option value="roblox">Roblox</option>
+          <option value="texture">Texture</option>
+          <option value="audio">Audio</option>
+          <option value="icon">Icon</option>
+          <option value="font">Font</option>
+          <option value="template">Template</option>
+          <option value="other">Other</option>
+        </select>
+        <select class="form-input" name="store_type">
+          <option value="store">BMS STORE</option>
+          <option value="studio">BMS STUDIO</option>
+        </select>
+        <input class="form-input" type="text" name="image" placeholder="Image URL">
+        <button class="btn btn-primary" type="submit">Save</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+// ============ API CLIENT ============
+const API = '/api';
+async function api(path, options = {}) {
+  const config = { headers: { 'Content-Type': 'application/json', ...options.headers }, ...options };
+  if (config.body && typeof config.body === 'object') config.body = JSON.stringify(config.body);
+  try {
+    const res = await fetch(API + path, config);
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Request failed');
+    return data;
+  } catch (err) { throw err; }
+}
+
+// ============ APP STATE ============
+const APP = {
+  currentPage: 'home', isLoggedIn: false, user: null,
+  editingAssetId: null,
+  cart: JSON.parse(localStorage.getItem('bms_cart') || '[]'),
+  assets: [], currentStoreType: 'store', currentCategory: 'all'
+};
+
+// ============ THEME ============
+function toggleTheme() {
+  const html = document.documentElement;
+  const current = html.getAttribute('data-theme');
+  const next = current === 'dark' ? 'light' : 'dark';
+  html.setAttribute('data-theme', next);
+  localStorage.setItem('bms_theme', next);
+  updateThemeIcons(next);
+}
+function updateThemeIcons(theme) {
+  const icon = theme === 'dark' ? 'fa-moon' : 'fa-sun';
+  const els = document.querySelectorAll('#themeIcon, #mobileThemeIcon');
+  els.forEach(el => { el.className = 'fas ' + icon; });
+}
+(function() {
+  const saved = localStorage.getItem('bms_theme') || 'dark';
+  document.documentElement.setAttribute('data-theme', saved);
+  updateThemeIcons(saved);
+})();
+
+// ============ TOAST ============
+function showToast(msg, type = 'info') {
+  const container = document.getElementById('toast-container');
+  const icons = { success: 'fa-check-circle', error: 'fa-exclamation-circle', info: 'fa-info-circle' };
+  const toast = document.createElement('div');
+  toast.className = 'toast ' + type;
+  toast.innerHTML = '<i class="fas ' + (icons[type] || icons.info) + '"></i> ' + msg;
+  container.appendChild(toast);
+  setTimeout(() => {
+    toast.style.animation = 'toastOut 0.35s var(--ease-out) forwards';
+    setTimeout(() => toast.remove(), 350);
+  }, 3000);
+  toast.onclick = () => toast.remove();
+}
+
+// ============ SPA ROUTER ============
+function navigateTo(page) {
+  if (page === 'admin' && !APP.isLoggedIn) { navigateTo('login'); showToast('Login terlebih dahulu', 'error'); return; }
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  const target = document.getElementById('page-' + page);
+  if (target) { target.classList.add('active'); target.style.animation = 'none'; target.offsetHeight; target.style.animation = ''; }
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.toggle('active', t.dataset.page === page));
+  document.getElementById('mainFooter').style.display = (page === 'login' || page === 'admin') ? 'none' : 'block';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  APP.currentPage = page;
+  if (page === 'store') { renderAssets(); setupFilters(); }
+  if (page === 'admin') refreshAdminData();
+  if (page === 'cart') renderCart();
+  closeMobileNav();
+  setTimeout(initRevealObserver, 100);
+}
+function toggleMobileNav() { document.getElementById('mobileNav').classList.toggle('open'); }
+function closeMobileNav() { document.getElementById('mobileNav').classList.remove('open'); }
+
+// ============ AUTH ============
+async function checkSession() {
+  try { const data = await api('/auth/me'); if (data.user) { APP.isLoggedIn = true; APP.user = data.user; updateAuthUI(); } } catch {}
+}
+function updateAuthUI() {
+  const loginBtn = document.getElementById('loginBtn');
+  const adminBtn = document.getElementById('adminBtn');
+  const mobileAdminBtn = document.getElementById('mobileAdminBtn');
+  if (APP.isLoggedIn) {
+    loginBtn.style.display = 'none'; adminBtn.style.display = 'inline-flex';
+    if (mobileAdminBtn) mobileAdminBtn.style.display = 'flex';
+  } else { loginBtn.style.display = 'inline-flex'; adminBtn.style.display = 'none'; if (mobileAdminBtn) mobileAdminBtn.style.display = 'none'; }
+}
+async function handleLogin(e) {
+  e.preventDefault();
+  const inputs = e.target.querySelectorAll('input');
+  const btn = e.target.querySelector('button');
+  btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Signing in...';
+  try {
+    const data = await api('/auth/login', { method: 'POST', body: { email: inputs[0].value, password: inputs[1].value } });
+    APP.isLoggedIn = true; APP.user = data.user; updateAuthUI();
+    showToast('Login berhasil!', 'success'); navigateTo('admin');
+  } catch (err) { showToast(err.message || 'Login gagal', 'error'); }
+  btn.disabled = false; btn.innerHTML = 'Sign In';
+}
+let registeredEmail = '';
+async function handleRegister(e) {
+  e.preventDefault();
+  const inputs = e.target.querySelectorAll('input');
+  const btn = e.target.querySelector('button');
+  registeredEmail = inputs[1].value;
+  btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Registering...';
+  try {
+    await api('/auth/register', { method: 'POST', body: { name: inputs[0].value, email: inputs[1].value, password: inputs[2].value } });
+    document.getElementById('registerForm').style.display = 'none';
+    document.getElementById('otpSection').style.display = 'block';
+    document.getElementById('otpInput').focus();
+    showToast('Kode OTP dikirim ke email Anda!', 'success');
+  } catch (err) { showToast(err.message || 'Registrasi gagal', 'error'); }
+  btn.disabled = false; btn.innerHTML = 'Register';
+}
+async function verifyOTP(e) {
+  e.preventDefault();
+  const otp = document.getElementById('otpInput').value;
+  if (!otp) return showToast('Masukkan kode OTP', 'error');
+  try {
+    const data = await api('/auth/verify-otp', { method: 'POST', body: { email: registeredEmail, otp } });
+    APP.isLoggedIn = true; APP.user = data.user; updateAuthUI();
+    showToast('Registrasi berhasil!', 'success'); navigateTo('admin');
+  } catch (err) { showToast(err.message || 'Kode OTP salah', 'error'); }
+}
+async function resendOTP() {
+  if (!registeredEmail) return showToast('Email tidak ditemukan', 'error');
+  try { await api('/auth/resend-otp', { method: 'POST', body: { email: registeredEmail } }); showToast('OTP dikirim ulang!', 'success'); } catch (err) { showToast(err.message, 'error'); }
+}
+async function handleLogout() {
+  try { await api('/auth/logout', { method: 'POST' }); } catch {}
+  APP.isLoggedIn = false; APP.user = null; updateAuthUI();
+  showToast('Berhasil logout', 'info'); navigateTo('home');
+}
+function switchAuthTab(tab) {
+  document.getElementById('loginForm').style.display = tab === 'login' ? 'block' : 'none';
+  document.getElementById('registerSection').style.display = tab === 'register' ? 'block' : 'none';
+  document.getElementById('otpSection').style.display = 'none';
+  document.getElementById('registerForm').style.display = 'block';
+}
+
+// ============ SERVICES DATA ============
+const SERVICES = [
+  { icon: 'fa-globe', title: 'Website Development', desc: 'Website modern dan responsif untuk bisnis dan portofolio.', tags: ['React','Next.js','Laravel','Vue'] },
+  { icon: 'fa-gamepad', title: 'Roblox Game Development', desc: 'Game Roblox berkualitas dengan fitur lengkap dan performa optimal.', tags: ['Lua','Luau','Roblox Studio','Animation'] },
+  { icon: 'fa-mobile-alt', title: 'Mobile App Development', desc: 'Aplikasi mobile cross-platform dengan UI/UX memukau.', tags: ['Flutter','React Native','Kotlin','Swift'] },
+  { icon: 'fa-paint-brush', title: 'UI/UX Design', desc: 'Desain antarmuka intuitif dengan fokus pada pengalaman pengguna.', tags: ['Figma','Adobe XD','Prototyping','Sketch'] },
+  { icon: 'fa-robot', title: 'Discord Bot Development', desc: 'Bot Discord kustom: moderation, music, games, dan integrasi API.', tags: ['Discord.js','Python','Node.js','API'] },
+  { icon: 'fa-server', title: 'Backend & API Development', desc: 'Sistem backend scalable dan API handal untuk aplikasi Anda.', tags: ['Node.js','Python','PostgreSQL','Redis'] },
+  { icon: 'fa-cube', title: '3D Modeling & Animation', desc: 'Model 3D untuk game, animasi karakter, dan aset digital.', tags: ['Blender','Rigging','Texturing','Maya'] },
+  { icon: 'fa-code-branch', title: 'Game Scripting', desc: 'Scripting game dengan sistem AI dan mekanik gameplay kompleks.', tags: ['Lua','C#','Python','Game Design'] },
+  { icon: 'fa-music', title: 'Audio Production & Sound Design', desc: 'Musik latar, SFX, voice over untuk game.', tags: ['FL Studio','Audacity','SFX','Mixing'] },
+  { icon: 'fa-database', title: 'Server & Database Management', desc: 'Manajemen server dan database untuk performa optimal.', tags: ['Linux','MySQL','MongoDB','DevOps'] },
+  { icon: 'fa-chalkboard-teacher', title: 'Consultation & Mentoring', desc: 'Konsultasi untuk pengembang yang ingin meningkatkan skill.', tags: ['Training','Code Review','Best Practices'] }
+];
+const PORTFOLIO = [
+  { title: 'E-Commerce Platform', desc: 'Platform e-commerce full-stack dengan payment gateway.', category: 'Web', color: '#8b7cfc', tags: ['Next.js','PostgreSQL','Stripe'] },
+  { title: 'Adventure Quest RPG', desc: 'Game RPG Roblox open-world dengan quest dan multiplayer.', category: 'Roblox', color: '#67e8f9', tags: ['Lua','Roblox Studio','Animation'] },
+  { title: 'FitTracker Pro', desc: 'Aplikasi fitness tracker dengan AI recommendations.', category: 'Mobile', color: '#f472b6', tags: ['Flutter','Firebase','ML Kit'] },
+  { title: 'Tower Defense X', desc: 'Game tower defense dengan 50+ level dan leaderboard.', category: 'Roblox', color: '#fb923c', tags: ['Lua','Roblox','Game Design'] },
+  { title: 'CollabSpace', desc: 'Platform kolaborasi tim real-time.', category: 'Web', color: '#60a5fa', tags: ['React','WebRTC','Socket.io'] },
+  { title: 'NexusBot Pro', desc: 'Discord bot all-in-one dengan 100+ commands.', category: 'Bot', color: '#c792ea', tags: ['Discord.js','Node.js','MongoDB'] }
+];
+const TESTIMONIALS = [
+  { name: 'Ahmad Rizky', role: 'CEO TechStart', text: 'BMS STUDIO mengerjakan project game Roblox kami dengan sangat profesional!', avatar: 'AR' },
+  { name: 'Dimas Saputra', role: 'Roblox Developer', text: 'Script dan asset dari BMS Store sangat membantu project saya. Kualitasnya top!', avatar: 'DS' },
+  { name: 'Fajar Nugraha', role: 'Game Studio Owner', text: 'Tim BMS sangat responsif dan paham betul tentang game development.', avatar: 'FN' }
+];
+
+function renderServices(id, count) {
+  const c = document.getElementById(id); if (!c) return;
+  const items = count ? SERVICES.slice(0, count) : SERVICES;
+  c.innerHTML = items.map(s => '<div class="service-card reveal"><div class="service-icon"><i class="fas '+s.icon+'"></i></div><h3>'+s.title+'</h3><p>'+s.desc+'</p><div class="service-tags">'+s.tags.map(t => '<span>'+t+'</span>').join('')+'</div></div>').join('');
+}
+function renderPortfolio() {
+  const c = document.getElementById('portfolioGrid'); if (!c) return;
+  c.innerHTML = PORTFOLIO.map(p => '<div class="portfolio-card reveal"><div class="portfolio-preview" style="background:linear-gradient(135deg,'+p.color+'22,'+p.color+'44)"><i class="fas fa-crown" style="color:'+p.color+'"></i></div><div class="portfolio-info"><h3>'+p.title+'</h3><p>'+p.desc+'</p><div class="portfolio-tags">'+p.tags.map(t => '<span>'+t+'</span>').join('')+'</div></div></div>').join('');
+}
+function renderTestimonials() {
+  const c = document.getElementById('testimonialsGrid'); if (!c) return;
+  c.innerHTML = TESTIMONIALS.map(t => '<div class="testi-card reveal"><div class="testi-stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div><div class="testi-text">"'+t.text+'"</div><div class="testi-author"><div class="testi-avatar">'+t.avatar+'</div><div><div class="testi-name">'+t.name+'</div><div class="testi-role">'+t.role+'</div></div></div></div>').join('');
+}
+
+// ============ STORE ============
+function switchStoreType(type) {
+  APP.currentStoreType = type;
+  document.querySelectorAll('.store-type-btn').forEach(b => b.classList.toggle('active', b.dataset.type === type));
+  renderAssets(); setupFilters();
+}
+
+const CATEGORIES = {
+  store: [
+    { value: 'all', label: 'All' }, { value: 'other', label: 'Digital' },
+    { value: 'roblox', label: 'Roblox' }, { value: 'script', label: 'Script' },
+    { value: 'ui-kit', label: 'UI Kit' }, { value: '3d-model', label: '3D' },
+    { value: 'audio', label: 'Audio' }, { value: 'template', label: 'Template' }
+  ],
+  studio: [
+    { value: 'all', label: 'All' }, { value: 'script', label: 'Script' },
+    { value: 'roblox', label: 'Roblox' }, { value: 'ui-kit', label: 'UI/UX' },
+    { value: '3d-model', label: '3D' }, { value: 'audio', label: 'Audio' },
+    { value: 'other', label: 'Lainnya' }
+  ]
+};
+
+function setupFilters() {
+  const container = document.getElementById('storeFilters');
+  const cats = CATEGORIES[APP.currentStoreType] || CATEGORIES.store;
+  container.innerHTML = cats.map(c => '<button class="filter-btn '+(c.value === 'all' ? 'active' : '')+'" data-category="'+c.value+'">'+c.label+'</button>').join('');
+}
+
+async function renderAssets() {
+  const grid = document.getElementById('assetsGrid');
+  const empty = document.getElementById('emptyState');
+  if (!grid) return;
+  APP.currentCategory = document.querySelector('.filter-btn.active')?.dataset?.category || 'all';
+  const search = document.getElementById('storeSearch')?.value || '';
+  grid.innerHTML = '<div class="skeleton" style="height:180px;grid-column:1/-1"></div>'.repeat(3);
+  try {
+    const params = new URLSearchParams({ store_type: APP.currentStoreType });
+    if (APP.currentCategory !== 'all') params.set('category', APP.currentCategory);
+    if (search) params.set('search', search);
+    const data = await api('/assets?' + params.toString());
+    APP.assets = data.assets || [];
+    if (!APP.assets.length) { grid.innerHTML = ''; empty.style.display = 'block'; return; }
+    empty.style.display = 'none';
+    grid.innerHTML = APP.assets.map(a => {
+      const isFree = a.price === 'Gratis' || a.price === '0' || !a.price;
+      const tags = (a.tags || '').split(',').filter(Boolean);
+      const hasDiscount = a.original_price && a.original_price !== a.price && a.original_price !== '';
+      return '<div class="asset-card reveal"><div class="asset-thumb">'+(a.image ? '<img src="'+a.image+'" alt="" loading="lazy">' : '<i class="fas fa-cube"></i>')+(a.video_enabled ? '<div class="play-btn" onclick="event.stopPropagation();openVideoModal(\''+(a.video_url||'')+'\')"><i class="fas fa-play"></i></div>' : '')+'</div><div class="asset-body"><h3>'+a.name+'</h3><div class="tags">'+tags.slice(0,3).map(t => '<span>'+t.trim()+'</span>').join('')+'</div><div class="desc">'+(a.description||'')+'</div></div><div class="asset-footer"><div><span class="asset-price">'+(isFree ? 'Gratis' : a.price)+'</span>'+(hasDiscount ? '<span class="asset-price-original">'+a.original_price+'</span>' : '')+'<div><span class="asset-stock '+(a.stock_status === 'limited' ? 'limited' : '')+'">'+(a.stock_status === 'limited' ? 'Limited' : a.stock_status === 'preorder' ? 'Pre-order' : 'Ready')+'</span></div></div><button class="asset-add" onclick="addToCart('+a.id+')"><i class="fas fa-plus"></i></button></div></div>';
+    }).join('');
+    setTimeout(initRevealObserver, 100);
+  } catch { grid.innerHTML = '<div class="empty-state"><i class="fas fa-exclamation-triangle"></i><h3>Gagal memuat</h3></div>'; empty.style.display = 'none'; }
+}
+
+document.addEventListener('click', function(e) {
+  const btn = e.target.closest('.filter-btn');
+  if (btn) { document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); renderAssets(); }
+});
+
+// ============ CART ============
+function saveCart() { localStorage.setItem('bms_cart', JSON.stringify(APP.cart)); updateCartBadge(); }
+function updateCartBadge() {
+  const count = APP.cart.reduce((s,i) => s + i.qty, 0);
+  const badge = document.getElementById('cartCount');
+  const mc = document.getElementById('mobileCartCount');
+  if (count > 0) { badge.style.display = 'flex'; badge.textContent = count; if(mc) mc.textContent = '('+count+')'; }
+  else { badge.style.display = 'none'; if(mc) mc.textContent = ''; }
+}
+function addToCart(assetId) {
+  const asset = APP.assets.find(a => a.id === assetId);
+  if (!asset) return;
+  const existing = APP.cart.find(i => i.id === assetId);
+  if (existing) existing.qty++;
+  else APP.cart.push({ id: asset.id, name: asset.name, price: asset.price, qty: 1, image: asset.image, store_type: asset.store_type });
+  saveCart(); showToast(asset.name + ' ditambahkan!', 'success');
+}
+function renderCart() {
+  const items = document.getElementById('cartItems');
+  const empty = document.getElementById('cartEmpty');
+  const summary = document.getElementById('cartSummary');
+  if (!items) return;
+  if (!APP.cart.length) { items.innerHTML = ''; empty.style.display = 'block'; summary.style.display = 'none'; return; }
+  empty.style.display = 'none'; summary.style.display = 'block';
+  items.innerHTML = APP.cart.map((item, i) => '<div class="cart-item"><div class="cart-item-thumb"><i class="fas fa-cube"></i></div><div class="cart-item-info"><h4>'+item.name+'</h4><p>'+(item.price === 'Gratis' ? 'Gratis' : item.price)+'</p></div><div class="cart-item-qty"><button onclick="updateCartQty('+i+',-1)"><i class="fas fa-minus"></i></button><span>'+item.qty+'</span><button onclick="updateCartQty('+i+',1)"><i class="fas fa-plus"></i></button></div><div class="cart-item-remove" onclick="removeFromCart('+i+')"><i class="fas fa-trash"></i></div></div>').join('');
+  updateCartSummary();
+}
+function updateCartQty(i,d) { APP.cart[i].qty += d; if (APP.cart[i].qty <= 0) APP.cart.splice(i,1); saveCart(); renderCart(); }
+function removeFromCart(i) { APP.cart.splice(i,1); saveCart(); renderCart(); }
+function updateCartSummary() {
+  let sub = 0;
+  APP.cart.forEach(item => { const p = parseFloat(String(item.price).replace(/[^0-9]/g,'')) || 0; sub += p * item.qty; });
+  document.getElementById('cartSubtotal').textContent = sub > 0 ? 'Rp '+sub.toLocaleString('id-ID') : 'Gratis';
+  document.getElementById('cartTotal').textContent = sub > 0 ? 'Rp '+sub.toLocaleString('id-ID') : 'Gratis';
+}
+async function checkout() {
+  if (!APP.cart.length) return showToast('Cart kosong', 'error');
+  try {
+    await api('/orders', { method: 'POST', body: { items: APP.cart, total: 0 } });
+    APP.cart = []; saveCart(); renderCart(); showToast('Pesanan berhasil dibuat!', 'success');
+  } catch (err) { showToast(err.message || 'Checkout gagal', 'error'); }
+}
+
+// ============ VIDEO MODAL ============
+function openVideoModal(url) {
+  if (!url) return showToast('No video URL', 'error');
+  const modal = document.getElementById('videoModal');
+  const embed = document.getElementById('videoEmbed');
+  let eu = '';
+  const yt = url.match(/(?:v=|\/)([a-zA-Z0-9_-]{11})/);
+  if (yt) eu = 'https://www.youtube.com/embed/'+yt[1]+'?autoplay=1';
+  else { const vm = url.match(/vimeo\.com\/(\d+)/); if (vm) eu = 'https://player.vimeo.com/video/'+vm[1]+'?autoplay=1'; }
+  if (!eu) return showToast('Invalid video URL', 'error');
+  embed.innerHTML = '<iframe src="'+eu+'" allow="autoplay; encrypted-media" allowfullscreen></iframe>';
+  modal.classList.add('open');
+}
+function closeVideoModal() { document.getElementById('videoModal').classList.remove('open'); document.getElementById('videoEmbed').innerHTML = ''; }
+document.getElementById('videoModal')?.addEventListener('click', function(e) { if (e.target === this) closeVideoModal(); });
+
+// ============ ADMIN ============
+let adminFilter = 'all';
+function filterAdminAssets(type) {
+  adminFilter = type;
+  document.querySelectorAll('[data-list]').forEach(b => b.classList.toggle('active', b.dataset.list === type));
+  refreshAdminData();
+}
+function switchAdminTab(tab) {
+  document.querySelectorAll('.admin-sidebar-item').forEach(i => i.classList.toggle('active', i.dataset.tab === tab));
+  document.querySelectorAll('.admin-section').forEach(s => s.classList.remove('active'));
+  const sec = document.getElementById('admin-'+tab);
+  if (sec) sec.classList.add('active');
+  if (tab === 'dashboard' || tab === 'assets') refreshAdminData();
+  if (tab === 'messages') loadMessages();
+  if (tab === 'orders') loadOrders();
+}
+async function refreshAdminData() {
+  try {
+    const [ad, md, od] = await Promise.all([
+      api('/assets'), api('/messages').catch(() => ({messages:[]})), api('/orders/all').catch(() => ({orders:[]}))
+    ]);
+    const assets = ad.assets || [];
+    const messages = md.messages || [];
+    const orders = od.orders || [];
+    document.getElementById('statAssets').textContent = assets.length;
+    document.getElementById('statMessages').textContent = messages.length;
+    document.getElementById('statOrders').textContent = orders.length;
+    document.getElementById('statUsers').textContent = '2+';
+    const filtered = adminFilter === 'all' ? assets : assets.filter(a => a.store_type === adminFilter);
+    renderAdminTable(filtered);
+    document.getElementById('recentAssets').innerHTML = assets.slice(0,5).map(a => '<tr><td style="padding:6px 10px">'+a.name+'</td><td style="padding:6px 10px;color:var(--text-muted)">'+a.store_type+'</td><td style="padding:6px 10px"><span class="badge '+(a.price==='Gratis'?'badge-free':'badge-paid')+'">'+(a.price==='Gratis'?'Free':a.price)+'</span></td></tr>').join('') || '<tr><td style="padding:10px;color:var(--text-muted)">Belum ada asset</td></tr>';
+    document.getElementById('recentMessages').innerHTML = messages.slice(0,5).map(m => '<tr><td style="padding:6px 10px">'+m.name+'</td><td style="padding:6px 10px;color:var(--text-muted)">'+m.email+'</td></tr>').join('') || '<tr><td style="padding:10px;color:var(--text-muted)">Belum ada pesan</td></tr>';
+  } catch {}
+}
+function renderAdminTable(assets) {
+  const tbody = document.getElementById('adminAssetsTable');
+  const empty = document.getElementById('emptyAdminAssets');
+  if (!tbody) return;
+  if (!assets.length) { tbody.innerHTML = ''; empty.style.display = 'block'; return; }
+  empty.style.display = 'none';
+  tbody.innerHTML = assets.map(a => '<tr><td>'+(a.image ? '<img src="'+a.image+'" class="thumb">' : '<div class="thumb" style="display:inline-flex;align-items:center;justify-content:center;background:var(--bg-4);font-size:14px"><i class="fas fa-cube"></i></div>')+'</td><td>'+a.name+'</td><td><span class="badge badge-free">'+(a.store_type === 'studio' ? 'STUDIO' : 'STORE')+'</span></td><td><span class="badge '+(a.price==='Gratis'?'badge-free':'badge-paid')+'">'+(a.price==='Gratis'?'Free':a.price)+'</span></td><td><span class="asset-stock '+(a.stock_status==='limited'?'limited':'')+'">'+(a.stock_status||'ready')+'</span></td><td><button class="table-btn table-btn-edit" onclick="openAssetForm('+a.id+')"><i class="fas fa-edit"></i></button> <button class="table-btn table-btn-del" onclick="deleteAsset('+a.id+')"><i class="fas fa-trash"></i></button></td></tr>').join('');
+}
+async function submitAdminAsset(e) {
+  e.preventDefault();
+  const fd = new FormData(e.target);
+  const data = {
+    name: fd.get('name'), price: fd.get('price') || 'Gratis', original_price: fd.get('original_price') || '',
+    description: fd.get('description') || '', tags: fd.get('tags') || '', category: fd.get('category') || 'other',
+    store_type: fd.get('store_type') || 'store', image: fd.get('image') || '',
+    video_enabled: fd.get('video_enabled') === 'on', video_url: fd.get('video_url') || '',
+    stock_status: fd.get('stock_status') || 'ready'
+  };
+  const btn = e.target.querySelector('button');
+  btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+  try {
+    if (APP.editingAssetId) { await api('/assets/'+APP.editingAssetId, { method: 'PUT', body: data }); showToast('Asset diupdate!','success'); APP.editingAssetId = null; }
+    else { await api('/assets', { method: 'POST', body: data }); showToast('Asset ditambahkan!','success'); }
+    e.target.reset(); refreshAdminData();
+  } catch (err) { showToast(err.message||'Gagal','error'); }
+  btn.disabled = false; btn.innerHTML = 'Save Asset';
+}
+async function openAssetForm(id) {
+  try {
+    const d = await api('/assets/'+id);
+    const a = d.asset; if (!a) return;
+    APP.editingAssetId = id;
+    const modal = document.getElementById('assetFormModal');
+    document.getElementById('assetFormTitle').textContent = 'Edit Asset';
+    const f = document.getElementById('assetForm');
+    f.querySelector('[name="name"]').value = a.name;
+    f.querySelector('[name="price"]').value = a.price;
+    f.querySelector('[name="description"]').value = a.description;
+    f.querySelector('[name="tags"]').value = a.tags;
+    f.querySelector('[name="category"]').value = a.category;
+    f.querySelector('[name="store_type"]').value = a.store_type || 'store';
+    f.querySelector('[name="image"]').value = a.image;
+    modal.classList.add('open');
+  } catch { showToast('Gagal','error'); }
+}
+function closeAssetForm() { document.getElementById('assetFormModal').classList.remove('open'); APP.editingAssetId = null; document.getElementById('assetForm').reset(); }
+async function submitAssetForm(e) {
+  e.preventDefault();
+  const fd = new FormData(e.target);
+  const data = { name: fd.get('name'), price: fd.get('price')||'Gratis', description: fd.get('description')||'', tags: fd.get('tags')||'', category: fd.get('category')||'other', store_type: fd.get('store_type')||'store', image: fd.get('image')||'', video_enabled: fd.get('video_enabled')==='on', video_url: fd.get('video_url')||'' };
+  try {
+    if (APP.editingAssetId) { await api('/assets/'+APP.editingAssetId,{method:'PUT',body:data}); APP.editingAssetId=null; }
+    else { await api('/assets',{method:'POST',body:data}); }
+    closeAssetForm(); refreshAdminData(); showToast('Asset saved!','success');
+  } catch(err) { showToast(err.message||'Gagal','error'); }
+}
+async function deleteAsset(id) {
+  if (!confirm('Yakin?')) return;
+  try { await api('/assets/'+id,{method:'DELETE'}); showToast('Dihapus','success'); refreshAdminData(); } catch {}
+}
+async function loadMessages() {
+  const c = document.getElementById('messagesList');
+  const e = document.getElementById('emptyMessages');
+  if (!c) return;
+  try {
+    const d = await api('/messages'); const msgs = d.messages||[];
+    if (!msgs.length) { c.innerHTML=''; e.style.display='block'; return; }
+    e.style.display='none';
+    c.innerHTML = msgs.map(m => '<div class="glass" style="padding:16px;border-radius:var(--radius-lg);margin-bottom:10px;'+(m.read?'':'border-left:3px solid var(--primary)')+'"><div style="display:flex;justify-content:space-between;margin-bottom:6px"><div><strong>'+m.name+'</strong> <span style="color:var(--text-muted);font-size:12px">('+m.email+')</span></div><span style="font-size:11px;color:var(--text-dim)">'+new Date(m.created_at).toLocaleString()+'</span></div>'+(m.project?'<div style="font-size:12px;color:var(--text-muted);margin-bottom:4px">'+m.project+(m.budget?' | '+m.budget:'')+'</div>':'')+'<p style="font-size:13px">'+m.message+'</p></div>').join('');
+  } catch { c.innerHTML = ''; }
+}
+async function loadOrders() {
+  const tbody = document.getElementById('adminOrdersTable');
+  const empty = document.getElementById('emptyOrders');
+  if (!tbody) return;
+  try {
+    const d = await api('/orders/all'); const orders = d.orders||[];
+    if (!orders.length) { tbody.innerHTML=''; empty.style.display='block'; return; }
+    empty.style.display='none';
+    tbody.innerHTML = orders.map(o => { const items = JSON.parse(o.items||'[]'); const names = items.map(i=>i.name).join(', '); return '<tr><td>#'+o.id+'</td><td>'+(o.customer_name||o.customer_email||'Guest')+'</td><td style="font-size:11px">'+names+'</td><td>Rp '+(o.total||0).toLocaleString('id-ID')+'</td><td><span class="badge" style="background:'+(o.status==='pending'?'rgba(251,146,60,0.12)':o.status==='completed'?'rgba(16,185,129,0.12)':'rgba(244,63,94,0.12)')+'">'+o.status+'</span></td><td style="color:var(--text-muted);font-size:11px">'+new Date(o.created_at).toLocaleDateString()+'</td><td><select class="form-input" style="padding:3px 6px;font-size:11px;width:auto" onchange="updateOrderStatus('+o.id+',this.value)"><option value="pending" '+(o.status==='pending'?'selected':'')+'>Pending</option><option value="processing" '+(o.status==='processing'?'selected':'')+'>Processing</option><option value="completed" '+(o.status==='completed'?'selected':'')+'>Completed</option><option value="cancelled" '+(o.status==='cancelled'?'selected':'')+'>Cancelled</option></select></td></tr>'; }).join('');
+  } catch { tbody.innerHTML=''; empty.style.display='block'; }
+}
+async function updateOrderStatus(id, s) { try { await api('/orders/'+id+'/status',{method:'PUT',body:{status:s}}); showToast('Status diupdate','success'); } catch {} }
+
+// ============ SETTINGS ============
+async function exportData() {
+  try {
+    const [ad,md,od] = await Promise.all([api('/assets'), api('/messages').catch(()=>({messages:[]})), api('/orders/all').catch(()=>({orders:[]}))]);
+    const blob = new Blob([JSON.stringify({assets:ad.assets,messages:md.messages,orders:od.orders,exportedAt:new Date().toISOString()},null,2)],{type:'application/json'});
+    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'bms-studio-backup.json'; a.click();
+    showToast('Exported!','success');
+  } catch { showToast('Export failed','error'); }
+}
+async function importData(e) {
+  const file = e.target.files[0]; if (!file) return;
+  try {
+    const text = await file.text(); const data = JSON.parse(text);
+    if (data.assets) { for (const a of data.assets) { await api('/assets',{method:'POST',body:a}).catch(()=>{}); } showToast('Imported!','success'); refreshAdminData(); }
+    else showToast('Invalid format','error');
+  } catch { showToast('Import failed','error'); }
+  e.target.value = '';
+}
+async function clearAllData() {
+  if (!confirm('Yakin ingin menghapus SEMUA data?')) return;
+  if (!confirm('APAKAH ANDA YAKIN?')) return;
+  try { const d = await api('/assets'); for (const a of (d.assets||[])) { await api('/assets/'+a.id,{method:'DELETE'}).catch(()=>{}); } showToast('Data cleared','info'); refreshAdminData(); } catch { showToast('Gagal','error'); }
+}
+
+// ============ CONTACT ============
+async function submitContact(e) {
+  e.preventDefault();
+  const fd = new FormData(e.target);
+  const btn = e.target.querySelector('button');
+  btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
+  try {
+    await api('/messages',{method:'POST',body:{name:fd.get('name'),email:fd.get('email'),project:fd.get('project')||'',budget:fd.get('budget')||'',message:fd.get('message')}});
+    showToast('Pesan terkirim!','success'); e.target.reset();
+  } catch(err) { showToast(err.message||'Gagal','error'); }
+  btn.disabled = false; btn.innerHTML = 'Send Message';
+}
+
+// ============ COUNTERS ============
+function initCounters() {
+  document.querySelectorAll('.stat-number').forEach(el => {
+    const target = parseInt(el.dataset.count) || 0;
+    const suffix = target >= 100 ? '%' : '+';
+    let current = 0; const step = Math.max(1, Math.floor(target / 30));
+    const interval = setInterval(() => { current += step; if (current >= target) { current = target; clearInterval(interval); } el.textContent = current + suffix; }, 40);
+  });
+}
+
+// ============ REVEAL ============
+let revealObserver = null;
+function initRevealObserver() {
+  if (revealObserver) revealObserver.disconnect();
+  revealObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => { if (entry.isIntersecting) { entry.target.classList.add('visible'); if (entry.target.classList.contains('stat-number') && entry.target.dataset.count) setTimeout(() => initCounters(), 200); } });
+  }, { threshold: 0.08 });
+  document.querySelectorAll('.reveal:not(.visible)').forEach(el => revealObserver.observe(el));
+}
+
+// ============ FEATURED HOME ============
+async function loadFeaturedProducts() {
+  try {
+    const data = await api('/assets?store_type=store');
+    const products = (data.assets || []).slice(0, 4);
+    const grid = document.getElementById('featuredProducts');
+    if (!grid) return;
+    grid.innerHTML = products.map(a => '<div class="asset-card reveal"><div class="asset-thumb" style="height:120px">'+(a.image?'<img src="'+a.image+'">':'<i class="fas fa-cube"></i>')+'</div><div class="asset-body"><h3 style="font-size:13px">'+a.name+'</h3><div style="display:flex;justify-content:space-between;align-items:center;margin-top:6px"><span class="asset-price" style="font-size:13px">'+(a.price==='Gratis'?'Gratis':a.price)+'</span><button class="asset-add" onclick="addToCart('+a.id+')"><i class="fas fa-plus"></i></button></div></div></div>').join('');
+    setTimeout(initRevealObserver, 100);
+  } catch {}
+}
+
+// ============ 3D SCENE ============
+function initThree() {
+  const canvas = document.getElementById('threeCanvas');
+  if (!canvas || typeof THREE === 'undefined') return;
+  const w = canvas.parentElement.offsetWidth, h = canvas.parentElement.offsetHeight;
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(60, w / h, 0.1, 1000);
+  const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+  renderer.setSize(w, h);
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  const group = new THREE.Group();
+  // torus knot
+  const geo1 = new THREE.TorusKnotGeometry(1.2, 0.4, 128, 16);
+  const mat1 = new THREE.MeshPhongMaterial({ color: 0x8b7cfc, emissive: 0x8b7cfc, emissiveIntensity: 0.2, wireframe: false, transparent: true, opacity: 0.35, shininess: 80 });
+  const mesh1 = new THREE.Mesh(geo1, mat1);
+  // torus
+  const geo2 = new THREE.TorusGeometry(1.8, 0.08, 64, 64);
+  const mat2 = new THREE.MeshPhongMaterial({ color: 0x67e8f9, emissive: 0x67e8f9, emissiveIntensity: 0.15, transparent: true, opacity: 0.25 });
+  const mesh2 = new THREE.Mesh(geo2, mat2);
+  mesh2.rotation.x = Math.PI / 3;
+  // particles
+  const pCount = 200;
+  const positions = new Float32Array(pCount * 3);
+  for (let i = 0; i < pCount * 3; i++) positions[i] = (Math.random() - 0.5) * 20;
+  const pGeo = new THREE.BufferGeometry();
+  pGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+  const pMat = new THREE.PointsMaterial({ color: 0x8b7cfc, size: 0.03, transparent: true, opacity: 0.5 });
+  const particles = new THREE.Points(pGeo, pMat);
+  group.add(mesh1, mesh2, particles);
+  scene.add(group);
+  // lights
+  scene.add(new THREE.AmbientLight(0x404060));
+  const dl = new THREE.DirectionalLight(0x8b7cfc, 0.8);
+  dl.position.set(2, 3, 4);
+  scene.add(dl);
+  const dl2 = new THREE.DirectionalLight(0x67e8f9, 0.4);
+  dl2.position.set(-3, -1, 2);
+  scene.add(dl2);
+  camera.position.z = 5;
+  function anim() {
+    requestAnimationFrame(anim);
+    group.rotation.x += 0.003;
+    group.rotation.y += 0.006;
+    const s = 1 + Math.sin(Date.now() * 0.0005) * 0.04;
+    group.scale.set(s, s, s);
+    renderer.render(scene, camera);
+  }
+  anim();
+  window.addEventListener('resize', () => {
+    const pw = canvas.parentElement.offsetWidth, ph = canvas.parentElement.offsetHeight;
+    camera.aspect = pw / ph;
+    camera.updateProjectionMatrix();
+    renderer.setSize(pw, ph);
+  });
+}
+
+// ============ INIT ============
+document.addEventListener('DOMContentLoaded', async function() {
+  initThree();
+  renderServices('featuredServices', 3);
+  renderServices('allServices');
+  renderPortfolio();
+  renderTestimonials();
+  await checkSession();
+  updateCartBadge();
+  renderCart();
+  setupFilters();
+  await renderAssets();
+  await loadFeaturedProducts();
+  setTimeout(() => { document.getElementById('loader').classList.add('hidden'); initRevealObserver(); setTimeout(initCounters, 500); }, 1200);
+  // card mouse 3D tilt + glow
+  document.querySelectorAll('.service-card, .asset-card, .portfolio-card').forEach(c => {
+    c.classList.add('tilt-active');
+    c.addEventListener('mousemove', e => {
+      const r = c.getBoundingClientRect();
+      const x = (e.clientX - r.left) / r.width;
+      const y = (e.clientY - r.top) / r.height;
+      c.style.setProperty('--mx', (x * 100) + '%');
+      c.style.setProperty('--my', (y * 100) + '%');
+      c.style.transform = 'perspective(800px) rotateY(' + ((x - 0.5) * 8) + 'deg) rotateX(' + ((0.5 - y) * 8) + 'deg)';
+    });
+    c.addEventListener('mouseleave', () => {
+      c.style.transform = 'perspective(800px) rotateY(0deg) rotateX(0deg)';
+    });
+  });
+});
+</script>
+</body>
+</html>
