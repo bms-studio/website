@@ -13,7 +13,7 @@ function getDB() {
   const tursoToken = process.env.TURSO_DB_TOKEN;
   const localPath = path.join(__dirname, 'data.db');
 
-  if (tursoUrl && tursoToken) {
+  if (tursoUrl && tursoToken && tursoUrl.startsWith('libsql://') && tursoToken.length > 10) {
     try {
       db = createClient({ url: tursoUrl, authToken: tursoToken });
       return db;
@@ -89,6 +89,15 @@ async function initDB() {
       customer_email TEXT DEFAULT '',
       payment_method TEXT DEFAULT '',
       store_type TEXT DEFAULT '',
+      created_at TEXT DEFAULT (datetime('now'))
+    )`,
+    `CREATE TABLE IF NOT EXISTS promos (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      code TEXT UNIQUE NOT NULL,
+      discount INTEGER NOT NULL DEFAULT 10,
+      max_uses INTEGER DEFAULT 0,
+      used_count INTEGER DEFAULT 0,
+      active INTEGER DEFAULT 1,
       created_at TEXT DEFAULT (datetime('now'))
     )`
   ];
@@ -166,6 +175,15 @@ async function seedData(client) {
           );
         } catch {}
       }
+    }
+  } catch {}
+
+  try {
+    const promos = await client.execute('SELECT COUNT(*) as count FROM promos');
+    if (promos.rows[0].count === 0) {
+      await client.execute('INSERT INTO promos (code, discount, max_uses, used_count, active) VALUES (?, ?, ?, ?, ?)', ['WELCOME10', 10, 100, 0, 1]);
+      await client.execute('INSERT INTO promos (code, discount, max_uses, used_count, active) VALUES (?, ?, ?, ?, ?)', ['BMS50', 50, 50, 0, 1]);
+      await client.execute('INSERT INTO promos (code, discount, max_uses, used_count, active) VALUES (?, ?, ?, ?, ?)', ['STARTER', 25, 200, 0, 1]);
     }
   } catch {}
 }

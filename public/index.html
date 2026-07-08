@@ -1028,6 +1028,7 @@ textarea.form-input{resize:vertical;min-height:100px}
       <div class="admin-sidebar-item" data-tab="add-asset" onclick="switchAdminTab('add-asset')"><i class="fas fa-plus-circle"></i> Add Asset</div>
       <div class="admin-sidebar-item" data-tab="messages" onclick="switchAdminTab('messages')"><i class="fas fa-envelope"></i> Messages</div>
       <div class="admin-sidebar-item" data-tab="orders" onclick="switchAdminTab('orders')"><i class="fas fa-shopping-bag"></i> Orders</div>
+      <div class="admin-sidebar-item" data-tab="promos" onclick="switchAdminTab('promos')"><i class="fas fa-tag"></i> Promos</div>
       <div class="admin-sidebar-item" data-tab="settings" onclick="switchAdminTab('settings')"><i class="fas fa-cog"></i> Settings</div>
       <div style="flex:1"></div>
       <div class="admin-sidebar-item" onclick="handleLogout()" style="color:var(--accent)"><i class="fas fa-sign-out-alt"></i> Logout</div>
@@ -1133,6 +1134,21 @@ textarea.form-input{resize:vertical;min-height:100px}
         <div id="emptyOrders" class="empty-state" style="display:none"><i class="fas fa-shopping-bag"></i><h3>No Orders</h3></div>
       </div>
 
+      <div class="admin-section" id="admin-promos">
+        <h2 style="font-size:20px;font-weight:700;margin-bottom:20px">Promo Codes</h2>
+        <div style="display:flex;gap:12px;margin-bottom:16px;flex-wrap:wrap">
+          <input class="form-input" id="promoNewCode" placeholder="Kode promo" style="width:160px;text-transform:uppercase">
+          <input class="form-input" id="promoNewDiscount" type="number" placeholder="Diskon %" style="width:100px">
+          <input class="form-input" id="promoNewUses" type="number" placeholder="Max uses (0=unlimited)" style="width:140px">
+          <button class="btn btn-primary btn-sm" onclick="addPromo()">Add Promo</button>
+        </div>
+        <div style="overflow-x:auto">
+          <table class="admin-table">
+            <thead><tr><th>Code</th><th>Discount</th><th>Used</th><th>Max</th><th>Status</th><th>Actions</th></tr></thead>
+            <tbody id="adminPromosTable"></tbody>
+          </table>
+        </div>
+      </div>
       <div class="admin-section" id="admin-settings">
         <h2 style="font-size:20px;font-weight:700;margin-bottom:20px">Settings</h2>
         <div class="settings-card">
@@ -1588,13 +1604,15 @@ const PAYMENTS = [
   { name: 'PayPal', type: 'ewallet', account: 'paypal@bmsstudio.com', holder: 'BMS STUDIO' },
 ];
 let appliedPromo = null;
-function applyPromoCode() {
+async function applyPromoCode() {
   const input = document.getElementById('promoInput');
   if (!input || !input.value.trim()) return showToast('Masukkan kode promo', 'error');
   const code = input.value.trim().toUpperCase();
-  const promos = { 'WELCOME10': 10, 'BMS50': 50, 'STARTER': 25 };
-  if (promos[code]) { appliedPromo = promos[code]; showToast('Promo '+code+': diskon '+appliedPromo+'%!', 'success'); renderCart(); }
-  else showToast('Kode promo tidak valid', 'error');
+  try {
+    const d = await api('/promos/validate', { method: 'POST', body: { code } });
+    if (d.valid) { appliedPromo = d.discount; showToast('Promo '+code+': diskon '+appliedPromo+'%!', 'success'); renderCart(); }
+    else showToast(d.error || 'Kode tidak valid', 'error');
+  } catch { showToast('Gagal validasi promo', 'error'); }
 }
 async function checkout() {
   if (!APP.cart.length) return showToast('Cart kosong', 'error');
@@ -1675,6 +1693,7 @@ function switchAdminTab(tab) {
   if (tab === 'dashboard' || tab === 'assets') refreshAdminData();
   if (tab === 'messages') loadMessages();
   if (tab === 'orders') loadOrders();
+  if (tab === 'promos') loadPromos();
 }
 async function refreshAdminData() {
   try {
@@ -1777,6 +1796,25 @@ async function loadOrders() {
   } catch { tbody.innerHTML=''; empty.style.display='block'; }
 }
 async function updateOrderStatus(id, s) { try { await api('/orders/'+id+'/status',{method:'PUT',body:{status:s}}); showToast('Status diupdate','success'); } catch {} }
+
+// ============ PROMOS ============
+async function loadPromos() {
+  const tbody = document.getElementById('adminPromosTable');
+  if (!tbody) return;
+  try {
+    const d = await api('/promos/all'); const promos = d.promos||[];
+    tbody.innerHTML = promos.map(p => '<tr><td style="font-weight:700;text-transform:uppercase">'+p.code+'</td><td>'+p.discount+'%</td><td>'+p.used_count+'</td><td>'+(p.max_uses||'&infin;')+'</td><td><span style="color:'+(p.active?'#34d399':'#f43f5e')+'">'+(p.active?'Active':'Inactive')+'</span></td><td><button class="table-btn '+(p.active?'table-btn-edit':'table-btn-del')+'" onclick="togglePromo('+p.id+')">'+(p.active?'Disable':'Enable')+'</button> <button class="table-btn table-btn-del" onclick="deletePromo('+p.id+')">Delete</button></td></tr>').join('');
+  } catch { tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--text-dim)">Gagal memuat</td></tr>'; }
+}
+async function addPromo() {
+  const code = document.getElementById('promoNewCode').value.trim().toUpperCase();
+  const discount = parseInt(document.getElementById('promoNewDiscount').value);
+  const maxUses = parseInt(document.getElementById('promoNewUses').value) || 0;
+  if (!code || !discount) return showToast('Isi kode dan diskon', 'error');
+  try { await api('/promos',{method:'POST',body:{code,discount,max_uses:maxUses}}); showToast('Promo '+code+' ditambahkan!','success'); loadPromos(); document.getElementById('promoNewCode').value=''; document.getElementById('promoNewDiscount').value=''; document.getElementById('promoNewUses').value=''; } catch(err) { showToast(err.message||'Gagal','error'); }
+}
+async function togglePromo(id) { try { await api('/promos/'+id+'/toggle',{method:'POST'}); loadPromos(); } catch {} }
+async function deletePromo(id) { if (!confirm('Hapus promo ini?')) return; try { await api('/promos/'+id,{method:'DELETE'}); loadPromos(); showToast('Promo dihapus','success'); } catch {} }
 
 // ============ SETTINGS ============
 async function exportData() {

@@ -31,11 +31,13 @@ const authRoutes = require('./routes/auth');
 const assetRoutes = require('./routes/assets');
 const messageRoutes = require('./routes/messages');
 const orderRoutes = require('./routes/orders');
+const promoRoutes = require('./routes/promos');
 
 app.use('/api/auth', authRoutes);
 app.use('/api/assets', assetRoutes);
 app.use('/api/messages', messageRoutes);
 app.use('/api/orders', orderRoutes);
+app.use('/api/promos', promoRoutes);
 
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
