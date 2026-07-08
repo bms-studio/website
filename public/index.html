@@ -1433,6 +1433,7 @@ function showToast(msg, type = 'info') {
 // ============ SPA ROUTER ============
 function navigateTo(page) {
   if (page === 'admin' && !APP.isLoggedIn) { navigateTo('login'); showToast('Login terlebih dahulu', 'error'); return; }
+  if (page === 'admin' && APP.user?.role !== 'admin') { navigateTo('profile'); showToast('Akses ditolak - bukan admin', 'error'); return; }
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   const target = document.getElementById('page-' + page);
   if (target) { target.classList.add('active'); target.style.animation = 'none'; target.offsetHeight; target.style.animation = ''; }
@@ -1484,7 +1485,7 @@ async function handleLogin(e) {
   try {
     const data = await api('/auth/login', { method: 'POST', body: { email: inputs[0].value, password: inputs[1].value } });
     APP.isLoggedIn = true; APP.user = data.user; updateAuthUI();
-    showToast('Login berhasil!', 'success'); navigateTo('admin');
+    showToast('Login berhasil!', 'success'); navigateTo(data.user.role === 'admin' ? 'admin' : 'profile');
   } catch (err) { showToast(err.message || 'Login gagal', 'error'); }
   btn.disabled = false; btn.innerHTML = 'Sign In';
 }
@@ -1511,7 +1512,7 @@ async function verifyOTP(e) {
   try {
     const data = await api('/auth/verify-otp', { method: 'POST', body: { email: registeredEmail, otp } });
     APP.isLoggedIn = true; APP.user = data.user; updateAuthUI();
-    showToast('Registrasi berhasil!', 'success'); navigateTo('admin');
+    showToast('Registrasi berhasil!', 'success'); navigateTo(data.user.role === 'admin' ? 'admin' : 'profile');
   } catch (err) { showToast(err.message || 'Kode OTP salah', 'error'); }
 }
 async function resendOTP() {
