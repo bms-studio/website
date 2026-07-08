@@ -1491,7 +1491,7 @@ function renderProfile() {
   try {
     const cartOrders = JSON.parse(localStorage.getItem('bms_orders_' + u.id) || '[]');
     if (cartOrders.length) {
-      ordersList.innerHTML = cartOrders.slice().reverse().map((o,i) => '<div class="glass" style="padding:14px 18px;border-radius:var(--radius-lg);border:1px solid var(--glass-border);display:flex;justify-content:space-between;align-items:center;font-size:13px"><div><div style="font-weight:600">'+ (o.items?.[0]?.name || 'Order') +'</div><div style="font-size:11px;color:var(--text-dim)">'+ (o.createdAt || new Date().toLocaleDateString()) +'</div></div><div style="display:flex;gap:6px;align-items:center"><span style="padding:3px 10px;border-radius:5px;font-size:10px;font-weight:600;background:rgba(16,185,129,0.12);color:#34d399">'+ (o.status || 'Completed') +'</span><button class="btn btn-outline btn-sm" style="padding:4px 8px;font-size:10px" onclick="openChat('+i+')"><i class="fas fa-comment"></i></button></div></div>').join('');
+      ordersList.innerHTML = cartOrders.slice().reverse().map((o,i) => '<div class="glass" style="padding:14px 18px;border-radius:var(--radius-lg);border:1px solid var(--glass-border);display:flex;justify-content:space-between;align-items:center;font-size:13px"><div><div style="font-weight:600">'+ (o.items?.[0]?.name || 'Order') +'</div><div style="font-size:11px;color:var(--text-dim)">'+ (o.createdAt || new Date().toLocaleDateString()) +'</div></div><div style="display:flex;gap:6px;align-items:center"><span style="padding:3px 10px;border-radius:5px;font-size:10px;font-weight:600;background:rgba(16,185,129,0.12);color:#34d399">'+ (o.status || 'Completed') +'</span><button class="btn btn-outline btn-sm" style="padding:4px 8px;font-size:10px" onclick="openChat('+(o.id || i)+')"><i class="fas fa-comment"></i></button></div></div>').join('');
     } else {
       ordersList.innerHTML = '<div class="empty-state" style="padding:32px"><i class="fas fa-shopping-bag" style="font-size:28px"></i><h3 style="font-size:16px">Belum ada pesanan</h3><p style="font-size:13px">Pesan pertama kamu akan muncul di sini.</p></div>';
     }
@@ -1697,12 +1697,13 @@ async function submitOrder() {
   APP.cart.forEach(item => { const p = parseFloat(String(item.price).replace(/[^0-9]/g,'')) || 0; sub += p * item.qty; });
   if (appliedPromo) sub = sub * (1 - appliedPromo / 100);
   try {
-    await api('/orders', { method: 'POST', body: { items: APP.cart, total: sub, customer_name: name, customer_email: email, payment_method: payMethod || 'N/A', store_type: APP.cart[0]?.storeType || '' } });
+    const orderRes = await api('/orders', { method: 'POST', body: { items: APP.cart, total: sub, customer_name: name, customer_email: email, payment_method: payMethod || 'N/A', store_type: APP.cart[0]?.storeType || '' } });
     // save order to localStorage for profile
     const u = APP.user;
     if (u && u.id) {
+      const orderId = orderRes.order?.id || Date.now();
       const orders = JSON.parse(localStorage.getItem('bms_orders_'+u.id) || '[]');
-      orders.push({ items: [...APP.cart], total: sub, status: 'Pending', createdAt: new Date().toLocaleDateString() });
+      orders.push({ id: orderId, items: [...APP.cart], total: sub, status: 'Pending', createdAt: new Date().toLocaleDateString() });
       localStorage.setItem('bms_orders_'+u.id, JSON.stringify(orders));
       const xp = parseInt(localStorage.getItem('bms_xp_'+u.id) || '0') + 10;
       localStorage.setItem('bms_xp_'+u.id, xp.toString());
@@ -1735,14 +1736,18 @@ let chatPollInterval = null;
 async function openChat(orderId) {
   navigateTo('chat');
   const container = document.getElementById('chatMessages');
-  const input = document.getElementById('chatInput');
   container.innerHTML = '<div style="text-align:center;color:var(--text-dim);padding:20px">Loading...</div>';
   APP.currentOrderId = orderId;
-  // local chat: use localStorage
-  const key = 'bms_chat_' + (APP.user?.id||'guest') + '_' + orderId;
-  const msgs = JSON.parse(localStorage.getItem(key) || '[]');
-  renderChatMessages(msgs);
   if (chatPollInterval) clearInterval(chatPollInterval);
+  await loadChatMessages();
+  chatPollInterval = setInterval(loadChatMessages, 3000);
+}
+async function loadChatMessages() {
+  if (APP.currentOrderId === undefined) return;
+  try {
+    const d = await api('/chats/' + APP.currentOrderId);
+    renderChatMessages(d.chat?.messages || []);
+  } catch { /* ignore poll errors */ }
 }
 function renderChatMessages(msgs) {
   const container = document.getElementById('chatMessages');
@@ -1756,11 +1761,10 @@ async function sendChatMessage() {
   const text = input.value.trim();
   if (!text || APP.currentOrderId === undefined) return;
   input.value = '';
-  const key = 'bms_chat_' + (APP.user?.id||'guest') + '_' + APP.currentOrderId;
-  const msgs = JSON.parse(localStorage.getItem(key) || '[]');
-  msgs.push({ role: 'user', text, name: APP.user?.name || 'You', time: new Date().toISOString() });
-  localStorage.setItem(key, JSON.stringify(msgs));
-  renderChatMessages(msgs);
+  try {
+    const d = await api('/chats/' + APP.currentOrderId + '/message', { method: 'POST', body: { text } });
+    renderChatMessages(d.messages);
+  } catch { showToast('Gagal kirim pesan', 'error'); }
 }
 
 // ============ TESTIMONIALS ============
