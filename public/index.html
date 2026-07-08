@@ -2101,31 +2101,46 @@ function initThree() {
 // ============ PUBLIC CHAT ============
 let pcInterval = null;
 let pcUnread = 0;
+let pcLastId = 0;
 function togglePublicChat() {
   const box = document.getElementById('publicChatBox');
   const open = box.classList.toggle('open');
   document.getElementById('pcBadge').style.display = 'none'; pcUnread = 0;
-  if (open) { loadPC(); if (pcInterval) clearInterval(pcInterval); pcInterval = setInterval(loadPC, 4000); }
+  if (open) { pcLastId = 0; document.getElementById('publicChatMsgs').innerHTML = ''; loadPC(); startPCPoll(); }
   else if (pcInterval) { clearInterval(pcInterval); pcInterval = null; }
+}
+function startPCPoll() {
+  if (pcInterval) clearInterval(pcInterval);
+  pcInterval = setInterval(() => { if (document.visibilityState === 'visible') loadPC(); }, 5000);
+}
+function buildPCMsg(c) {
+  const tagHtml = c.user_role === 'admin' ? '<span class="pc-tag admin"><i class="fas fa-check-circle"></i> Admin</span>' : '';
+  const avatarStyle = c.user_avatar ? `background-image:url(${c.user_avatar})` : '';
+  return '<div class="public-chat-msg" data-pcid="'+c.id+'"><div class="pc-avatar" style="'+avatarStyle+'">'+(c.user_avatar?'':(c.user_name||'?').charAt(0).toUpperCase())+'</div><div style="flex:1;min-width:0"><div><span class="pc-name" onclick="viewPublicProfile('+c.user_id+')">'+c.user_name+'</span>'+tagHtml+'</div><div class="pc-text">'+c.text+'</div></div></div>';
 }
 async function loadPC() {
   try {
-    const d = await api('/public-chats');
+    const url = pcLastId > 0 ? '/public-chats?after='+pcLastId : '/public-chats';
+    const d = await api(url);
+    const chats = d.chats || [];
+    if (!chats.length) return;
     const container = document.getElementById('publicChatMsgs');
     const box = document.getElementById('publicChatBox');
-    if (!box.classList.contains('open') && d.chats?.length) {
-      pcUnread += d.chats.filter(c => !document.querySelector(`[data-pcid="${c.id}"]`)).length;
-      const badge = document.getElementById('pcBadge');
-      if (pcUnread > 0) { badge.textContent = pcUnread; badge.style.display = 'flex'; }
-    }
-    if (container && box.classList.contains('open')) {
-      container.innerHTML = (d.chats||[]).map(c => {
-        const tagHtml = c.user_role === 'admin' ? '<span class="pc-tag admin"><i class="fas fa-check-circle"></i> Admin</span>' : '';
-        const avatarStyle = c.user_avatar ? `background-image:url(${c.user_avatar})` : '';
-        return '<div class="public-chat-msg" data-pcid="'+c.id+'"><div class="pc-avatar" style="'+avatarStyle+'">'+(c.user_avatar?'':(c.user_name||'?').charAt(0).toUpperCase())+'</div><div style="flex:1;min-width:0"><div><span class="pc-name" onclick="viewPublicProfile('+c.user_id+')">'+c.user_name+'</span>'+tagHtml+'</div><div class="pc-text">'+c.text+'</div></div></div>';
-      }).join('');
+    const isOpen = box.classList.contains('open');
+    if (isOpen) {
+      chats.forEach(c => {
+        if (!document.querySelector('[data-pcid="'+c.id+'"]')) {
+          container.insertAdjacentHTML('beforeend', buildPCMsg(c));
+        }
+      });
       container.scrollTop = container.scrollHeight;
+    } else {
+      pcUnread += chats.length;
+      const badge = document.getElementById('pcBadge');
+      badge.textContent = pcUnread > 99 ? '99+' : pcUnread;
+      badge.style.display = 'flex';
     }
+    pcLastId = chats[chats.length - 1].id;
   } catch {}
 }
 async function sendPC() {

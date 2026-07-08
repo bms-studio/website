@@ -5,7 +5,12 @@ const router = express.Router();
 
 router.get('/', async (req, res) => {
   try {
-    const result = await q('SELECT * FROM public_chats ORDER BY created_at DESC LIMIT 50');
+    const after = parseInt(req.query.after) || 0;
+    if (after > 0) {
+      const result = await q('SELECT * FROM public_chats WHERE id > ? ORDER BY id ASC', [after]);
+      return res.json({ chats: result.rows });
+    }
+    const result = await q('SELECT * FROM public_chats ORDER BY id DESC LIMIT 30');
     res.json({ chats: result.rows.reverse() });
   } catch { res.status(500).json({ error: 'Server error' }); }
 });
