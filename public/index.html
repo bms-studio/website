@@ -2157,6 +2157,8 @@ function uploadBanner(input) {
     const dataUrl = e.target.result;
     try {
       const xp = parseInt(localStorage.getItem('bms_xp_'+(APP.user?.id||'')) || '0');
+      console.log('Upload banner: user.id='+APP.user?.id+', xp='+xp);
+      if (xp < 20) { showToast('XP kamu saat ini '+xp+'. Butuh 20 XP untuk pasang banner. Checkout 2x dulu ya!', 'error'); return; }
       const d = await api('/admin/profile', { method: 'PUT', body: { banner: dataUrl, xp: xp } });
       if (d.user) { APP.user = d.user; renderProfile(); showToast('Banner updated!', 'success'); }
     } catch(err) { showToast(err.message || 'Failed', 'error'); }
