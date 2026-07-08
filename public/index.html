@@ -75,6 +75,15 @@ ul{list-style:none}
 .reveal-line{display:inline-block;opacity:0;transform:translateY(20px);animation:revealUp 0.7s forwards cubic-bezier(0.16,1,0.3,1)}
 @keyframes revealUp{to{opacity:1;transform:translateY(0)}}
 
+/* BACK TO TOP */
+.back-to-top{position:fixed;bottom:28px;right:28px;width:44px;height:44px;border-radius:50%;background:var(--bg-3);border:1px solid var(--glass-border);color:var(--text-muted);font-size:16px;cursor:pointer;opacity:0;transform:translateY(12px);transition:all 0.3s var(--ease-out);z-index:999;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(12px)}
+.back-to-top.show{opacity:1;transform:translateY(0)}
+.back-to-top:hover{background:var(--glass2);border-color:var(--primary);color:var(--primary)}
+
+/* RIPPLE */
+.ripple{position:absolute;border-radius:50%;background:rgba(255,255,255,0.25);transform:scale(0);animation:rippleAnim 0.6s ease-out;pointer-events:none}
+@keyframes rippleAnim{to{transform:scale(4);opacity:0}}
+
 /* 3D LOGO */
 .logo-3d{font-size:2rem;letter-spacing:-0.02em;display:inline-block;position:relative}
 .logo-3d::after{content:attr(data-text);position:absolute;inset:0;color:transparent;-webkit-text-stroke:2px var(--primary);opacity:0.3;transform:translate(2px,2px);pointer-events:none}
@@ -502,6 +511,7 @@ textarea.form-input{resize:vertical;min-height:100px}
       <button class="theme-toggle" onclick="toggleTheme()" title="Toggle theme"><i class="fas fa-moon" id="themeIcon"></i></button>
       <a class="cart-badge nav-btn nav-btn-outline" onclick="navigateTo('cart')"><i class="fas fa-shopping-cart"></i><span id="cartCount" class="badge" style="display:none">0</span></a>
       <a class="nav-btn nav-btn-outline" id="loginBtn" onclick="navigateTo('login')">Login</a>
+      <a class="nav-btn nav-btn-outline" id="profileBtn" style="display:none" onclick="navigateTo('profile')"><i class="fas fa-user"></i></a>
       <a class="nav-btn nav-btn-primary" id="adminBtn" style="display:none" onclick="navigateTo('admin')">Admin</a>
       <div class="hamburger" onclick="toggleMobileNav()"><i class="fas fa-bars"></i></div>
     </div>
@@ -514,6 +524,7 @@ textarea.form-input{resize:vertical;min-height:100px}
     <a class="nav-tab" data-page="store" onclick="navigateTo('store')">Store</a>
     <a class="nav-tab" data-page="contact" onclick="navigateTo('contact')">Contact</a>
     <a class="nav-tab" data-page="cart" onclick="navigateTo('cart')">Cart <span id="mobileCartCount" style="color:var(--primary)"></span></a>
+    <a class="nav-tab" id="mobileProfileBtn" data-page="profile" onclick="navigateTo('profile')" style="display:none">Profile</a>
     <a class="nav-tab" data-page="login" onclick="navigateTo('login')">Login</a>
     <a class="nav-tab" id="mobileAdminBtn" style="display:none" data-page="admin" onclick="navigateTo('admin')">Admin Panel</a>
     <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--glass-border)">
@@ -610,6 +621,51 @@ textarea.form-input{resize:vertical;min-height:100px}
     <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
       <a class="btn btn-primary btn-lg" onclick="navigateTo('contact')">Contact Us</a>
       <a class="btn btn-outline btn-lg" onclick="navigateTo('store')">Browse Store</a>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="section section-gradient" style="background:var(--bg-2);padding:80px 20px;max-width:none">
+    <div style="max-width:700px;margin:0 auto">
+      <h2 class="section-title">Frequently Asked <span class="text-gradient">Questions</span></h2>
+      <p class="section-desc">Everything you need to know about our services.</p>
+      <div style="display:flex;flex-direction:column;gap:8px;margin-top:32px" id="faqList">
+        <div class="faq-item glass" style="padding:20px 24px;border-radius:var(--radius-lg);cursor:pointer;border:1px solid var(--glass-border);transition:var(--transition)" onclick="toggleFaq(this)">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <span style="font-weight:500;font-size:14px">How long does delivery take?</span>
+            <i class="fas fa-chevron-down" style="color:var(--text-dim);font-size:12px;transition:transform 0.3s"></i>
+          </div>
+          <div class="faq-answer" style="max-height:0;overflow:hidden;transition:max-height 0.3s ease;color:var(--text-muted);font-size:13px;line-height:1.7"><div style="padding-top:12px">Most digital products are delivered within 24 hours. Custom development projects vary based on complexity, typically 3-7 days.</div></div>
+        </div>
+        <div class="faq-item glass" style="padding:20px 24px;border-radius:var(--radius-lg);cursor:pointer;border:1px solid var(--glass-border);transition:var(--transition)" onclick="toggleFaq(this)">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <span style="font-weight:500;font-size:14px">What payment methods do you accept?</span>
+            <i class="fas fa-chevron-down" style="color:var(--text-dim);font-size:12px;transition:transform 0.3s"></i>
+          </div>
+          <div class="faq-answer" style="max-height:0;overflow:hidden;transition:max-height 0.3s ease;color:var(--text-muted);font-size:13px;line-height:1.7"><div style="padding-top:12px">We accept bank transfers to BCA, BNI, BRI, Mandiri, and E-Wallet GoPay, QRIS, and PayPal. Payment details are provided after order confirmation.</div></div>
+        </div>
+        <div class="faq-item glass" style="padding:20px 24px;border-radius:var(--radius-lg);cursor:pointer;border:1px solid var(--glass-border);transition:var(--transition)" onclick="toggleFaq(this)">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <span style="font-weight:500;font-size:14px">Can I request custom modifications?</span>
+            <i class="fas fa-chevron-down" style="color:var(--text-dim);font-size:12px;transition:transform 0.3s"></i>
+          </div>
+          <div class="faq-answer" style="max-height:0;overflow:hidden;transition:max-height 0.3s ease;color:var(--text-muted);font-size:13px;line-height:1.7"><div style="padding-top:12px">Absolutely! We specialize in custom development. Contact us through the contact form or chat to discuss your specific requirements.</div></div>
+        </div>
+        <div class="faq-item glass" style="padding:20px 24px;border-radius:var(--radius-lg);cursor:pointer;border:1px solid var(--glass-border);transition:var(--transition)" onclick="toggleFaq(this)">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <span style="font-weight:500;font-size:14px">Is there a warranty or refund policy?</span>
+            <i class="fas fa-chevron-down" style="color:var(--text-dim);font-size:12px;transition:transform 0.3s"></i>
+          </div>
+          <div class="faq-answer" style="max-height:0;overflow:hidden;transition:max-height 0.3s ease;color:var(--text-muted);font-size:13px;line-height:1.7"><div style="padding-top:12px">Yes, we offer warranty on all our products and services. Each product comes with specific warranty terms. Contact support for more details.</div></div>
+        </div>
+        <div class="faq-item glass" style="padding:20px 24px;border-radius:var(--radius-lg);cursor:pointer;border:1px solid var(--glass-border);transition:var(--transition)" onclick="toggleFaq(this)">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <span style="font-weight:500;font-size:14px">How do I get support after purchase?</span>
+            <i class="fas fa-chevron-down" style="color:var(--text-dim);font-size:12px;transition:transform 0.3s"></i>
+          </div>
+          <div class="faq-answer" style="max-height:0;overflow:hidden;transition:max-height 0.3s ease;color:var(--text-muted);font-size:13px;line-height:1.7"><div style="padding-top:12px">You can reach us through our contact page or WhatsApp. Our support team is available 24/7 to assist you.</div></div>
+        </div>
+      </div>
     </div>
   </section>
 </div>
@@ -884,9 +940,81 @@ textarea.form-input{resize:vertical;min-height:100px}
       </div>
       <div id="cartSummary" class="cart-summary" style="display:none">
         <div class="cart-summary-row"><span>Subtotal</span><span id="cartSubtotal">Rp 0</span></div>
+        <div style="display:flex;gap:8px;margin:12px 0">
+          <input class="form-input" type="text" id="promoInput" placeholder="Kode promo" style="flex:1">
+          <button class="btn btn-outline btn-sm" onclick="applyPromoCode()">Apply</button>
+        </div>
+        <div id="promoApplied" style="display:none;padding:8px 12px;border-radius:var(--radius);background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.2);font-size:12px;color:#34d399;margin-bottom:10px"><i class="fas fa-check-circle"></i> Promo applied!</div>
         <div class="cart-summary-row total"><span>Total</span><span id="cartTotal">Rp 0</span></div>
         <button class="btn btn-primary btn-lg" onclick="checkout()">Checkout</button>
       </div>
+      <!-- Checkout Modal -->
+      <div class="modal-overlay" id="checkoutModal">
+        <div class="modal-content" style="max-width:480px">
+          <div class="modal-header"><h3 style="font-size:16px">Checkout</h3><button class="modal-close" onclick="document.getElementById('checkoutModal').classList.remove('open')">&times;</button></div>
+          <div style="display:flex;flex-direction:column;gap:12px">
+            <input class="form-input" id="checkoutName" placeholder="Nama lengkap">
+            <input class="form-input" id="checkoutEmail" type="email" placeholder="Email">
+            <input class="form-input" id="checkoutContact" placeholder="No. WhatsApp (opsional)">
+            <select class="form-input" id="checkoutPay" onchange="selectPayment()" style="padding:12px 16px">
+              <option value="">-- Pilih Pembayaran --</option>
+            </select>
+            <div id="checkoutPayInfo"></div>
+            <div style="display:flex;justify-content:space-between;font-weight:700;padding:12px 0;border-top:1px solid var(--glass-border)">
+              <span>Total</span><span id="checkoutTotal" style="color:var(--primary)">Rp 0</span>
+            </div>
+            <button class="btn btn-primary" onclick="submitOrder()" style="width:100%"><i class="fas fa-check"></i> Place Order</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- PROFILE -->
+<div class="page" id="page-profile">
+  <div class="banner-page">
+    <div class="overlay"></div>
+    <div class="content">
+      <h1 class="hero-title" style="font-size:30px">My <span class="text-gradient">Profile</span></h1>
+      <p style="color:var(--text-muted);margin-top:6px;font-size:13px">Your stats, orders, and referral info</p>
+    </div>
+  </div>
+  <section class="section" style="padding-top:32px">
+    <div style="max-width:800px;margin:0 auto">
+      <div class="glass" style="padding:24px;border-radius:var(--radius-lg);border:1px solid var(--glass-border);display:flex;align-items:center;gap:20px;flex-wrap:wrap;margin-bottom:20px">
+        <div style="width:64px;height:64px;border-radius:50%;background:var(--gradient-1);display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:700;color:#fff;flex-shrink:0" id="profileAvatar">B</div>
+        <div style="flex:1;min-width:150px">
+          <h3 style="font-size:18px;font-weight:700" id="profileName">User</h3>
+          <p style="font-size:12px;color:var(--text-muted)" id="profileEmail">email@example.com</p>
+        </div>
+        <div style="display:flex;gap:20px;flex-wrap:wrap">
+          <div style="text-align:center"><div style="font-size:20px;font-weight:800" id="profileXP">0</div><div style="font-size:11px;color:var(--text-muted)">XP</div></div>
+          <div style="text-align:center"><div style="font-size:20px;font-weight:800" id="profileCoins">0</div><div style="font-size:11px;color:var(--text-dim)">Coins</div></div>
+          <div style="text-align:center"><div style="font-size:20px;font-weight:800" id="profileOrders">0</div><div style="font-size:11px;color:var(--text-dim)">Orders</div></div>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px" id="profileLevelSection">
+        <div class="glass" style="padding:20px;border-radius:var(--radius-lg);border:1px solid var(--glass-border)">
+          <div style="font-size:12px;font-weight:600;margin-bottom:8px"><i class="fas fa-trophy" style="color:var(--accent2)"></i> Level</div>
+          <div style="font-size:28px;font-weight:800" id="profileLevel">Basic</div>
+          <div style="height:6px;background:var(--bg-3);border-radius:3px;margin-top:10px;overflow:hidden">
+            <div style="height:100%;width:0%;background:var(--gradient-1);border-radius:3px;transition:width 0.5s" id="profileLevelBar"></div>
+          </div>
+          <div style="font-size:11px;color:var(--text-dim);margin-top:4px" id="profileLevelNext">0 / 0 XP</div>
+        </div>
+        <div class="glass" style="padding:20px;border-radius:var(--radius-lg);border:1px solid var(--glass-border)">
+          <div style="font-size:12px;font-weight:600;margin-bottom:8px"><i class="fas fa-gift" style="color:var(--secondary)"></i> Referral</div>
+          <div style="font-size:13px;margin-bottom:6px">Kode referral kamu:</div>
+          <div style="display:flex;gap:6px">
+            <input class="form-input" id="profileRefCode" readonly style="font-size:13px;font-weight:700;text-align:center">
+            <button class="btn btn-outline btn-sm" onclick="copyRefCode()"><i class="fas fa-copy"></i></button>
+          </div>
+          <div style="font-size:11px;color:var(--text-muted);margin-top:6px">Bagikan kode ini, dapatkan <strong>50 coins</strong> per referral!</div>
+        </div>
+      </div>
+      <h3 style="font-size:16px;font-weight:700;margin-bottom:12px">Order History</h3>
+      <div id="profileOrdersList" style="display:flex;flex-direction:column;gap:8px"></div>
     </div>
   </section>
 </div>
@@ -1033,6 +1161,8 @@ textarea.form-input{resize:vertical;min-height:100px}
     </div>
   </div>
 </div>
+
+<button class="back-to-top" id="backToTop" onclick="window.scrollTo({top:0,behavior:'smooth'})" aria-label="Back to top"><i class="fas fa-chevron-up"></i></button>
 
 <!-- FOOTER -->
 <div id="mainFooter">
@@ -1184,6 +1314,7 @@ function navigateTo(page) {
   if (page === 'store') { renderAssets(); setupFilters(); }
   if (page === 'admin') refreshAdminData();
   if (page === 'cart') renderCart();
+  if (page === 'profile') renderProfile();
   closeMobileNav();
   setTimeout(initRevealObserver, 100);
 }
@@ -1196,12 +1327,23 @@ async function checkSession() {
 }
 function updateAuthUI() {
   const loginBtn = document.getElementById('loginBtn');
+  const profileBtn = document.getElementById('profileBtn');
   const adminBtn = document.getElementById('adminBtn');
   const mobileAdminBtn = document.getElementById('mobileAdminBtn');
+  const mobileProfileBtn = document.getElementById('mobileProfileBtn');
   if (APP.isLoggedIn) {
-    loginBtn.style.display = 'none'; adminBtn.style.display = 'inline-flex';
+    loginBtn.style.display = 'none';
+    profileBtn.style.display = 'inline-flex';
+    adminBtn.style.display = 'inline-flex';
     if (mobileAdminBtn) mobileAdminBtn.style.display = 'flex';
-  } else { loginBtn.style.display = 'inline-flex'; adminBtn.style.display = 'none'; if (mobileAdminBtn) mobileAdminBtn.style.display = 'none'; }
+    if (mobileProfileBtn) mobileProfileBtn.style.display = 'block';
+  } else {
+    loginBtn.style.display = 'inline-flex';
+    profileBtn.style.display = 'none';
+    adminBtn.style.display = 'none';
+    if (mobileAdminBtn) mobileAdminBtn.style.display = 'none';
+    if (mobileProfileBtn) mobileProfileBtn.style.display = 'none';
+  }
 }
 async function handleLogin(e) {
   e.preventDefault();
@@ -1249,6 +1391,47 @@ async function handleLogout() {
   try { await api('/auth/logout', { method: 'POST' }); } catch {}
   APP.isLoggedIn = false; APP.user = null; updateAuthUI();
   showToast('Berhasil logout', 'info'); navigateTo('home');
+}
+function renderProfile() {
+  if (!APP.isLoggedIn || !APP.user) { navigateTo('login'); return; }
+  const u = APP.user;
+  document.getElementById('profileAvatar').textContent = (u.name || u.email || 'U').charAt(0).toUpperCase();
+  document.getElementById('profileName').textContent = u.name || 'User';
+  document.getElementById('profileEmail').textContent = u.email || '';
+  // XP, Coins, Level (using localStorage for persistence across sessions)
+  let xp = parseInt(localStorage.getItem('bms_xp_'+u.id) || '0');
+  let coins = parseInt(localStorage.getItem('bms_coins_'+u.id) || '0');
+  const levelNames = ['Basic','Bronze','Silver','Gold','Platinum','Diamond','Elite','Legendary'];
+  const levelThresholds = [0,100,300,600,1000,1600,2400,3500];
+  let level = 0;
+  for (let i = levelThresholds.length - 1; i >= 0; i--) { if (xp >= levelThresholds[i]) { level = i; break; } }
+  const nextXP = level < levelThresholds.length - 1 ? levelThresholds[level + 1] : xp;
+  const prevXP = levelThresholds[level];
+  const progress = nextXP > prevXP ? ((xp - prevXP) / (nextXP - prevXP)) * 100 : 100;
+  document.getElementById('profileXP').textContent = xp;
+  document.getElementById('profileCoins').textContent = coins;
+  document.getElementById('profileLevel').textContent = levelNames[level];
+  document.getElementById('profileLevelBar').style.width = Math.min(progress, 100) + '%';
+  document.getElementById('profileLevelNext').textContent = level < levelThresholds.length - 1 ? `${xp - prevXP} / ${nextXP - prevXP} XP` : 'Max Level';
+  // Referral code
+  const refCode = u.ref_code || (u.email ? u.email.split('@')[0].toUpperCase() + (u.id || '') : 'BMS' + Math.floor(Math.random()*1000));
+  document.getElementById('profileRefCode').value = refCode;
+  // Orders
+  const ordersList = document.getElementById('profileOrdersList');
+  try {
+    const cartOrders = JSON.parse(localStorage.getItem('bms_orders_' + u.id) || '[]');
+    if (cartOrders.length) {
+      ordersList.innerHTML = cartOrders.slice().reverse().map(o => '<div class="glass" style="padding:14px 18px;border-radius:var(--radius-lg);border:1px solid var(--glass-border);display:flex;justify-content:space-between;align-items:center;font-size:13px"><div><div style="font-weight:600">'+ (o.items?.[0]?.name || 'Order') +'</div><div style="font-size:11px;color:var(--text-dim)">'+ (o.createdAt || new Date().toLocaleDateString()) +'</div></div><span style="padding:3px 10px;border-radius:5px;font-size:10px;font-weight:600;background:rgba(16,185,129,0.12);color:#34d399">'+ (o.status || 'Completed') +'</span></div>').join('');
+    } else {
+      ordersList.innerHTML = '<div class="empty-state" style="padding:32px"><i class="fas fa-shopping-bag" style="font-size:28px"></i><h3 style="font-size:16px">Belum ada pesanan</h3><p style="font-size:13px">Pesan pertama kamu akan muncul di sini.</p></div>';
+    }
+  } catch { ordersList.innerHTML = '<div class="empty-state" style="padding:32px"><p style="font-size:13px">Gagal memuat pesanan.</p></div>'; }
+}
+function copyRefCode() {
+  const input = document.getElementById('profileRefCode');
+  if (!input) return;
+  input.select(); navigator.clipboard.writeText(input.value);
+  showToast('Kode referral disalin!', 'success');
 }
 function switchAuthTab(tab) {
   document.getElementById('loginForm').style.display = tab === 'login' ? 'block' : 'none';
@@ -1389,14 +1572,74 @@ function removeFromCart(i) { APP.cart.splice(i,1); saveCart(); renderCart(); }
 function updateCartSummary() {
   let sub = 0;
   APP.cart.forEach(item => { const p = parseFloat(String(item.price).replace(/[^0-9]/g,'')) || 0; sub += p * item.qty; });
+  const promoEl = document.getElementById('promoApplied');
+  const total = appliedPromo ? sub * (1 - appliedPromo / 100) : sub;
   document.getElementById('cartSubtotal').textContent = sub > 0 ? 'Rp '+sub.toLocaleString('id-ID') : 'Gratis';
-  document.getElementById('cartTotal').textContent = sub > 0 ? 'Rp '+sub.toLocaleString('id-ID') : 'Gratis';
+  document.getElementById('cartTotal').textContent = total > 0 ? 'Rp '+total.toLocaleString('id-ID') : 'Gratis';
+  if (promoEl) promoEl.style.display = appliedPromo ? 'block' : 'none';
+}
+const PAYMENTS = [
+  { name: 'BCA', type: 'bank', account: '1234567890', holder: 'BMS STUDIO' },
+  { name: 'BNI', type: 'bank', account: '9876543210', holder: 'BMS STUDIO' },
+  { name: 'BRI', type: 'bank', account: '5678901234', holder: 'BMS STUDIO' },
+  { name: 'Mandiri', type: 'bank', account: '4321098765', holder: 'BMS STUDIO' },
+  { name: 'GoPay', type: 'ewallet', account: '081234567890', holder: 'BMS STUDIO' },
+  { name: 'QRIS', type: 'ewallet', account: 'BMS STUDIO QR', holder: 'BMS STUDIO' },
+  { name: 'PayPal', type: 'ewallet', account: 'paypal@bmsstudio.com', holder: 'BMS STUDIO' },
+];
+let appliedPromo = null;
+function applyPromoCode() {
+  const input = document.getElementById('promoInput');
+  if (!input || !input.value.trim()) return showToast('Masukkan kode promo', 'error');
+  const code = input.value.trim().toUpperCase();
+  const promos = { 'WELCOME10': 10, 'BMS50': 50, 'STARTER': 25 };
+  if (promos[code]) { appliedPromo = promos[code]; showToast('Promo '+code+': diskon '+appliedPromo+'%!', 'success'); renderCart(); }
+  else showToast('Kode promo tidak valid', 'error');
 }
 async function checkout() {
   if (!APP.cart.length) return showToast('Cart kosong', 'error');
+  let sub = 0;
+  APP.cart.forEach(item => { const p = parseFloat(String(item.price).replace(/[^0-9]/g,'')) || 0; sub += p * item.qty; });
+  if (sub <= 0) {
+    try { await api('/orders', { method: 'POST', body: { items: APP.cart, total: 0 } }); APP.cart = []; saveCart(); renderCart(); showToast('Pesanan berhasil dibuat!', 'success'); } catch (err) { showToast(err.message || 'Checkout gagal', 'error'); }
+    return;
+  }
+  document.getElementById('checkoutModal').classList.add('open');
+  const paySelect = document.getElementById('checkoutPay');
+  paySelect.innerHTML = '<option value="">-- Pilih Pembayaran --</option>' + PAYMENTS.map(p => '<option value="'+p.name+'">'+p.name+' ('+p.type+')</option>').join('');
+  document.getElementById('checkoutPayInfo').innerHTML = '';
+  document.getElementById('checkoutTotal').textContent = 'Rp '+sub.toLocaleString('id-ID');
+}
+function selectPayment() {
+  const name = document.getElementById('checkoutPay').value;
+  const pay = PAYMENTS.find(p => p.name === name);
+  document.getElementById('checkoutPayInfo').innerHTML = pay ? '<div style="padding:12px;border-radius:var(--radius);background:var(--glass);border:1px solid var(--glass-border);font-size:13px"><div style="font-weight:600;margin-bottom:4px">'+pay.name+'</div><div>Akun: <strong>'+pay.account+'</strong></div><div>a.n. '+pay.holder+'</div></div>' : '';
+}
+async function submitOrder() {
+  const name = document.getElementById('checkoutName').value.trim();
+  const email = document.getElementById('checkoutEmail').value.trim();
+  const contact = document.getElementById('checkoutContact').value.trim();
+  const payMethod = document.getElementById('checkoutPay').value;
+  if (!name || !email) return showToast('Isi nama dan email', 'error');
+  let sub = 0;
+  APP.cart.forEach(item => { const p = parseFloat(String(item.price).replace(/[^0-9]/g,'')) || 0; sub += p * item.qty; });
+  if (appliedPromo) sub = sub * (1 - appliedPromo / 100);
   try {
-    await api('/orders', { method: 'POST', body: { items: APP.cart, total: 0 } });
-    APP.cart = []; saveCart(); renderCart(); showToast('Pesanan berhasil dibuat!', 'success');
+    await api('/orders', { method: 'POST', body: { items: APP.cart, total: sub, customer_name: name, customer_email: email, payment_method: payMethod || 'N/A', store_type: APP.cart[0]?.storeType || '' } });
+    // save order to localStorage for profile
+    const u = APP.user;
+    if (u && u.id) {
+      const orders = JSON.parse(localStorage.getItem('bms_orders_'+u.id) || '[]');
+      orders.push({ items: [...APP.cart], total: sub, status: 'Pending', createdAt: new Date().toLocaleDateString() });
+      localStorage.setItem('bms_orders_'+u.id, JSON.stringify(orders));
+      const xp = parseInt(localStorage.getItem('bms_xp_'+u.id) || '0') + 10;
+      const coins = parseInt(localStorage.getItem('bms_coins_'+u.id) || '0') + 5;
+      localStorage.setItem('bms_xp_'+u.id, xp.toString());
+      localStorage.setItem('bms_coins_'+u.id, coins.toString());
+    }
+    APP.cart = []; saveCart(); renderCart(); appliedPromo = null;
+    document.getElementById('checkoutModal').classList.remove('open');
+    showToast('Pesanan berhasil! Silakan transfer ke '+ (payMethod || 'metode yang dipilih'), 'success');
   } catch (err) { showToast(err.message || 'Checkout gagal', 'error'); }
 }
 
@@ -1414,6 +1657,7 @@ function openVideoModal(url) {
   modal.classList.add('open');
 }
 function closeVideoModal() { document.getElementById('videoModal').classList.remove('open'); document.getElementById('videoEmbed').innerHTML = ''; }
+function toggleFaq(el) { const a=el.querySelector('.faq-answer'); const i=el.querySelector('.fa-chevron-down'); if (!a) return; const open=a.style.maxHeight!=='0px'&&a.style.maxHeight!==''; a.style.maxHeight=open?'0':a.scrollHeight+'px'; if(i)i.style.transform=open?'rotate(0deg)':'rotate(180deg)'; }
 document.getElementById('videoModal')?.addEventListener('click', function(e) { if (e.target === this) closeVideoModal(); });
 
 // ============ ADMIN ============
@@ -1673,6 +1917,10 @@ document.addEventListener('DOMContentLoaded', async function() {
   await renderAssets();
   await loadFeaturedProducts();
   setTimeout(() => { document.getElementById('loader').classList.add('hidden'); initRevealObserver(); setTimeout(initCounters, 500); }, 1200);
+  // back-to-top
+  window.addEventListener('scroll', () => document.getElementById('backToTop')?.classList.toggle('show', window.scrollY > 400));
+  // ripple
+  document.querySelectorAll('.btn').forEach(b => { b.addEventListener('click', function(e) { const r=document.createElement('span'); r.className='ripple'; const rect=this.getBoundingClientRect(); r.style.left=(e.clientX-rect.left)+'px'; r.style.top=(e.clientY-rect.top)+'px'; this.appendChild(r); setTimeout(()=>r.remove(),600); }); });
   // card mouse 3D tilt + glow
   document.querySelectorAll('.service-card, .asset-card, .portfolio-card').forEach(c => {
     c.classList.add('tilt-active');
