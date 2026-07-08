@@ -77,10 +77,10 @@ ul{list-style:none}
 @keyframes revealUp{to{opacity:1;transform:translateY(0)}}
 
 /* PUBLIC CHAT */
-.public-chat-btn{position:fixed;bottom:28px;right:28px;width:52px;height:52px;border-radius:50%;background:var(--gradient-1);color:#fff;font-size:20px;cursor:pointer;z-index:998;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 24px rgba(139,124,252,0.25);transition:transform 0.3s}
+.public-chat-btn{position:fixed;bottom:28px;left:28px;width:52px;height:52px;border-radius:50%;background:var(--gradient-1);color:#fff;font-size:20px;cursor:pointer;z-index:998;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 24px rgba(139,124,252,0.25);transition:transform 0.3s}
 .public-chat-btn:hover{transform:scale(1.05)}
 .public-chat-btn .badge{position:absolute;top:-2px;right:-2px;width:18px;height:18px;background:var(--accent);border-radius:50%;font-size:9px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700}
-.public-chat-box{position:fixed;bottom:92px;right:28px;width:340px;max-height:460px;border-radius:var(--radius-xl);background:var(--bg-3);border:1px solid var(--glass-border);box-shadow:0 8px 40px rgba(0,0,0,0.3);z-index:997;display:none;flex-direction:column;overflow:hidden;backdrop-filter:blur(20px)}
+.public-chat-box{position:fixed;bottom:92px;left:28px;width:340px;max-height:460px;border-radius:var(--radius-xl);background:var(--bg-3);border:1px solid var(--glass-border);box-shadow:0 8px 40px rgba(0,0,0,0.3);z-index:997;display:none;flex-direction:column;overflow:hidden;backdrop-filter:blur(20px)}
 .public-chat-box.open{display:flex}
 .public-chat-header{display:flex;justify-content:space-between;align-items:center;padding:14px 16px;border-bottom:1px solid var(--glass-border);background:var(--bg-2)}
 .public-chat-header h4{font-size:14px;font-weight:700}
@@ -2114,9 +2114,12 @@ function startPCPoll() {
   pcInterval = setInterval(() => { if (document.visibilityState === 'visible') loadPC(); }, 5000);
 }
 function buildPCMsg(c) {
-  const tagHtml = c.user_role === 'admin' ? '<span class="pc-tag admin"><i class="fas fa-check-circle"></i> Admin</span>' : '';
+  const isOfficial = c.user_role === 'official';
+  const isAdmin = c.user_role === 'admin';
+  const tagHtml = isOfficial ? '<span class="pc-tag official"><i class="fas fa-crown"></i> Official</span>' : (isAdmin ? '<span class="pc-tag admin"><i class="fas fa-check-circle"></i> Admin</span>' : '');
+  const deleteBtn = (APP.user?.role === 'admin') ? '<i class="fas fa-trash" style="cursor:pointer;opacity:0.5;font-size:10px;margin-left:8px" onclick="deletePC('+c.id+')"></i>' : '';
   const avatarStyle = c.user_avatar ? `background-image:url(${c.user_avatar})` : '';
-  return '<div class="public-chat-msg" data-pcid="'+c.id+'"><div class="pc-avatar" style="'+avatarStyle+'">'+(c.user_avatar?'':(c.user_name||'?').charAt(0).toUpperCase())+'</div><div style="flex:1;min-width:0"><div><span class="pc-name" onclick="viewPublicProfile('+c.user_id+')">'+c.user_name+'</span>'+tagHtml+'</div><div class="pc-text">'+c.text+'</div></div></div>';
+  return '<div class="public-chat-msg" data-pcid="'+c.id+'"><div class="pc-avatar" style="'+avatarStyle+'">'+(c.user_avatar?'':(c.user_name||'?').charAt(0).toUpperCase())+'</div><div style="flex:1;min-width:0"><div><span class="pc-name" onclick="viewPublicProfile('+c.user_id+')">'+c.user_name+'</span>'+tagHtml+deleteBtn+'</div><div class="pc-text">'+c.text+'</div></div></div>';
 }
 async function loadPC() {
   try {
@@ -2143,15 +2146,9 @@ async function loadPC() {
     pcLastId = chats[chats.length - 1].id;
   } catch {}
 }
-async function sendPC() {
-  const input = document.getElementById('pcInput');
-  const text = input.value.trim();
-  if (!text) return;
-  input.value = '';
-  try { await api('/public-chats', { method: 'POST', body: { text } }); loadPC(); } catch { showToast('Login to chat', 'error'); }
-}
+async function deletePC(id) { if (!confirm('Delete message?')) return; try { await api('/public-chats/'+id, { method: 'DELETE' }); loadPC(); } catch {} }
 
-// ============ AVATAR / BANNER ============
+async function deletePC(id) { if (!confirm('Delete message?')) return; try { await api('/public-chats/'+id, { method: 'DELETE' }); loadPC(); } catch {} }
 function uploadAvatar(input) {
   const file = input.files[0];
   if (!file) return;
