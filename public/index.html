@@ -1249,6 +1249,7 @@ textarea.form-input{resize:vertical;min-height:100px}
       <div class="admin-sidebar-item" data-tab="sellerapps" onclick="switchAdminTab('sellerapps')"><i class="fas fa-file-signature"></i> Seller Apps</div>
       <div class="admin-sidebar-item" data-tab="tags" onclick="switchAdminTab('tags')"><i class="fas fa-tags"></i> Tags</div>
       <div class="admin-sidebar-item" data-tab="promotions" onclick="switchAdminTab('promotions')"><i class="fas fa-images"></i> Promotions</div>
+      <div class="admin-sidebar-item" data-tab="announcements" onclick="switchAdminTab('announcements')"><i class="fas fa-bullhorn"></i> Announcements</div>
       <div class="admin-sidebar-item" data-tab="settings" onclick="switchAdminTab('settings')"><i class="fas fa-cog"></i> Settings</div>
       <div style="flex:1"></div>
       <div class="admin-sidebar-item" onclick="handleLogout()" style="color:var(--accent)"><i class="fas fa-sign-out-alt"></i> Logout</div>
@@ -1435,7 +1436,21 @@ textarea.form-input{resize:vertical;min-height:100px}
         <h2 style="font-size:20px;font-weight:700;margin-bottom:20px">Tag Management <span style="font-size:12px;color:var(--accent);font-weight:400">(Owner only)</span></h2>
         <p style="font-size:12px;color:var(--text-muted);margin-bottom:12px">Ketik tag di kolom bawah, lalu klik <strong>Add</strong> di samping user yang ingin diberi tag.</p>
         <div style="display:flex;gap:12px;margin-bottom:16px;flex-wrap:wrap;align-items:center">
-          <input class="form-input" id="tagNewText" placeholder="Tag text (e.g. Verified, VIP, Creator)" style="width:220px">
+          <input class="form-input" id="tagNewText" placeholder="Tag text (e.g. Verified, VIP, Creator)" style="width:180px">
+          <select class="form-input" id="tagNewIcon" style="width:100px;font-size:12px">
+            <option value="">No icon</option>
+            <option value="fa-star">&#9733; Star</option>
+            <option value="fa-check-circle">&#10003; Check</option>
+            <option value="fa-crown">&#9813; Crown</option>
+            <option value="fa-fire">&#9731; Fire</option>
+            <option value="fa-heart">&#9829; Heart</option>
+            <option value="fa-bolt">&#9889; Bolt</option>
+            <option value="fa-gem">&#9830; Gem</option>
+            <option value="fa-shield-halved">&#9720; Shield</option>
+            <option value="fa-flag">&#9873; Flag</option>
+            <option value="fa-certificate">&#9733; Badge</option>
+          </select>
+          <input class="form-input" id="tagNewColor" type="color" value="#8b7cfc" style="width:44px;padding:4px;cursor:pointer" title="Tag color">
           <span style="font-size:12px;color:var(--text-dim)">Lalu klik Add pada user di bawah</span>
         </div>
         <div style="overflow-x:auto">
@@ -1455,6 +1470,15 @@ textarea.form-input{resize:vertical;min-height:100px}
           <button class="btn btn-primary btn-sm" onclick="adminAddPromo()"><i class="fas fa-plus"></i> Add</button>
         </div>
         <div class="promo-admin-grid" id="adminPromoGrid"></div>
+      </div>
+      <div class="admin-section" id="admin-announcements">
+        <h2 style="font-size:20px;font-weight:700;margin-bottom:20px">Announcements <span style="font-size:12px;color:var(--accent);font-weight:400">(Admin only)</span></h2>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;align-items:center">
+          <input class="form-input" id="annTitle" placeholder="Title (optional)" style="flex:1;min-width:120px">
+          <input class="form-input" id="annMessage" placeholder="Message (required)" style="flex:2;min-width:200px">
+          <button class="btn btn-primary btn-sm" onclick="createAnnouncement()"><i class="fas fa-plus"></i> Add</button>
+        </div>
+        <div class="promo-admin-grid" id="adminAnnouncementList"></div>
       </div>
       <div class="admin-section" id="admin-settings">
         <h2 style="font-size:20px;font-weight:700;margin-bottom:20px">Settings</h2>
@@ -1533,6 +1557,20 @@ textarea.form-input{resize:vertical;min-height:100px}
         <h3 style="font-size:15px;font-weight:700;margin-bottom:10px"><i class="fas fa-comments" style="color:var(--secondary)"></i> My Chats</h3>
         <div id="sellerMyChatsList"></div>
         <button class="btn btn-outline btn-sm" onclick="loadSellerMyChats()" style="font-size:11px"><i class="fas fa-sync"></i> Refresh</button>
+      </div>
+      <!-- Promo Codes -->
+      <div style="margin-bottom:20px">
+        <h3 style="font-size:15px;font-weight:700;margin-bottom:10px"><i class="fas fa-tags" style="color:var(--secondary)"></i> Promo Codes</h3>
+        <div class="glass" style="padding:14px;border-radius:var(--radius);border:1px solid var(--glass-border);margin-bottom:10px">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
+            <input class="form-input" id="sellerPromoCode" placeholder="Code (e.g. SALE10)" style="text-transform:uppercase;font-size:13px">
+            <input class="form-input" id="sellerPromoDiscount" type="number" placeholder="Discount %" min="1" max="100" style="font-size:13px">
+            <input class="form-input" id="sellerPromoProduct" type="number" placeholder="Product ID (0 = all)" style="font-size:13px">
+            <input class="form-input" id="sellerPromoMax" type="number" placeholder="Max uses (0 = unlimited)" style="font-size:13px">
+          </div>
+          <button class="btn btn-primary btn-sm" onclick="createSellerPromo()"><i class="fas fa-plus"></i> Create Promo</button>
+        </div>
+        <div id="sellerPromoList"></div>
       </div>
       <!-- My Products List -->
       <div id="sellerProductsList"></div>
@@ -2284,6 +2322,7 @@ function switchAdminTab(tab) {
   if (tab === 'promotions') loadAdminPromotions();
   if (tab === 'sellerapps') loadAdminSellerApps();
   if (tab === 'publicproducts') { loadAdminPublicProducts('pending'); }
+  if (tab === 'announcements') { loadAdminAnnouncements(); }
 }
 async function refreshAdminData() {
   try {
@@ -2662,7 +2701,11 @@ function buildPCMsg(c) {
   const isSeller = c.user_verified == 1 && !isOfficial && !isAdmin;
   let tagHtml = isOfficial ? '<span class="pc-tag official"><i class="fas fa-crown"></i> Official</span>' : (isAdmin ? '<span class="pc-tag admin"><i class="fas fa-check-circle"></i> Admin</span>' : '');
   if (isSeller) tagHtml += '<span class="pc-tag" style="background:rgba(251,191,36,0.08);color:#fbbf24;border:1px solid rgba(251,191,36,0.15)"><i class="fas fa-store-alt"></i> Seller</span>';
-  const userTags = (c.tags || []).map(t => '<span class="pc-tag" style="background:rgba(139,124,252,0.08);color:var(--primary-light);border:1px solid rgba(139,124,252,0.15)"><i class="fas fa-tag" style="font-size:7px;margin-right:2px"></i>'+t+'</span>').join('');
+  const userTags = (c.tags || []).map(t => {
+      const tc = typeof t === 'object' ? t : { tag: t, icon: '', color: '#8b7cfc' };
+      const iconHtml = tc.icon ? '<i class="fas '+tc.icon+'" style="margin-right:2px;font-size:9px"></i>' : '<i class="fas fa-tag" style="font-size:7px;margin-right:2px"></i>';
+      return '<span class="pc-tag" style="background:'+tc.color+'15;color:'+tc.color+';border:1px solid '+tc.color+'30">'+iconHtml+tc.tag+'</span>';
+    }).join('');
   const deleteBtn = (APP.user?.role === 'admin') ? '<i class="fas fa-trash" style="cursor:pointer;opacity:0.5;font-size:10px;margin-left:8px" onclick="deletePC('+c.id+')"></i>' : '';
   const avatarStyle = c.user_avatar ? `background-image:url(${c.user_avatar})` : '';
   const isVerified = isOfficial || isAdmin || isSeller;
@@ -2933,7 +2976,11 @@ async function viewPublicProfile(userId) {
     // Database tags (below XP)
     const dbTagsEl = document.getElementById('pvDbTags');
     if (p.tags && p.tags.length) {
-      dbTagsEl.innerHTML = p.tags.map(t => '<span class="pv-dbtag"><i class="fas fa-tag"></i> ' + t.tag + '</span>').join('');
+      dbTagsEl.innerHTML = p.tags.map(t => {
+      const tc = t.color || '#8b7cfc';
+      const iconHtml = t.icon ? '<i class="fas '+t.icon+'" style="margin-right:3px"></i>' : '<i class="fas fa-tag" style="margin-right:3px"></i>';
+      return '<span class="pv-dbtag" style="background:'+tc+'15;color:'+tc+';border-color:'+tc+'30">'+iconHtml + t.tag + '</span>';
+    }).join('');
       dbTagsEl.style.display = 'flex';
     } else {
       dbTagsEl.style.display = 'none';
@@ -3015,19 +3062,25 @@ async function loadAdminTags() {
     });
     tbody.innerHTML = users.map(u => {
       const userTags = tagMap[u.id] || [];
-      const tagList = userTags.map(t => '<span style="display:inline-block;padding:2px 8px;border-radius:4px;font-size:10px;font-weight:600;background:rgba(139,124,252,0.1);color:var(--primary-light);margin:2px;border:1px solid rgba(139,124,252,0.15)">'+t.tag+' <i class="fas fa-times" style="cursor:pointer;opacity:0.6;margin-left:4px" onclick="deleteTag('+t.id+', event)"></i></span>').join('');
+      const tagList = userTags.map(t => {
+      const tagColor = t.color || '#8b7cfc';
+      const tagIcon = t.icon ? '<i class="fas '+t.icon+'" style="margin-right:3px;font-size:9px"></i>' : '';
+      return '<span style="display:inline-flex;align-items:center;padding:2px 8px;border-radius:4px;font-size:10px;font-weight:600;background:'+tagColor+'20;color:'+tagColor+';margin:2px;border:1px solid '+tagColor+'40">'+tagIcon+t.tag+' <i class="fas fa-times" style="cursor:pointer;opacity:0.6;margin-left:4px" onclick="deleteTag('+t.id+', event)"></i></span>';
+    }).join('');
       return '<tr><td>'+(u.name||'?')+'</td><td>'+u.email+'</td><td>'+tagList+'</td><td><button class="table-btn table-btn-edit" onclick="addTagToUser('+u.id+')">Add</button></td></tr>';
     }).join('');
   } catch {}
 }
 function addTagToUser(userId) {
   const tagText = document.getElementById('tagNewText').value.trim();
+  const icon = document.getElementById('tagNewIcon').value;
+  const color = document.getElementById('tagNewColor').value;
   if (!tagText) return showToast('Ketik tag text di kolom atas dulu!', 'error');
-  addTag(userId, tagText);
+  addTag(userId, tagText, icon, color);
 }
-async function addTag(userId, tag) {
+async function addTag(userId, tag, icon, color) {
   try {
-    await api('/tags', { method: 'POST', body: { userId, tag } });
+    await api('/tags', { method: 'POST', body: { userId, tag, icon, color } });
     document.getElementById('tagNewText').value = '';
     loadAdminTags();
     showToast('Tag "'+tag+'" added!', 'success');
@@ -3104,6 +3157,7 @@ async function loadSellerDashboard() {
     document.getElementById('sellerPendingSection').style.display = 'none';
     await loadSellerProducts();
     await loadSellerMyChats();
+    loadSellerPromos();
   } else {
     // Check if has pending application
     try {
@@ -3454,6 +3508,105 @@ async function deletePublicProduct(id) {
   };
 })();
 
+// ============ ANNOUNCEMENTS ============
+async function loadAnnouncements() {
+  try {
+    const d = await api('/announcements');
+    const items = d.announcements || [];
+    const bar = document.getElementById('announcementBar');
+    const text = document.getElementById('announcementText');
+    if (items.length && bar && text) {
+      const a = items[0];
+      const dismissed = localStorage.getItem('announcement_dismissed_' + a.id);
+      if (!dismissed) {
+        text.innerHTML = (a.title ? '<strong>' + a.title + ':</strong> ' : '') + a.message;
+        bar.dataset.announcementId = a.id;
+        bar.style.display = 'block';
+      }
+    }
+  } catch {}
+}
+function dismissAnnouncement() {
+  const bar = document.getElementById('announcementBar');
+  if (bar) { bar.style.display = 'none'; }
+  try {
+    const id = bar?.dataset?.announcementId;
+    if (id) localStorage.setItem('announcement_dismissed_' + id, '1');
+  } catch {}
+}
+
+// ============ SELLER PROMO CODES ============
+async function loadSellerPromos() {
+  const list = document.getElementById('sellerPromoList');
+  if (!list) return;
+  try {
+    const d = await api('/seller-promos');
+    const promos = d.promos || [];
+    list.innerHTML = promos.length ? promos.map(p => {
+      const statusColor = p.active ? '#34d399' : '#f43f5e';
+      const used = p.used_count || 0;
+      const max = p.max_uses || '&infin;';
+      return '<div class="glass" style="padding:12px;border-radius:var(--radius);border:1px solid var(--glass-border);display:flex;justify-content:space-between;align-items:center;gap:8px"><div style="flex:1;min-width:0"><div style="font-weight:700;font-size:14px;letter-spacing:1px">' + p.code + '</div><div style="font-size:11px;color:var(--text-dim)">' + p.discount + '% OFF ' + (p.product_id && p.product_id != 0 ? '(product #' + p.product_id + ')' : '(all products)') + ' &middot; Used: ' + used + '/' + max + '</div></div><div style="display:flex;gap:4px;align-items:center"><span style="font-size:10px;padding:2px 8px;border-radius:4px;background:' + statusColor + '22;color:' + statusColor + '">' + (p.active ? 'Active' : 'Inactive') + '</span><button class="btn btn-outline btn-xs" onclick="toggleSellerPromo(' + p.id + ',' + (p.active ? 0 : 1) + ')"><i class="fas fa-power-off"></i></button><button class="btn btn-outline btn-xs" style="color:var(--accent)" onclick="deleteSellerPromo(' + p.id + ')"><i class="fas fa-trash"></i></button></div></div>';
+    }).join('') : '<div style="text-align:center;padding:20px;color:var(--text-dim);font-size:13px">Belum ada promo code. Buat di atas.</div>';
+  } catch { list.innerHTML = '<div style="padding:20px;text-align:center;color:var(--text-dim)">Gagal memuat promo.</div>'; }
+}
+async function createSellerPromo() {
+  const code = document.getElementById('sellerPromoCode')?.value.trim().toUpperCase();
+  const discount = parseInt(document.getElementById('sellerPromoDiscount')?.value) || 0;
+  const productId = parseInt(document.getElementById('sellerPromoProduct')?.value) || 0;
+  const maxUses = parseInt(document.getElementById('sellerPromoMax')?.value) || 0;
+  if (!code || discount < 1) return showToast('Code and discount required', 'error');
+  if (discount > 100) return showToast('Max discount 100%', 'error');
+  try {
+    await api('/seller-promos', { method: 'POST', body: { code, discount, product_id: productId, max_uses: maxUses } });
+    showToast('Promo code created!', 'success');
+    document.getElementById('sellerPromoCode').value = '';
+    document.getElementById('sellerPromoDiscount').value = '';
+    document.getElementById('sellerPromoProduct').value = '0';
+    document.getElementById('sellerPromoMax').value = '';
+    loadSellerPromos();
+  } catch (e) { showToast(e.message || 'Failed', 'error'); }
+}
+async function toggleSellerPromo(id, active) {
+  try { await api('/seller-promos/' + id, { method: 'PUT', body: { active } }); loadSellerPromos(); } catch {}
+}
+async function deleteSellerPromo(id) {
+  if (!confirm('Delete this promo code?')) return;
+  try { await api('/seller-promos/' + id, { method: 'DELETE' }); loadSellerPromos(); } catch {}
+}
+
+// ============ ADMIN ANNOUNCEMENTS ============
+async function loadAdminAnnouncements() {
+  const list = document.getElementById('adminAnnouncementList');
+  if (!list) return;
+  try {
+    const d = await api('/announcements/all');
+    const items = d.announcements || [];
+    list.innerHTML = items.length ? items.map(a => {
+      return '<div class="promo-admin-card"><div style="font-weight:600;font-size:13px">' + (a.title || 'No title') + '</div><div style="font-size:12px;color:var(--text-muted);margin:4px 0">' + a.message + '</div><div style="font-size:10px;color:var(--text-dim)">' + (a.created_at || '').slice(0,10) + ' ' + (a.active ? '<span style="color:#34d399">Active</span>' : '<span style="color:var(--text-dim)">Inactive</span>') + '</div><div class="actions"><button class="btn btn-outline btn-xs" onclick="toggleAnnouncement(' + a.id + ',' + (a.active ? 0 : 1) + ')">' + (a.active ? 'Disable' : 'Enable') + '</button><button class="btn btn-danger btn-xs" onclick="deleteAnnouncement(' + a.id + ')">Delete</button></div></div>';
+    }).join('') : '<div style="grid-column:1/-1;text-align:center;padding:20px;color:var(--text-dim)">Belum ada announcement.</div>';
+  } catch {}
+}
+async function createAnnouncement() {
+  const title = document.getElementById('annTitle')?.value.trim();
+  const message = document.getElementById('annMessage')?.value.trim();
+  if (!message) return showToast('Message required', 'error');
+  try {
+    await api('/announcements', { method: 'POST', body: { title, message } });
+    showToast('Announcement created!', 'success');
+    document.getElementById('annTitle').value = '';
+    document.getElementById('annMessage').value = '';
+    loadAdminAnnouncements();
+  } catch (e) { showToast(e.message || 'Failed', 'error'); }
+}
+async function toggleAnnouncement(id, active) {
+  try { await api('/announcements/' + id, { method: 'PUT', body: { active } }); loadAdminAnnouncements(); } catch {}
+}
+async function deleteAnnouncement(id) {
+  if (!confirm('Delete this announcement?')) return;
+  try { await api('/announcements/' + id, { method: 'DELETE' }); loadAdminAnnouncements(); } catch {}
+}
+
 // ============ INIT ============
 document.addEventListener('DOMContentLoaded', async function() {
   initThree();
@@ -3470,6 +3623,7 @@ document.addEventListener('DOMContentLoaded', async function() {
   await loadTopProducts();
   await loadPromotions();
   await loadTopSellers();
+  loadAnnouncements();
   setTimeout(() => { document.getElementById('loader').classList.add('hidden'); initRevealObserver(); setTimeout(initCounters, 500); }, 1200);
   // back-to-top
   window.addEventListener('scroll', () => document.getElementById('backToTop')?.classList.toggle('show', window.scrollY > 400));
