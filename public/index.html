@@ -1554,6 +1554,7 @@ textarea.form-input{resize:vertical;min-height:100px}
           <input class="form-input" id="spPrice" placeholder="Price (e.g. Rp 50.000)" value="Gratis">
           <textarea class="form-input" id="spDesc" placeholder="Description" rows="2" style="grid-column:1/-1"></textarea>
           <input class="form-input" id="spImage" placeholder="Image URL (optional)">
+          <input class="form-input" id="spVideo" placeholder="Video URL (YouTube/Vimeo - optional)">
           <input class="form-input" id="spLink" placeholder="Link (optional)">
           <select class="form-input" id="spCategory">
             <option value="other">Other</option><option value="digital">Digital</option><option value="asset">Asset</option><option value="service">Service</option>
@@ -1592,6 +1593,7 @@ textarea.form-input{resize:vertical;min-height:100px}
         <input class="form-input" id="editSpPrice" placeholder="Price">
         <textarea class="form-input" id="editSpDesc" placeholder="Description" rows="2" style="grid-column:1/-1"></textarea>
         <input class="form-input" id="editSpImage" placeholder="Image URL">
+        <input class="form-input" id="editSpVideo" placeholder="Video URL (YouTube/Vimeo)">
         <input class="form-input" id="editSpLink" placeholder="Link">
         <select class="form-input" id="editSpCategory"><option value="other">Other</option><option value="digital">Digital</option><option value="asset">Asset</option><option value="service">Service</option></select>
       </div>
@@ -1778,6 +1780,10 @@ textarea.form-input{resize:vertical;min-height:100px}
           <option value="studio">BMS STUDIO</option>
         </select>
         <input class="form-input" type="text" name="image" placeholder="Image URL">
+        <div style="display:flex;gap:8px;align-items:center">
+          <input class="form-input" type="text" name="video_url" placeholder="Video URL (YouTube/Vimeo)" style="flex:1">
+          <label style="font-size:12px;color:var(--text-muted);white-space:nowrap;display:flex;align-items:center;gap:4px"><input type="checkbox" name="video_enabled"> Enable</label>
+        </div>
         <input class="form-input" type="text" name="link" placeholder="External Link (opsional)">
         <button class="btn btn-primary" type="submit">Save</button>
       </form>
@@ -1801,6 +1807,30 @@ function api(path, options = {}) {
   });
 }
 const _cb = (u) => u && u.startsWith('http') && !u.startsWith('data:') ? (u.includes('?') ? u+'&_t='+Date.now() : u+'?_t='+Date.now()) : (u||'');
+
+// ============ SOUND EFFECTS ============
+let _audioCtx = null;
+function _getAudioCtx() { if (!_audioCtx) _audioCtx = new (window.AudioContext || window.webkitAudioContext)(); return _audioCtx; }
+function playNotifSound() {
+  try {
+    const ctx = _getAudioCtx();
+    const o = ctx.createOscillator(); const g = ctx.createGain();
+    o.type = 'sine'; o.frequency.setValueAtTime(880, ctx.currentTime); o.frequency.exponentialRampToValueAtTime(1320, ctx.currentTime + 0.1);
+    g.gain.setValueAtTime(0.18, ctx.currentTime); g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.25);
+    o.connect(g); g.connect(ctx.destination); o.start(ctx.currentTime); o.stop(ctx.currentTime + 0.25);
+  } catch {}
+}
+function playAnnounceSound() {
+  try {
+    const ctx = _getAudioCtx();
+    [523, 659, 784].forEach((freq, i) => {
+      const o = ctx.createOscillator(); const g = ctx.createGain();
+      o.type = 'sine'; o.frequency.setValueAtTime(freq, ctx.currentTime + i * 0.12);
+      g.gain.setValueAtTime(0.15, ctx.currentTime + i * 0.12); g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + i * 0.12 + 0.2);
+      o.connect(g); g.connect(ctx.destination); o.start(ctx.currentTime + i * 0.12); o.stop(ctx.currentTime + i * 0.12 + 0.25);
+    });
+  } catch {}
+}
 
 // ============ APP STATE ============
 const APP = {
@@ -1838,6 +1868,7 @@ function showToast(msg, type = 'info') {
   toast.className = 'toast ' + type;
   toast.innerHTML = '<i class="fas ' + (icons[type] || icons.info) + '"></i> ' + msg;
   container.appendChild(toast);
+  if (type === 'success' || type === 'error') playNotifSound();
   setTimeout(() => {
     toast.style.animation = 'toastOut 0.35s var(--ease-out) forwards';
     setTimeout(() => toast.remove(), 350);
@@ -2394,6 +2425,8 @@ async function openAssetForm(id) {
     f.querySelector('[name="category"]').value = a.category;
     f.querySelector('[name="store_type"]').value = a.store_type || 'store';
     f.querySelector('[name="image"]').value = a.image;
+    f.querySelector('[name="video_url"]').value = a.video_url || '';
+    f.querySelector('[name="video_enabled"]').checked = !!a.video_enabled;
     modal.classList.add('open');
   } catch { showToast('Gagal','error'); }
 }
@@ -2547,7 +2580,7 @@ async function loadFeaturedProducts() {
     const products = (data.assets || []).slice(0, 4);
     const grid = document.getElementById('featuredProducts');
     if (!grid) return;
-    grid.innerHTML = products.map(a => '<div class="asset-card reveal"><div class="asset-thumb" style="height:120px">'+(a.image?'<img src="'+a.image+'">':'<i class="fas fa-cube"></i>')+'</div><div class="asset-body"><h3 style="font-size:13px">'+a.name+'</h3><div style="display:flex;justify-content:space-between;align-items:center;margin-top:6px"><span class="asset-price" style="font-size:13px">'+(a.price==='Gratis'?'Gratis':a.price)+'</span><button class="asset-add" onclick="addToCart('+a.id+')"><i class="fas fa-plus"></i></button></div></div></div>').join('');
+    grid.innerHTML = products.map(a => '<div class="asset-card reveal"><div class="asset-thumb" style="height:120px">'+(a.image?'<img src="'+a.image+'">':'<i class="fas fa-cube"></i>')+(a.video_enabled && a.video_url ? '<div class="play-btn" onclick="event.stopPropagation();openVideoModal(\''+a.video_url+'\')"><i class="fas fa-play"></i></div>' : '')+'</div><div class="asset-body"><h3 style="font-size:13px">'+a.name+'</h3><div style="display:flex;justify-content:space-between;align-items:center;margin-top:6px"><span class="asset-price" style="font-size:13px">'+(a.price==='Gratis'?'Gratis':a.price)+'</span><button class="asset-add" onclick="addToCart('+a.id+')"><i class="fas fa-plus"></i></button></div></div></div>').join('');
     setTimeout(initRevealObserver, 100);
   } catch {}
 }
@@ -2621,9 +2654,8 @@ async function loadTopProducts() {
     const all = [...storeProducts, ...publicProducts.map(p => ({...p, isPublic: true, price: p.price}))];
     grid.innerHTML = all.map(a => {
       const img = a.image ? '<img src="'+a.image+'" alt="" loading="lazy" onerror="this.style.display=\'none\'">' : '<i class="fas fa-cube"></i>';
-      const r = a.avg_rating ? Math.round(Number(a.avg_rating)) : 0;
-      const starsHtml = '<div class="rating-stars">'+Array.from({length:5}, (_,i) => '<i class="fas fa-star'+(i<r?'':' empty')+'"></i>').join('')+'</div>';
-      return '<div class="asset-card reveal"><div class="asset-thumb" style="height:120px">'+img+'</div><div class="asset-body"><h3 style="font-size:13px">'+a.name+'</h3>'+starsHtml+'</div><div class="asset-footer"><div><span class="asset-price" style="font-size:13px">'+(a.price||'Gratis')+'</span>'+(a.isPublic?' <span style="font-size:9px;background:rgba(251,191,36,0.1);color:#fbbf24;padding:1px 6px;border-radius:4px">Public</span>':'')+'</div><button class="asset-add" onclick="navigateTo(\'store\')"><i class="fas fa-arrow-right"></i></button></div></div>';
+      const vidBtn = a.video_enabled && a.video_url ? '<div class="play-btn" onclick="event.stopPropagation();openVideoModal(\''+a.video_url+'\')"><i class="fas fa-play"></i></div>' : '';
+      return '<div class="asset-card reveal"><div class="asset-thumb" style="height:120px">'+img+vidBtn+'</div><div class="asset-body"><h3 style="font-size:13px">'+a.name+'</h3>'+starsHtml+'</div><div class="asset-footer"><div><span class="asset-price" style="font-size:13px">'+(a.price||'Gratis')+'</span>'+(a.isPublic?' <span style="font-size:9px;background:rgba(251,191,36,0.1);color:#fbbf24;padding:1px 6px;border-radius:4px">Public</span>':'')+'</div><button class="asset-add" onclick="navigateTo(\'store\')"><i class="fas fa-arrow-right"></i></button></div></div>';
     }).join('');
     setTimeout(initRevealObserver, 100);
   } catch {}
@@ -3146,7 +3178,8 @@ async function renderPublicProducts() {
       const sellerInitial = sellerAv ? '' : (p.seller_name || p.seller_email || 'U').charAt(0).toUpperCase();
       const r = p.avg_rating ? Math.round(Number(p.avg_rating)) : 0;
       const starsHtml = r ? '<div class="rating-stars">'+Array.from({length:5}, (_,i) => '<i class="fas fa-star'+(i<r?'':' empty')+'"></i>').join('')+'</div>' : '';
-      return '<div class="asset-card reveal"><div class="asset-thumb" style="height:150px">'+(p.image?'<img src="'+p.image+'" alt="" loading="lazy" onerror="this.parentElement.innerHTML=\'<i class=\\\\\'fas fa-box\\\\\'></i>\'">':'<i class="fas fa-box"></i>')+'</div><div class="asset-body"><div style="font-size:11px;color:var(--secondary);margin-bottom:4px;display:flex;align-items:center;gap:4px"><div style="width:18px;height:18px;border-radius:50%;background:var(--gradient-1);display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:700;color:#fff;flex-shrink:0;overflow:hidden" '+sellerAvStyle+'>'+sellerInitial+'</div>'+ (p.seller_name || p.seller_email || 'Unknown') +'</div><h3>'+p.name+'</h3>'+starsHtml+'<div class="desc" style="-webkit-line-clamp:2">'+(p.description||'')+'</div></div><div class="asset-footer"><div><span class="asset-price">'+p.price+'</span></div><div style="display:flex;gap:4px">'+(p.link ? '<a href="'+p.link+'" target="_blank" rel="noopener" class="asset-add" onclick="event.stopPropagation()" title="Open link / Buy"><i class="fas fa-external-link-alt"></i></a>' : '')+'<button class="asset-add" onclick="addPublicToCartByIndex('+i+')" title="Add to cart"><i class="fas fa-plus"></i></button><button class="asset-add" onclick="openSellerChat('+p.id+')" title="Chat seller"><i class="fas fa-comment"></i></button></div></div></div>';
+      const vidBtn = p.video_url ? '<div class="play-btn" onclick="event.stopPropagation();openVideoModal(\''+p.video_url+'\')"><i class="fas fa-play"></i></div>' : '';
+      return '<div class="asset-card reveal"><div class="asset-thumb" style="height:150px">'+(p.image?'<img src="'+p.image+'" alt="" loading="lazy" onerror="this.parentElement.innerHTML=\'<i class=\\\\\'fas fa-box\\\\\'></i>\'">':'<i class="fas fa-box"></i>')+vidBtn+'</div><div class="asset-body"><div style="font-size:11px;color:var(--secondary);margin-bottom:4px;display:flex;align-items:center;gap:4px"><div style="width:18px;height:18px;border-radius:50%;background:var(--gradient-1);display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:700;color:#fff;flex-shrink:0;overflow:hidden" '+sellerAvStyle+'>'+sellerInitial+'</div>'+ (p.seller_name || p.seller_email || 'Unknown') +'</div><h3>'+p.name+'</h3>'+starsHtml+'<div class="desc" style="-webkit-line-clamp:2">'+(p.description||'')+'</div></div><div class="asset-footer"><div><span class="asset-price">'+p.price+'</span></div><div style="display:flex;gap:4px">'+(p.link ? '<a href="'+p.link+'" target="_blank" rel="noopener" class="asset-add" onclick="event.stopPropagation()" title="Open link / Buy"><i class="fas fa-external-link-alt"></i></a>' : '')+'<button class="asset-add" onclick="addPublicToCartByIndex('+i+')" title="Add to cart"><i class="fas fa-plus"></i></button><button class="asset-add" onclick="openSellerChat('+p.id+')" title="Chat seller"><i class="fas fa-comment"></i></button></div></div></div>';
     }).join('');
     setTimeout(initRevealObserver, 100);
   } catch {}
@@ -3265,6 +3298,7 @@ async function saveSellerEditProduct() {
     price: document.getElementById('editSpPrice').value.trim() || 'Gratis',
     description: document.getElementById('editSpDesc').value.trim(),
     image: document.getElementById('editSpImage').value.trim(),
+    video_url: document.getElementById('editSpVideo').value.trim(),
     link: document.getElementById('editSpLink').value.trim(),
     category: document.getElementById('editSpCategory').value
   };
@@ -3281,11 +3315,12 @@ async function addSellerProduct() {
   const price = document.getElementById('spPrice').value.trim() || 'Gratis';
   const description = document.getElementById('spDesc').value.trim();
   const image = document.getElementById('spImage').value.trim();
+  const video_url = document.getElementById('spVideo').value.trim();
   const link = document.getElementById('spLink').value.trim();
   const category = document.getElementById('spCategory').value;
   try {
-    await api('/seller/products', { method: 'POST', body: { name, price, description, image, link, category } });
-    document.getElementById('spName').value = ''; document.getElementById('spDesc').value = ''; document.getElementById('spImage').value = ''; document.getElementById('spLink').value = '';
+    await api('/seller/products', { method: 'POST', body: { name, price, description, image, video_url, link, category } });
+    document.getElementById('spName').value = ''; document.getElementById('spDesc').value = ''; document.getElementById('spImage').value = ''; document.getElementById('spVideo').value = ''; document.getElementById('spLink').value = '';
     showToast('Product submitted for review!', 'success');
     loadSellerProducts();
   } catch (e) { showToast(e.message || 'Failed', 'error'); }
@@ -3545,6 +3580,7 @@ async function loadAnnouncements() {
     _currentAnnouncementId = activeItem.id;
     text.innerHTML = (activeItem.title ? '<strong>' + activeItem.title + ':</strong> ' : '') + activeItem.message;
     bar.classList.add('show');
+    playAnnounceSound();
   } catch {}
 }
 function dismissAnnouncement() {

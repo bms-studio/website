@@ -232,6 +232,8 @@ async function initDB() {
     "ALTER TABLE tags ADD COLUMN icon TEXT DEFAULT ''",
     "ALTER TABLE tags ADD COLUMN color TEXT DEFAULT '#8b7cfc'",
     "ALTER TABLE announcements ADD COLUMN duration_minutes INTEGER DEFAULT 0",
+    "ALTER TABLE assets ADD COLUMN video_enabled INTEGER DEFAULT 0",
+    "ALTER TABLE assets ADD COLUMN video_url TEXT DEFAULT ''",
   ];
   for (const sql of migrations) {
     try { await client.execute(sql); } catch {}
