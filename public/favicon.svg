@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+  <defs>
+    <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#8b7cfc;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#67e8f9;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#f472b6;stop-opacity:1" />
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  
+  <rect width="200" height="200" fill="#08080c" rx="40"/>
+  
+  <g filter="url(#glow)">
+    <polygon points="100,40 140,80 140,140 100,170 60,140 60,80" fill="url(#grad1)" opacity="0.9">
+      <animateTransform attributeName="transform" type="rotate" values="0 100 100; 360 100 100" dur="20s" repeatCount="indefinite"/>
+    </polygon>
+    <polygon points="100,40 140,80 140,140 100,170 60,140 60,80" fill="none" stroke="url(#grad1)" stroke-width="2" opacity="0.5">
+      <animateTransform attributeName="transform" type="rotate" values="360 100 100; 0 100 100" dur="20s" repeatCount="indefinite"/>
+    </polygon>
+  </g>
+  
+  <circle cx="100" cy="100" r="25" fill="url(#grad1)" opacity="0.3">
+    <animate attributeName="r" values="25;35;25" dur="2s" repeatCount="indefinite"/>
+  </circle>
+  <circle cx="100" cy="100" r="15" fill="#8b7cfc" opacity="0.8"/>
+</svg>
