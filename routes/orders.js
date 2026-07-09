@@ -16,7 +16,9 @@ router.get('/', authenticateSession, async (req, res) => {
 router.get('/all', authenticateSession, requireAdmin, async (req, res) => {
   try {
     const result = await q('SELECT * FROM orders ORDER BY created_at DESC');
-    res.json({ orders: result.rows });
+    // Admin sees all orders except public store orders (those belong to sellers)
+    const filtered = result.rows.filter(o => o.store_type !== 'public');
+    res.json({ orders: filtered });
   } catch (err) {
     res.status(500).json({ error: 'Server error' });
   }

@@ -165,4 +165,32 @@ router.get('/my-chats', authenticateSession, async (req, res) => {
   } catch { res.status(500).json({ error: 'Server error' }); }
 });
 
+// ====== SELLER ORDERS ======
+
+// Get seller's orders (orders containing items with this seller_id)
+router.get('/orders', authenticateSession, async (req, res) => {
+  try {
+    const allOrders = await q('SELECT * FROM orders ORDER BY created_at DESC');
+    const sellerOrders = allOrders.rows.filter(o => {
+      const items = JSON.parse(o.items || '[]');
+      return items.some(item => String(item.sellerId) === String(req.user.id));
+    });
+    res.json({ orders: sellerOrders });
+  } catch { res.status(500).json({ error: 'Server error' }); }
+});
+
+// Update order status (seller only for their own product orders)
+router.put('/orders/:id/status', authenticateSession, async (req, res) => {
+  try {
+    const { status } = req.body;
+    const order = await q('SELECT * FROM orders WHERE id = ?', [req.params.id]);
+    if (!order.rows.length) return res.status(404).json({ error: 'Order not found' });
+    const items = JSON.parse(order.rows[0].items || '[]');
+    const hasItem = items.some(item => String(item.sellerId) === String(req.user.id));
+    if (!hasItem) return res.status(403).json({ error: 'Not your order' });
+    await q('UPDATE orders SET status = ? WHERE id = ?', [status, req.params.id]);
+    res.json({ success: true });
+  } catch { res.status(500).json({ error: 'Server error' }); }
+});
+
 module.exports = router;

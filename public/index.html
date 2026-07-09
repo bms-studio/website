@@ -1582,6 +1582,12 @@ textarea.form-input{resize:vertical;min-height:100px}
         </div>
         <div id="sellerPromoList"></div>
       </div>
+      <!-- Seller Orders -->
+      <div style="margin-bottom:20px">
+        <h3 style="font-size:15px;font-weight:700;margin-bottom:10px"><i class="fas fa-shopping-bag" style="color:var(--secondary)"></i> Orders</h3>
+        <div id="sellerOrdersList"></div>
+        <button class="btn btn-outline btn-sm" onclick="loadSellerOrders()" style="font-size:11px"><i class="fas fa-sync"></i> Refresh</button>
+      </div>
       <!-- My Products List -->
       <div id="sellerProductsList"></div>
     </div>
@@ -2175,15 +2181,16 @@ async function checkout() {
   if (!APP.cart.length) return showToast('Cart kosong', 'error');
   let sub = 0;
   APP.cart.forEach(item => { const p = parseFloat(String(item.price).replace(/[^0-9]/g,'')) || 0; sub += p * item.qty; });
-  if (sub <= 0) {
-    try { await api('/orders', { method: 'POST', body: { items: APP.cart, total: 0 } }); APP.cart = []; saveCart(); renderCart(); showToast('Pesanan berhasil dibuat!', 'success'); } catch (err) { showToast(err.message || 'Checkout gagal', 'error'); }
+  const finalTotal = appliedPromo ? sub * (1 - appliedPromo / 100) : sub;
+  if (finalTotal <= 0) {
+    try { await api('/orders', { method: 'POST', body: { items: APP.cart, total: 0 } }); APP.cart = []; saveCart(); renderCart(); appliedPromo = null; showToast('Pesanan berhasil dibuat!', 'success'); } catch (err) { showToast(err.message || 'Checkout gagal', 'error'); }
     return;
   }
   document.getElementById('checkoutModal').classList.add('open');
   const paySelect = document.getElementById('checkoutPay');
   paySelect.innerHTML = '<option value="">-- Pilih Pembayaran --</option>' + PAYMENTS.map(p => '<option value="'+p.name+'">'+p.name+' ('+p.type+')</option>').join('');
   document.getElementById('checkoutPayInfo').innerHTML = '';
-  document.getElementById('checkoutTotal').textContent = 'Rp '+sub.toLocaleString('id-ID');
+  document.getElementById('checkoutTotal').textContent = 'Rp '+finalTotal.toLocaleString('id-ID');
 }
 function selectPayment() {
   const name = document.getElementById('checkoutPay').value;
@@ -3191,6 +3198,7 @@ async function loadSellerDashboard() {
     await loadSellerProducts();
     await loadSellerMyChats();
     loadSellerPromos();
+    loadSellerOrders();
   } else {
     // Check if has pending application
     try {
@@ -3622,6 +3630,28 @@ async function toggleSellerPromo(id, active) {
 async function deleteSellerPromo(id) {
   if (!confirm('Delete this promo code?')) return;
   try { await api('/seller-promos/' + id, { method: 'DELETE' }); loadSellerPromos(); } catch {}
+}
+
+// ============ SELLER ORDERS ============
+async function loadSellerOrders() {
+  const list = document.getElementById('sellerOrdersList');
+  if (!list) return;
+  try {
+    const d = await api('/seller/orders');
+    const orders = d.orders || [];
+    if (!orders.length) { list.innerHTML = '<div style="font-size:13px;color:var(--text-dim);padding:12px">Belum ada order.</div>'; return; }
+    list.innerHTML = orders.map(o => {
+      const items = JSON.parse(o.items || '[]');
+      const myItems = items.filter(i => String(i.sellerId) === String(APP.user?.id));
+      const names = myItems.map(i => i.name).join(', ');
+      const total = myItems.reduce((sum, i) => sum + (parseFloat(String(i.price).replace(/[^0-9]/g,'')) || 0) * (i.qty || 1), 0);
+      const statusColor = o.status === 'completed' ? '#34d399' : o.status === 'processing' ? '#fbbf24' : o.status === 'cancelled' ? '#f87171' : '#fb923c';
+      return '<div class="glass" style="padding:12px;border-radius:var(--radius);border:1px solid var(--glass-border);margin-bottom:8px"><div style="display:flex;justify-content:space-between;align-items:start;gap:8px"><div style="flex:1;min-width:0"><div style="font-weight:600;font-size:13px">#' + o.id + ' - ' + names + '</div><div style="font-size:11px;color:var(--text-dim)">' + (o.customer_name || 'Guest') + ' &middot; ' + new Date(o.created_at).toLocaleDateString() + '</div></div><div style="text-align:right"><div style="font-weight:600;font-size:13px;color:var(--primary)">Rp ' + (o.total || 0).toLocaleString('id-ID') + '</div><select class="form-input" style="padding:3px 6px;font-size:11px;width:auto;margin-top:4px" onchange="updateSellerOrderStatus(' + o.id + ',this.value)"><option value="pending" ' + (o.status === 'pending' ? 'selected' : '') + '>Pending</option><option value="processing" ' + (o.status === 'processing' ? 'selected' : '') + '>Processing</option><option value="completed" ' + (o.status === 'completed' ? 'selected' : '') + '>Completed</option><option value="cancelled" ' + (o.status === 'cancelled' ? 'selected' : '') + '>Cancelled</option></select></div></div></div>';
+    }).join('');
+  } catch { list.innerHTML = '<div style="font-size:13px;color:var(--text-dim);padding:12px">Gagal load orders.</div>'; }
+}
+async function updateSellerOrderStatus(id, status) {
+  try { await api('/seller/orders/' + id + '/status', { method: 'PUT', body: { status } }); showToast('Status diupdate', 'success'); loadSellerOrders(); } catch {}
 }
 
 // ============ ADMIN ANNOUNCEMENTS ============
