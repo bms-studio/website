@@ -2912,16 +2912,18 @@ async function deletePublicProduct(id) {
   const _origNav = window._origNav || navigateTo;
   window._origNav = _origNav;
   navigateTo = function(page) {
-    if (page === 'publicstore') {
-      showPage('publicstore');
-      setTimeout(() => { loadPublicStoreStats(); renderPublicProducts(); }, 100);
-      document.title = 'Public Store - BMS Platform';
-      return;
-    }
-    if (page === 'seller') {
-      showPage('seller');
-      setTimeout(() => loadSellerDashboard(), 100);
-      document.title = 'Seller Dashboard - BMS Platform';
+    if (page === 'publicstore' || page === 'seller') {
+      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+      const target = document.getElementById('page-' + page);
+      if (target) { target.classList.add('active'); target.style.animation = 'none'; target.offsetHeight; target.style.animation = ''; }
+      document.querySelectorAll('.nav-tab').forEach(t => t.classList.toggle('active', t.dataset.page === page));
+      document.getElementById('mainFooter').style.display = page === 'seller' ? 'none' : 'block';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      APP.currentPage = page;
+      closeMobileNav();
+      setTimeout(initRevealObserver, 100);
+      if (page === 'publicstore') { loadPublicStoreStats(); renderPublicProducts(); document.title = 'Public Store - BMS Platform'; }
+      if (page === 'seller') { loadSellerDashboard(); document.title = 'Seller Dashboard - BMS Platform'; }
       return;
     }
     _origNav(page);
