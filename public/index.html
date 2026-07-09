@@ -1788,18 +1788,19 @@ textarea.form-input{resize:vertical;min-height:100px}
 <script>
 // ============ API CLIENT ============
 const API = '/api';
-async function api(path, options = {}) {
+function api(path, options = {}) {
   const { headers: optHeaders, ...rest } = options;
   const config = { headers: { 'Content-Type': 'application/json', ...optHeaders }, credentials: 'include', ...rest };
   if (config.body && typeof config.body === 'object') config.body = JSON.stringify(config.body);
-  try {
-    const res = await fetch(API + path, config);
+  return fetch(API + path, config).then(async res => {
     const text = await res.text();
     let data;
     try { data = JSON.parse(text); } catch { throw new Error('Server returned: ' + text.slice(0,100)); }
     if (!res.ok) throw new Error(data.error || 'Request failed');
     return data;
-  } catch (err) { throw err; }
+  });
+}
+const _cb = (u) => u && u.startsWith('http') && !u.startsWith('data:') ? (u.includes('?') ? u+'&_t='+Date.now() : u+'?_t='+Date.now()) : (u||'');
 }
 
 // ============ APP STATE ============
@@ -3632,22 +3633,21 @@ async function deleteAnnouncement(id) {
   try { await api('/announcements/' + id, { method: 'DELETE' }); loadAdminAnnouncements(); loadAnnouncements(); } catch {}
 }
 
-// ============ AUTO REFRESH (silent realtime) ============
-let autoRefreshInterval = null;
-function startAutoRefresh() {
-  if (autoRefreshInterval) clearInterval(autoRefreshInterval);
-  autoRefreshInterval = setInterval(async () => {
+// ============ REALTIME POLL (only announcements + notifications) ============
+let _realtimeInterval = null;
+let _lastAnnouncementId = 0;
+function startRealtimePoll() {
+  if (_realtimeInterval) clearInterval(_realtimeInterval);
+  _realtimeInterval = setInterval(async () => {
     try {
-      await Promise.all([
-        loadAnnouncements(),
-        APP.isLoggedIn ? checkSession().catch(()=>{}) : Promise.resolve(),
-        updateCartBadge(),
-        renderAssets().catch(()=>{}),
-        loadFeaturedProducts().catch(()=>{}),
-        loadTopProducts().catch(()=>{}),
-        loadPromotions().catch(()=>{}),
-        loadTopSellers().catch(()=>{}),
-      ]);
+      // Only poll announcements (lightweight, 1 query)
+      const d = await api('/announcements');
+      const items = d.announcements || [];
+      const newId = items.length ? items[0].id : 0;
+      if (newId && newId !== _lastAnnouncementId) {
+        _lastAnnouncementId = newId;
+        loadAnnouncements();
+      }
     } catch {}
   }, 10000);
 }
@@ -3669,7 +3669,7 @@ document.addEventListener('DOMContentLoaded', async function() {
   await loadPromotions();
   await loadTopSellers();
   loadAnnouncements();
-  startAutoRefresh();
+  startRealtimePoll();
   setTimeout(() => { document.getElementById('loader').classList.add('hidden'); initRevealObserver(); setTimeout(initCounters, 500); }, 1200);
   // back-to-top
   window.addEventListener('scroll', () => document.getElementById('backToTop')?.classList.toggle('show', window.scrollY > 400));
@@ -3679,9 +3679,6 @@ document.addEventListener('DOMContentLoaded', async function() {
   document.addEventListener('visibilitychange', () => {
     if (document.visibilityState === 'visible') {
       loadAnnouncements();
-      updateCartBadge();
-      renderAssets().catch(()=>{});
-      if (document.getElementById('publicChatBox')?.classList.contains('open')) loadPC();
     }
   });
   // card mouse 3D tilt + glow
