@@ -188,6 +188,25 @@ async function initDB() {
       rating INTEGER NOT NULL DEFAULT 5,
       review TEXT DEFAULT '',
       created_at TEXT DEFAULT (datetime('now'))
+    )`,
+    `CREATE TABLE IF NOT EXISTS seller_promos (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      seller_id INTEGER NOT NULL,
+      code TEXT NOT NULL,
+      discount INTEGER NOT NULL DEFAULT 10,
+      product_id INTEGER DEFAULT 0,
+      max_uses INTEGER DEFAULT 0,
+      used_count INTEGER DEFAULT 0,
+      active INTEGER DEFAULT 1,
+      created_at TEXT DEFAULT (datetime('now'))
+    )`,
+    `CREATE TABLE IF NOT EXISTS announcements (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      title TEXT DEFAULT '',
+      message TEXT NOT NULL,
+      active INTEGER DEFAULT 1,
+      created_by INTEGER NOT NULL,
+      created_at TEXT DEFAULT (datetime('now'))
     )`
   ];
   for (const sql of tables) {
@@ -210,6 +229,8 @@ async function initDB() {
     "ALTER TABLE testimonials ADD COLUMN product_name TEXT DEFAULT ''",
     "ALTER TABLE testimonials ADD COLUMN store_type TEXT DEFAULT ''",
     "ALTER TABLE testimonials ADD COLUMN seller_name TEXT DEFAULT ''",
+    "ALTER TABLE tags ADD COLUMN icon TEXT DEFAULT ''",
+    "ALTER TABLE tags ADD COLUMN color TEXT DEFAULT '#8b7cfc'",
   ];
   for (const sql of migrations) {
     try { await client.execute(sql); } catch {}

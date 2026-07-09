@@ -468,6 +468,10 @@ textarea.form-input{resize:vertical;min-height:100px}
 .footer-col a:hover{color:var(--primary-light)}
 .footer-bottom{text-align:center;padding-top:20px;margin-top:32px;border-top:1px solid var(--glass-border);font-size:12px;color:var(--text-dim)}
 
+/* ANNOUNCEMENT BAR */
+#announcementBar{animation:slideDown 0.4s cubic-bezier(.16,1,.3,1);z-index:1001}
+@keyframes slideDown{from{transform:translateY(-100%)}to{transform:translateY(0)}}
+
 /* TOAST */
 #toast-container{position:fixed;top:80px;right:16px;z-index:9999;display:flex;flex-direction:column;gap:8px;pointer-events:none}
 .toast{pointer-events:auto;padding:12px 18px;border-radius:var(--radius);background:linear-gradient(135deg,rgba(18,18,28,0.95),rgba(139,124,252,0.04));backdrop-filter:blur(24px);border:1px solid rgba(255,255,255,0.06);border-left:3px solid var(--primary);display:flex;align-items:center;gap:10px;font-size:12px;font-weight:500;min-width:280px;max-width:380px;box-shadow:0 8px 32px rgba(0,0,0,0.3);animation:toastIn 0.35s var(--ease-out);cursor:pointer}
@@ -592,6 +596,10 @@ textarea.form-input{resize:vertical;min-height:100px}
   <div class="loader-bar"><div class="loader-bar-inner"></div></div>
 </div>
 
+<div id="announcementBar" style="display:none;background:var(--primary);color:#fff;text-align:center;padding:10px 20px;font-size:13px;font-weight:500;position:relative;z-index:1001;cursor:pointer" onclick="dismissAnnouncement()">
+  <span id="announcementText"></span>
+  <i class="fas fa-times" style="position:absolute;right:16px;top:50%;transform:translateY(-50%);cursor:pointer;opacity:0.7;font-size:14px" onclick="event.stopPropagation();dismissAnnouncement()"></i>
+</div>
 <nav id="navbar">
   <div class="nav-inner">
     <div class="nav-brand" onclick="navigateTo('home')">BMS <span style="font-weight:500;color:var(--secondary)">Platform</span></div>
@@ -2776,7 +2784,7 @@ function uploadBanner(input) {
 }
 
 // ============ PROFILE (updated render) ============
-function renderProfile() {
+async function renderProfile() {
   if (!APP.isLoggedIn || !APP.user) { navigateTo('login'); return; }
   const u = APP.user;
   const savedName = localStorage.getItem('bms_name_'+u.id) || u.name || '';
@@ -2828,20 +2836,40 @@ function renderProfile() {
   const refCode = u.ref_code || (u.email ? u.email.split('@')[0].toUpperCase() + (u.id || '') : 'BMS' + Math.floor(Math.random()*1000));
   document.getElementById('profileRefCode').value = refCode;
   loadTestimonialOrders();
-  // Orders
+  // Orders — merge localStorage + server orders
   const ordersList = document.getElementById('profileOrdersList');
   try {
-    const cartOrders = JSON.parse(localStorage.getItem('bms_orders_' + u.id) || '[]');
-    if (cartOrders.length) {
-      ordersList.innerHTML = cartOrders.slice().reverse().map(o => {
-        const firstItem = o.items?.[0] || {};
+    let allOrders = [];
+    const localOrders = JSON.parse(localStorage.getItem('bms_orders_' + u.id) || '[]');
+    allOrders = [...localOrders];
+    try {
+      const serverRes = await api('/orders');
+      const serverOrders = (serverRes.orders || []).map(o => ({
+        id: o.id,
+        items: JSON.parse(o.items || '[]'),
+        total: o.total,
+        status: o.status,
+        createdAt: (o.created_at || '').slice(0,10),
+        fromServer: true
+      }));
+      serverOrders.forEach(so => {
+        if (!allOrders.find(o => o.id === so.id)) allOrders.push(so);
+      });
+    } catch {}
+    if (allOrders.length) {
+      ordersList.innerHTML = allOrders.sort((a,b) => new Date(b.createdAt||0)-new Date(a.createdAt||0)).map(o => {
+        const items = o.items || [];
+        const firstItem = items[0] || {};
         const isPublic = firstItem.store_type === 'public';
-        const itemCount = o.items?.length || 1;
-        const itemLabel = itemCount > 1 ? firstItem.name + ' +' + (itemCount - 1) + ' lainnya' : firstItem.name;
+        const itemLabel = items.length > 1 ? (firstItem.name||'Product') + ' +' + (items.length - 1) + ' lainnya' : (firstItem.name||'Product');
         const itemId = firstItem.productId || firstItem.id || null;
         const itemType = isPublic ? 'public' : (firstItem.store_type || 'store');
+        const itemImg = firstItem.image || '';
         const rateBtn = itemId ? '<button class="btn btn-outline btn-xs" onclick="openRateModal('+(typeof itemId==='string'&&itemId.startsWith('public_')?parseInt(itemId.replace('public_','')):itemId)+',\''+itemType+'\',\''+(firstItem.name||'').replace(/'/g,"\\'")+'\')" title="Rate"><i class="fas fa-star"></i></button>' : '';
-        return '<div class="glass" style="padding:12px 14px;border-radius:var(--radius-lg);border:1px solid var(--glass-border);display:flex;gap:8px;align-items:center;font-size:13px"><div style="flex:1;min-width:0"><div style="font-weight:600;display:flex;align-items:center;gap:6px;flex-wrap:wrap">'+(firstItem.image?'<img src="'+firstItem.image+'" style="width:28px;height:28px;border-radius:6px;object-fit:cover;flex-shrink:0">':'')+'<span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+(itemLabel||'Order')+'</span>'+(isPublic?'<span style="font-size:9px;padding:1px 6px;border-radius:4px;background:rgba(251,191,36,0.1);color:#fbbf24;flex-shrink:0">Store</span>':'')+'</div><div style="font-size:11px;color:var(--text-dim);margin-top:2px">'+ (o.createdAt || new Date().toLocaleDateString()) +'</div></div><div style="display:flex;gap:4px;align-items:center;flex-shrink:0"><span style="padding:2px 8px;border-radius:100px;font-size:9px;font-weight:600;background:rgba(16,185,129,0.12);color:#34d399;border:1px solid rgba(16,185,129,0.2);white-space:nowrap">'+ (o.status || 'Completed') +'</span>'+rateBtn+'<button class="btn btn-outline btn-xs" onclick="openChat('+(o.id || i)+')" title="Chat"><i class="fas fa-comment"></i></button></div></div>';
+        const statusColor = (o.status||'Completed').toLowerCase() === 'pending' ? '#fbbf24' : '#34d399';
+        const statusBg = (o.status||'Completed').toLowerCase() === 'pending' ? 'rgba(251,191,36,0.12)' : 'rgba(16,185,129,0.12)';
+        const orderIdNum = o.id || 0;
+        return '<div class="glass" style="padding:10px 14px;border-radius:var(--radius-lg);border:1px solid var(--glass-border);display:flex;gap:8px;align-items:center;font-size:13px"><div style="flex:1;min-width:0"><div style="font-weight:600;display:flex;align-items:center;gap:6px;flex-wrap:wrap">'+(itemImg?'<img src="'+itemImg+'" style="width:28px;height:28px;border-radius:6px;object-fit:cover;flex-shrink:0" onerror="this.style.display=\'none\'">':'<span style="width:28px;height:28px;border-radius:6px;background:var(--bg-3);display:inline-flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0"><i class="fas fa-cube"></i></span>')+'<span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+(itemLabel||'Product')+'</span>'+(isPublic?'<span style="font-size:9px;padding:1px 6px;border-radius:4px;background:rgba(251,191,36,0.1);color:#fbbf24;flex-shrink:0">Store</span>':'')+'</div><div style="font-size:11px;color:var(--text-dim);margin-top:2px">'+ (o.createdAt || '') +'</div></div><div style="display:flex;gap:4px;align-items:center;flex-shrink:0"><span style="padding:2px 8px;border-radius:100px;font-size:9px;font-weight:600;background:'+statusBg+';color:'+statusColor+';border:1px solid transparent;white-space:nowrap">'+ (o.status || 'Completed') +'</span>'+rateBtn+(orderIdNum?'<button class="btn btn-outline btn-xs" onclick="openChat('+orderIdNum+')" title="Chat"><i class="fas fa-comment"></i></button>':'')+'</div></div>';
       }).join('');
     } else {
       ordersList.innerHTML = '<div style="padding:32px;text-align:center"><i class="fas fa-shopping-bag" style="font-size:36px;color:var(--text-dim);opacity:0.3;margin-bottom:12px"></i><div style="font-size:15px;font-weight:600;color:var(--text-muted);margin-bottom:4px">Belum ada pesanan</div><p style="font-size:12px;color:var(--text-dim)">Pesan pertama kamu akan muncul di sini.</p></div>';

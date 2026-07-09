@@ -41,8 +41,10 @@ const publicChatRoutes = require('./routes/public_chats');
 const adminMgmtRoutes = require('./routes/admin_mgmt');
 const tagRoutes = require('./routes/tags');
 const sellerRoutes = require('./routes/seller');
+const sellerPromoRoutes = require('./routes/seller_promos');
 const adminStoreRoutes = require('./routes/admin_store');
 const promoImageRoutes = require('./routes/promotions');
+const announcementRoutes = require('./routes/announcements');
 
 app.use('/api/auth', authRoutes);
 app.use('/api/assets', assetRoutes);
@@ -55,8 +57,10 @@ app.use('/api/public-chats', publicChatRoutes);
 app.use('/api/admin', adminMgmtRoutes);
 app.use('/api/tags', tagRoutes);
 app.use('/api/seller', sellerRoutes);
+app.use('/api/seller-promos', sellerPromoRoutes);
 app.use('/api/admin-store', adminStoreRoutes);
 app.use('/api/promotions', promoImageRoutes);
+app.use('/api/announcements', announcementRoutes);
 
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
