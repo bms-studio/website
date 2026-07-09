@@ -105,18 +105,22 @@ ul{list-style:none}
 .profile-viewer-card::-webkit-scrollbar{width:4px}
 .profile-viewer-card::-webkit-scrollbar-thumb{background:var(--primary);border-radius:4px}
 .pv-banner{height:130px;border-radius:var(--radius-xl) var(--radius-xl) 0 0;background:var(--gradient-1);background-size:cover;background-position:center;position:relative}
-.pv-avatar-wrap{position:absolute;top:70px;left:24px;width:80px;height:80px;border-radius:50%;border:3px solid var(--bg-3);background:var(--gradient-1);overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:700;color:#fff;z-index:2}
+.pv-avatar-section{display:flex;gap:16px;padding:20px 24px 0;align-items:flex-start}
+.pv-avatar-wrap{position:relative;width:72px;height:72px;border-radius:50%;background:var(--gradient-1);overflow:hidden;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:700;color:#fff}
 .pv-avatar-wrap img{width:100%;height:100%;object-fit:cover;display:none}
-.pv-body{padding:24px}
-.pv-info{margin-left:100px}
+.pv-avatar-wrap.verified::before{content:'';position:absolute;inset:-3px;border-radius:50%;background:conic-gradient(#8b7cfc,#67e8f9,#f472b6,#fb923c,#8b7cfc);z-index:-1;animation:pvSpin 3s linear infinite}
+.pv-avatar-wrap.verified::after{content:'';position:absolute;inset:0;border-radius:50%;background:var(--bg-3);z-index:-1}
+@keyframes pvSpin{to{transform:rotate(360deg)}}
+.pv-info{flex:1}
 .pv-tags{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:4px}
 .pv-tag{padding:2px 8px;border-radius:4px;font-size:10px;font-weight:600;background:rgba(139,124,252,0.12);color:var(--primary-light);border:1px solid rgba(139,124,252,0.2);display:inline-flex;align-items:center;gap:3px}
 .pv-tag i{font-size:8px}
 .pv-tag.official{background:rgba(251,191,36,0.12);color:#fbbf24;border-color:rgba(251,191,36,0.25)}
 .pv-tag.admin{background:rgba(56,189,248,0.12);color:#38bdf8;border-color:rgba(56,189,248,0.2)}
-.pv-name{font-size:20px;font-weight:700;font-family:'Syne',sans-serif}
-.pv-email{font-size:12px;color:var(--text-muted);margin-top:2px}
-.pv-bio{margin-top:10px;font-size:13px;color:var(--text-muted);line-height:1.6;font-style:italic;padding:12px;border-radius:var(--radius);background:var(--glass);border-left:3px solid var(--primary)}
+.pv-name{font-size:18px;font-weight:700;font-family:'Syne',sans-serif}
+.pv-email{font-size:12px;color:var(--text-muted)}
+.pv-body{padding:0 24px 24px}
+.pv-bio{margin-top:12px;font-size:13px;color:var(--text-muted);line-height:1.6;font-style:italic;padding:12px;border-radius:var(--radius);background:var(--glass);border-left:3px solid var(--primary)}
 .pv-xp-section{margin-top:14px}
 .pv-xp-header{display:flex;justify-content:space-between;font-size:12px;font-weight:600;align-items:center}
 .pv-xp-bar{height:6px;border-radius:3px;background:var(--glass-border);margin-top:6px;overflow:hidden}
@@ -1281,14 +1285,14 @@ textarea.form-input{resize:vertical;min-height:100px}
       </div>
       <div class="admin-section" id="admin-tags">
         <h2 style="font-size:20px;font-weight:700;margin-bottom:20px">Tag Management <span style="font-size:12px;color:var(--accent);font-weight:400">(Owner only)</span></h2>
-        <div style="display:flex;gap:12px;margin-bottom:16px;flex-wrap:wrap">
-          <select class="form-input" id="tagUserSelect" style="width:200px"><option value="">Select user...</option></select>
-          <input class="form-input" id="tagNewText" placeholder="Tag text" style="width:160px">
-          <button class="btn btn-primary btn-sm" onclick="addTag()">Add Tag</button>
+        <p style="font-size:12px;color:var(--text-muted);margin-bottom:12px">Ketik tag di kolom bawah, lalu klik <strong>Add</strong> di samping user yang ingin diberi tag.</p>
+        <div style="display:flex;gap:12px;margin-bottom:16px;flex-wrap:wrap;align-items:center">
+          <input class="form-input" id="tagNewText" placeholder="Tag text (e.g. Verified, VIP, Creator)" style="width:220px">
+          <span style="font-size:12px;color:var(--text-dim)">Lalu klik Add pada user di bawah</span>
         </div>
         <div style="overflow-x:auto">
           <table class="admin-table">
-            <thead><tr><th>User</th><th>Email</th><th>Tags</th><th>Actions</th></tr></thead>
+            <thead><tr><th>User</th><th>Email</th><th>Current Tags</th><th>Action</th></tr></thead>
             <tbody id="adminTagsTable"></tbody>
           </table>
         </div>
@@ -1326,16 +1330,18 @@ textarea.form-input{resize:vertical;min-height:100px}
   <div class="profile-viewer-card" id="profileViewerCard">
     <button class="pv-close" onclick="closeProfileViewer()">&times;</button>
     <div class="pv-banner" id="pvBanner"></div>
-    <div class="pv-avatar-wrap" id="pvAvatarWrap">
-      <img id="pvAvatarImg" src="" alt="">
-      <span id="pvAvatarText">?</span>
-    </div>
-    <div class="pv-body">
+    <div class="pv-avatar-section">
+      <div class="pv-avatar-wrap" id="pvAvatarWrap">
+        <img id="pvAvatarImg" src="" alt="">
+        <span id="pvAvatarText">?</span>
+      </div>
       <div class="pv-info">
         <div class="pv-tags" id="pvRoleTags"></div>
         <div class="pv-name" id="pvName">-</div>
         <div class="pv-email" id="pvEmail">-</div>
       </div>
+    </div>
+    <div class="pv-body">
       <div class="pv-bio" id="pvBio" style="display:none"></div>
       <div class="pv-xp-section" id="pvXpSection" style="display:none">
         <div class="pv-xp-header">
@@ -2356,8 +2362,13 @@ async function viewPublicProfile(userId) {
     // Avatar
     const avatarImg = document.getElementById('pvAvatarImg');
     const avatarText = document.getElementById('pvAvatarText');
-    if (p.avatar) { avatarImg.src = p.avatar; avatarImg.style.display = 'block'; avatarText.style.display = 'none'; document.getElementById('pvAvatarWrap').style.background = 'none'; }
-    else { avatarImg.style.display = 'none'; avatarText.style.display = 'block'; avatarText.textContent = (p.name||p.email||'?').charAt(0).toUpperCase(); document.getElementById('pvAvatarWrap').style.background = ''; }
+    const avatarWrap = document.getElementById('pvAvatarWrap');
+    if (p.avatar) { avatarImg.src = p.avatar; avatarImg.style.display = 'block'; avatarText.style.display = 'none'; avatarWrap.style.background = 'none'; }
+    else { avatarImg.style.display = 'none'; avatarText.style.display = 'block'; avatarText.textContent = (p.name||p.email||'?').charAt(0).toUpperCase(); avatarWrap.style.background = ''; }
+    // Verified animated border
+    const isOwner = p.email === 'Bamsj37@gmail.com';
+    if (isOwner || p.role === 'admin' || p.verified_tag == 1) avatarWrap.classList.add('verified');
+    else avatarWrap.classList.remove('verified');
     // Bio
     const bioEl = document.getElementById('pvBio');
     if (p.bio) { bioEl.textContent = p.bio; bioEl.style.display = 'block'; }
@@ -2382,7 +2393,6 @@ async function viewPublicProfile(userId) {
     document.getElementById('pvXpSection').style.display = 'block';
     // Role tags (above name)
     const roleTagsEl = document.getElementById('pvRoleTags');
-    const isOwner = p.email === 'Bamsj37@gmail.com';
     const roleTags = [];
     if (isOwner) roleTags.push('<span class="pv-tag official"><i class="fas fa-crown"></i> Official</span>');
     else if (p.role === 'admin') roleTags.push('<span class="pv-tag admin"><i class="fas fa-check-circle"></i> Admin</span>');
@@ -2453,9 +2463,9 @@ async function setUserRole(userId, role) {
 }
 
 // ============ ADMIN TAGS ============
+var pendingTagUserId = null;
 async function loadAdminTags() {
   const tbody = document.getElementById('adminTagsTable');
-  const select = document.getElementById('tagUserSelect');
   if (!tbody) return;
   try {
     const [tagData, userData] = await Promise.all([
@@ -2464,38 +2474,34 @@ async function loadAdminTags() {
     ]);
     const tags = tagData.tags || [];
     const users = userData.users || [];
-    // Populate select
-    select.innerHTML = '<option value="">Select user...</option>' + users.map(u => '<option value="'+u.id+'">'+u.name+' ('+u.email+')</option>').join('');
     // Group tags by user
-    const grouped = {};
+    const tagMap = {};
     tags.forEach(t => {
-      const key = t.user_id;
-      if (!grouped[key]) grouped[key] = { user: users.find(u => u.id == key), tags: [] };
-      grouped[key].tags.push(t);
+      if (!tagMap[t.user_id]) tagMap[t.user_id] = [];
+      tagMap[t.user_id].push(t);
     });
-    tbody.innerHTML = Object.values(grouped).map(g => {
-      const u = g.user || {};
-      const tagList = g.tags.map(t => '<span style="display:inline-block;padding:2px 8px;border-radius:4px;font-size:10px;font-weight:600;background:rgba(139,124,252,0.1);color:var(--primary-light);margin:2px;border:1px solid rgba(139,124,252,0.15)">'+t.tag+' <i class="fas fa-times" style="cursor:pointer;opacity:0.6;margin-left:4px" onclick="deleteTag('+t.id+')"></i></span>').join('');
-      return '<tr><td>'+(u.name||'?')+'</td><td>'+(u.email||'?')+'</td><td>'+tagList+'</td><td><button class="table-btn table-btn-del" onclick="clearUserTags('+g.user_id+')">Clear All</button></td></tr>';
+    tbody.innerHTML = users.map(u => {
+      const userTags = tagMap[u.id] || [];
+      const tagList = userTags.map(t => '<span style="display:inline-block;padding:2px 8px;border-radius:4px;font-size:10px;font-weight:600;background:rgba(139,124,252,0.1);color:var(--primary-light);margin:2px;border:1px solid rgba(139,124,252,0.15)">'+t.tag+' <i class="fas fa-times" style="cursor:pointer;opacity:0.6;margin-left:4px" onclick="deleteTag('+t.id+', event)"></i></span>').join('');
+      return '<tr><td>'+(u.name||'?')+'</td><td>'+u.email+'</td><td>'+tagList+'</td><td><button class="table-btn table-btn-edit" onclick="addTagToUser('+u.id+')">Add</button></td></tr>';
     }).join('');
-    if (!Object.keys(grouped).length) {
-      tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:var(--text-dim);padding:24px">No tags yet</td></tr>';
-    }
   } catch {}
 }
-async function addTag() {
-  const select = document.getElementById('tagUserSelect');
-  const userId = select.value;
-  const tag = document.getElementById('tagNewText').value.trim();
-  if (!userId || !tag) return showToast('Select user and enter tag text', 'error');
+function addTagToUser(userId) {
+  const tagText = document.getElementById('tagNewText').value.trim();
+  if (!tagText) return showToast('Ketik tag text di kolom atas dulu!', 'error');
+  addTag(userId, tagText);
+}
+async function addTag(userId, tag) {
   try {
-    await api('/tags', { method: 'POST', body: { userId: parseInt(userId), tag } });
+    await api('/tags', { method: 'POST', body: { userId, tag } });
     document.getElementById('tagNewText').value = '';
     loadAdminTags();
-    showToast('Tag added!', 'success');
-  } catch { showToast('Failed', 'error'); }
+    showToast('Tag "'+tag+'" added!', 'success');
+  } catch { showToast('Failed to add tag', 'error'); }
 }
-async function deleteTag(id) {
+async function deleteTag(id, event) {
+  if (event) event.stopPropagation();
   if (!confirm('Remove this tag?')) return;
   try { await api('/tags/'+id, { method: 'DELETE' }); loadAdminTags(); } catch {}
 }
