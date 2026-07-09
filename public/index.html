@@ -107,11 +107,16 @@ ul{list-style:none}
 .pv-banner{height:130px;border-radius:var(--radius-xl) var(--radius-xl) 0 0;background:var(--gradient-1);background-size:cover;background-position:center;position:relative}
 .pv-avatar-section{display:flex;gap:16px;padding:20px 24px 0;align-items:flex-start}
 .pv-avatar-wrap{position:relative;width:72px;height:72px;border-radius:50%;background:var(--gradient-1);overflow:hidden;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:700;color:#fff}
-.pv-avatar-wrap img{width:100%;height:100%;object-fit:cover;display:none}
+.pv-avatar-wrap img{width:100%;height:100%;object-fit:cover;display:none;border-radius:50%}
 .pv-avatar-wrap.verified{overflow:visible}
 .pv-avatar-wrap.verified::before{content:'';position:absolute;inset:-3px;border-radius:50%;background:conic-gradient(#8b7cfc,#67e8f9,#f472b6,#fb923c,#8b7cfc);z-index:0;animation:pvSpin 3s linear infinite}
 .pv-avatar-wrap.verified::after{content:'';position:absolute;inset:0;border-radius:50%;background:var(--bg-3);z-index:1}
 .pv-avatar-wrap.verified :where(img,span){position:relative;z-index:2}
+/* Profile page verified avatar border */
+#profileAvatarWrap.verified{overflow:visible}
+#profileAvatarWrap.verified::before{content:'';position:absolute;inset:-3px;border-radius:50%;background:conic-gradient(#8b7cfc,#67e8f9,#f472b6,#fb923c,#8b7cfc);z-index:0;animation:pvSpin 3s linear infinite}
+#profileAvatarWrap.verified::after{content:'';position:absolute;inset:0;border-radius:50%;background:var(--bg-3);z-index:1}
+#profileAvatarWrap.verified :where(img,span){position:relative;z-index:2}
 @keyframes pvSpin{to{transform:rotate(360deg)}}
 .pv-info{flex:1}
 .pv-tags{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:4px}
@@ -2338,7 +2343,12 @@ function renderProfile() {
   else { bannerEl.style.backgroundImage = ''; bannerEl.style.background = 'var(--gradient-1)'; }
   // verified badge
   const verifiedEl = document.getElementById('profileVerified');
-  if (verifiedEl) verifiedEl.style.display = (u.role === 'admin' || u.email === 'Bamsj37@gmail.com') ? 'inline-flex' : 'none';
+  const isOwner = u.email === 'Bamsj37@gmail.com';
+  if (verifiedEl) verifiedEl.style.display = (u.role === 'admin' || isOwner) ? 'inline-flex' : 'none';
+  // Animated border on profile avatar
+  const profileAvatarWrap = document.getElementById('profileAvatarWrap');
+  if (isOwner || u.role === 'admin') profileAvatarWrap?.classList.add('verified');
+  else profileAvatarWrap?.classList.remove('verified');
   // XP, Level
   let xp = parseInt(u.xp) || parseInt(localStorage.getItem('bms_xp_'+u.id) || '0');
   const levelNames = ['Basic','Bronze','Silver','Gold','Platinum','Diamond','Elite','Legendary'];
