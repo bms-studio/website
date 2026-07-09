@@ -173,6 +173,21 @@ ul{list-style:none}
 
 /* CARD FLOAT */
 @keyframes cardFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+
+/* TOP SELLERS MEDAL ANIMATIONS */
+.seller-card{transition:all 0.3s ease}
+.seller-card:hover{transform:translateY(-8px);box-shadow:0 12px 40px rgba(139,124,252,0.15)}
+.seller-medal-rank-1{border-color:#8b7cfc !important;box-shadow:0 0 20px rgba(139,124,252,0.3) inset, 0 8px 32px rgba(139,124,252,0.15)}
+.seller-medal-rank-1:hover{box-shadow:0 0 30px rgba(139,124,252,0.4) inset, 0 12px 40px rgba(139,124,252,0.25)}
+.seller-medal-rank-2{border-color:#67e8f9 !important;box-shadow:0 0 20px rgba(103,232,249,0.3) inset, 0 8px 32px rgba(103,232,249,0.15)}
+.seller-medal-rank-2:hover{box-shadow:0 0 30px rgba(103,232,249,0.4) inset, 0 12px 40px rgba(103,232,249,0.25)}
+.seller-medal-rank-3{border-color:#f472b6 !important;box-shadow:0 0 20px rgba(244,114,182,0.3) inset, 0 8px 32px rgba(244,114,182,0.15)}
+.seller-medal-rank-3:hover{box-shadow:0 0 30px rgba(244,114,182,0.4) inset, 0 12px 40px rgba(244,114,182,0.25)}
+.seller-avatar-glow{animation:avatarGlowPulse 2s ease-in-out infinite}
+@keyframes avatarGlowPulse{0%,100%{filter:drop-shadow(0 0 8px currentColor)}50%{filter:drop-shadow(0 0 16px currentColor)}}
+@keyframes medalFloat{0%,100%{transform:translateY(-8px) rotate(0deg)}25%{transform:translateY(-20px) rotate(15deg)}50%{transform:translateY(-12px) rotate(0deg)}75%{transform:translateY(-20px) rotate(-15deg)}}
+.seller-top-badge{animation:medalBounce 2s ease-in-out infinite}
+@keyframes medalBounce{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(-4px,-4px) scale(1.1)}}
 .card-float{animation:cardFloat 4s ease-in-out infinite}
 .card-float:nth-child(2){animation-delay:1s}
 .card-float:nth-child(3){animation-delay:2s}
@@ -2756,17 +2771,27 @@ async function loadTopSellers() {
     const sellerMap = {};
     products.forEach(p => {
       const id = p.user_id;
-      if (!sellerMap[id]) sellerMap[id] = { id, name: p.seller_name || p.seller_email || 'Unknown', count: 0, products: [] };
+      if (!sellerMap[id]) sellerMap[id] = { id, name: p.seller_name || p.seller_email || 'Unknown', avatar: p.seller_avatar || '', count: 0, products: [] };
       sellerMap[id].count++;
       sellerMap[id].products.push(p.name);
     });
     const sellers = Object.values(sellerMap).sort((a,b) => b.count - a.count).slice(0, 6);
     if (!sellers.length) { grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:30px;color:var(--text-dim)">Belum ada seller</div>'; return; }
-    grid.innerHTML = sellers.map(s => {
-  const av = s.avatar || (s.products[0] ? _publicProducts.find(p=>p.user_id==s.id)?.seller_avatar : '');
-  const avStyle = av ? 'background-image:url('+av+');background-size:cover;background-position:center;background-color:var(--bg-4)' : 'background:var(--gradient-1)';
-  return '<div class="glass" style="padding:16px;border-radius:var(--radius-lg);border:1px solid var(--glass-border);text-align:center"><div style="width:48px;height:48px;border-radius:50%;margin:0 auto 10px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:20px;color:#fff;overflow:hidden;'+avStyle+'">'+(av?'':s.name.charAt(0).toUpperCase())+'</div><div style="font-size:14px;font-weight:600;margin-bottom:4px">'+s.name+'</div><div style="font-size:11px;color:var(--text-dim)">'+s.count+' products</div><div style="font-size:10px;color:var(--secondary);margin-top:4px"><i class="fas fa-store-alt"></i> Verified Seller</div></div>';
-}).join('');
+    grid.innerHTML = sellers.map((s, idx) => {
+      const rank = idx + 1;
+      const av = s.avatar || '';
+      const avStyle = av ? 'background-image:url('+av+');background-size:cover;background-position:center;background-color:var(--bg-4)' : 'background:var(--gradient-1)';
+      const medalEmoji = rank === 1 ? '🥇' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : '';
+      const medalClass = rank <= 3 ? 'seller-medal-rank-'+rank : '';
+      const animClass = rank <= 3 ? 'seller-top-badge' : '';
+      return '<div class="glass seller-card '+medalClass+'" style="padding:16px;border-radius:var(--radius-lg);border:1px solid var(--glass-border);text-align:center;position:relative;overflow:hidden;transition:all 0.3s ease">'+
+        (rank <= 3 ? '<div class="'+animClass+'" style="position:absolute;top:-8px;right:-8px;font-size:32px;animation:medalFloat '+((rank===1?2:rank===2?2.2:2.4))+'s ease-in-out infinite">'+medalEmoji+'</div>' : '')+
+        '<div style="width:64px;height:64px;border-radius:50%;margin:0 auto 12px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:24px;color:#fff;overflow:hidden;'+avStyle+';'+(rank <= 3 ? 'box-shadow:0 0 24px '+(['rgba(139,124,252,0.4)','rgba(103,232,249,0.4)','rgba(244,114,182,0.4)'][rank-1])+';border:3px solid '+(['#8b7cfc','#67e8f9','#f472b6'][rank-1]) : 'border:2px solid var(--glass-border)')+';" '+(rank <= 3 ? 'class="seller-avatar-glow"' : '')+'>'+(av?'':s.name.charAt(0).toUpperCase())+'</div>'+
+        '<div style="font-size:14px;font-weight:600;margin-bottom:4px">'+s.name+'</div>'+
+        '<div style="font-size:11px;color:var(--text-dim)">'+s.count+' products</div>'+
+        '<div style="font-size:10px;color:var(--secondary);margin-top:4px"><i class="fas fa-store-alt"></i> Verified Seller</div>'+
+        '</div>';
+    }).join('');
   } catch { grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:30px;color:var(--text-dim)">Gagal memuat seller</div>'; }
 }
 
