@@ -1883,9 +1883,11 @@ textarea.form-input{resize:vertical;min-height:100px}
 // ============ API CLIENT ============
 const API = '/api';
 function api(path, options = {}) {
-  const { headers: optHeaders, ...rest } = options;
+  const { headers: optHeaders, cache = true, ...rest } = options;
   const config = { headers: { 'Content-Type': 'application/json', ...optHeaders }, credentials: 'include', ...rest };
   if (config.body && typeof config.body === 'object') config.body = JSON.stringify(config.body);
+  
+  const cacheKey = 'api_cache_' + path;
   
   let retries = 3;
   const attempt = () => {
@@ -1894,11 +1896,39 @@ function api(path, options = {}) {
       let data;
       try { data = JSON.parse(text); } catch { throw new Error('Server returned: ' + text.slice(0,100)); }
       if (!res.ok) throw new Error(data.error || 'Request failed');
+      
+      // Cache successful response
+      if (cache && path.includes('GET') === false && !path.includes('POST')) {
+        try { localStorage.setItem(cacheKey, JSON.stringify({ data, time: Date.now() })); } catch {}
+      }
       return data;
     }).catch(err => {
       if (retries > 0 && (err.message.includes('timeout') || err.message.includes('Failed to fetch'))) {
         retries--;
+        // Try fallback cache before retry
+        if (cache) {
+          try {
+            const cached = localStorage.getItem(cacheKey);
+            if (cached) {
+              const { data, time } = JSON.parse(cached);
+              const age = Date.now() - time;
+              if (age < 3600000) return data; // Use cache if < 1 hour old
+            }
+          } catch {}
+        }
         return new Promise(r => setTimeout(() => r(attempt()), 500 + Math.random() * 500));
+      }
+      
+      // Last resort: use stale cache
+      if (cache) {
+        try {
+          const cached = localStorage.getItem(cacheKey);
+          if (cached) {
+            const { data } = JSON.parse(cached);
+            console.warn('Using stale cache for ' + path);
+            return data;
+          }
+        } catch {}
       }
       throw err;
     });
@@ -2191,8 +2221,10 @@ async function renderAssets() {
     const params = new URLSearchParams({ store_type: APP.currentStoreType });
     if (APP.currentCategory !== 'all') params.set('category', APP.currentCategory);
     if (search) params.set('search', search);
-    const data = await api('/assets?' + params.toString());
+    const data = await api('/assets?' + params.toString(), { cache: true });
     APP.assets = data.assets || [];
+    // Cache assets data
+    try { localStorage.setItem('cached_assets_' + APP.currentStoreType, JSON.stringify(APP.assets)); } catch {}
     if (!APP.assets.length) { grid.innerHTML = ''; empty.style.display = 'block'; return; }
     empty.style.display = 'none';
     grid.innerHTML = APP.assets.map(a => {
