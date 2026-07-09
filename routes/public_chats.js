@@ -9,10 +9,10 @@ router.get('/', async (req, res) => {
     const after = parseInt(req.query.after) || 0;
     let rows;
     if (after > 0) {
-      const result = await q('SELECT * FROM public_chats WHERE id > ? ORDER BY id ASC', [after]);
+      const result = await q('SELECT pc.*, u.verified_tag as user_verified FROM public_chats pc LEFT JOIN users u ON pc.user_id = u.id WHERE pc.id > ? ORDER BY pc.id ASC', [after]);
       rows = result.rows;
     } else {
-      const result = await q('SELECT * FROM public_chats ORDER BY id DESC LIMIT 30');
+      const result = await q('SELECT pc.*, u.verified_tag as user_verified FROM public_chats pc LEFT JOIN users u ON pc.user_id = u.id ORDER BY pc.id DESC LIMIT 30');
       rows = result.rows.reverse();
     }
     // Attach tags for each unique user

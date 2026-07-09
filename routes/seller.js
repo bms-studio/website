@@ -89,4 +89,75 @@ router.delete('/products/:id', authenticateSession, async (req, res) => {
   } catch { res.status(500).json({ error: 'Server error' }); }
 });
 
+// ====== SELLER CHATS ======
+
+// Get or create chat for a product (customer side)
+router.post('/chats', authenticateSession, async (req, res) => {
+  try {
+    const { productId } = req.body;
+    if (!productId) return res.status(400).json({ error: 'productId required' });
+    const product = await q('SELECT * FROM public_products WHERE id = ?', [productId]);
+    if (!product.rows.length) return res.status(404).json({ error: 'Product not found' });
+    if (product.rows[0].user_id == req.user.id) return res.status(400).json({ error: 'Cannot chat with yourself' });
+    // Check existing chat
+    const existing = await q('SELECT * FROM seller_chats WHERE product_id = ? AND customer_id = ?', [productId, req.user.id]);
+    if (existing.rows.length) return res.json({ chat: existing.rows[0] });
+    // Create new
+    const ins = await q('INSERT INTO seller_chats (product_id, customer_id, seller_id, messages) VALUES (?, ?, ?, ?)',
+      [productId, req.user.id, product.rows[0].user_id, '[]']);
+    const chat = await q('SELECT * FROM seller_chats WHERE id = ?', [Number(ins.lastInsertRowid) || ins.id]);
+    res.json({ chat: chat.rows[0] });
+  } catch { res.status(500).json({ error: 'Server error' }); }
+});
+
+// Send message in a seller chat
+router.post('/chats/:id/message', authenticateSession, async (req, res) => {
+  try {
+    const { text } = req.body;
+    if (!text || !text.trim()) return res.status(400).json({ error: 'Text required' });
+    const chat = await q('SELECT * FROM seller_chats WHERE id = ?', [req.params.id]);
+    if (!chat.rows.length) return res.status(404).json({ error: 'Chat not found' });
+    const c = chat.rows[0];
+    if (c.customer_id != req.user.id && c.seller_id != req.user.id) return res.status(403).json({ error: 'Not your chat' });
+    const messages = JSON.parse(c.messages || '[]');
+    messages.push({ sender_id: req.user.id, text: text.trim(), time: new Date().toISOString() });
+    await q('UPDATE seller_chats SET messages = ? WHERE id = ?', [JSON.stringify(messages), req.params.id]);
+    res.json({ success: true });
+  } catch { res.status(500).json({ error: 'Server error' }); }
+});
+
+// Get messages for a seller chat
+router.get('/chats/:id', authenticateSession, async (req, res) => {
+  try {
+    const chat = await q('SELECT * FROM seller_chats WHERE id = ?', [req.params.id]);
+    if (!chat.rows.length) return res.status(404).json({ error: 'Chat not found' });
+    const c = chat.rows[0];
+    if (c.customer_id != req.user.id && c.seller_id != req.user.id) return res.status(403).json({ error: 'Not your chat' });
+    const product = await q('SELECT name FROM public_products WHERE id = ?', [c.product_id]);
+    const customer = await q('SELECT id, name, email FROM users WHERE id = ?', [c.customer_id]);
+    const seller = await q('SELECT id, name, email FROM users WHERE id = ?', [c.seller_id]);
+    res.json({ chat: { ...c, messages: JSON.parse(c.messages || '[]'), product_name: product.rows[0]?.name, customer: customer.rows[0], seller: seller.rows[0] } });
+  } catch { res.status(500).json({ error: 'Server error' }); }
+});
+
+// Get all chats for current user (as customer or seller)
+router.get('/my-chats', authenticateSession, async (req, res) => {
+  try {
+    const asCustomer = await q(
+      'SELECT sc.*, p.name as product_name FROM seller_chats sc LEFT JOIN public_products p ON sc.product_id = p.id WHERE sc.customer_id = ? ORDER BY sc.id DESC',
+      [req.user.id]
+    );
+    const asSeller = await q(
+      'SELECT sc.*, p.name as product_name FROM seller_chats sc LEFT JOIN public_products p ON sc.product_id = p.id WHERE sc.seller_id = ? ORDER BY sc.id DESC',
+      [req.user.id]
+    );
+    // Add last message preview
+    const mapChat = (row) => {
+      const msgs = JSON.parse(row.messages || '[]');
+      return { ...row, last_message: msgs.length ? msgs[msgs.length - 1] : null, message_count: msgs.length };
+    };
+    res.json({ as_customer: asCustomer.rows.map(mapChat), as_seller: asSeller.rows.map(mapChat) });
+  } catch { res.status(500).json({ error: 'Server error' }); }
+});
+
 module.exports = router;

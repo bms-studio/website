@@ -1087,6 +1087,7 @@ textarea.form-input{resize:vertical;min-height:100px}
             <div style="display:flex;align-items:center;gap:8px">
               <h3 style="font-size:18px;font-weight:700" id="profileName">User</h3>
               <span id="profileVerified" style="display:none;padding:2px 8px;border-radius:5px;font-size:10px;font-weight:600;background:rgba(56,189,248,0.12);color:#38bdf8"><i class="fas fa-check-circle"></i> Verified</span>
+            <span id="profileSellerBadge" style="display:none;padding:2px 8px;border-radius:5px;font-size:10px;font-weight:600;background:rgba(251,191,36,0.12);color:#fbbf24"><i class="fas fa-store-alt"></i> Seller</span>
 
             </div>
             <p style="font-size:12px;color:var(--text-muted)" id="profileEmail">email@example.com</p>
@@ -1435,8 +1436,30 @@ textarea.form-input{resize:vertical;min-height:100px}
         </div>
         <button class="btn btn-primary" style="margin-top:12px" onclick="addSellerProduct()">Add Product</button>
       </div>
+      <!-- My Chats -->
+      <div style="margin-bottom:20px">
+        <h3 style="font-size:15px;font-weight:700;margin-bottom:10px"><i class="fas fa-comments" style="color:var(--secondary)"></i> My Chats</h3>
+        <div id="sellerMyChatsList"></div>
+        <button class="btn btn-outline btn-sm" onclick="loadSellerMyChats()" style="font-size:11px"><i class="fas fa-sync"></i> Refresh</button>
+      </div>
       <!-- My Products List -->
       <div id="sellerProductsList"></div>
+    </div>
+    <!-- Edit Product Modal -->
+    <div class="glass" id="sellerEditProductModal" style="display:none;padding:20px;border-radius:var(--radius-lg);border:1px solid var(--glass-border2);margin-bottom:20px">
+      <h3 style="font-size:15px;margin-bottom:12px">Edit Product</h3>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <input class="form-input" id="editSpName" placeholder="Product name">
+        <input class="form-input" id="editSpPrice" placeholder="Price">
+        <textarea class="form-input" id="editSpDesc" placeholder="Description" rows="2" style="grid-column:1/-1"></textarea>
+        <input class="form-input" id="editSpImage" placeholder="Image URL">
+        <input class="form-input" id="editSpLink" placeholder="Link">
+        <select class="form-input" id="editSpCategory"><option value="other">Other</option><option value="digital">Digital</option><option value="asset">Asset</option><option value="service">Service</option></select>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:12px">
+        <button class="btn btn-primary btn-sm" onclick="saveSellerEditProduct()">Save</button>
+        <button class="btn btn-outline btn-sm" onclick="document.getElementById('sellerEditProductModal').style.display='none'">Cancel</button>
+      </div>
     </div>
     <!-- Pending application message -->
     <div id="sellerPendingSection" style="display:none">
@@ -1445,6 +1468,21 @@ textarea.form-input{resize:vertical;min-height:100px}
         <h3 style="font-size:16px">Application Pending</h3>
         <p style="font-size:13px;color:var(--text-muted)">Your application is being reviewed by admin.</p>
       </div>
+    </div>
+  </div>
+</div>
+
+<!-- SELLER CHAT MODAL -->
+<div class="profile-viewer-overlay" id="sellerChatModal" onclick="if(event.target===this)closeSellerChat()">
+  <div class="profile-viewer-card" style="width:420px">
+    <div class="pv-banner" style="height:80px;background:var(--gradient-1);display:flex;align-items:center;padding:0 20px">
+      <div><div style="font-weight:700;font-size:15px" id="sellerChatProductName">Chat</div><div style="font-size:11px;opacity:0.7" id="sellerChatWith">Seller</div></div>
+      <button class="pv-close" onclick="closeSellerChat()">&times;</button>
+    </div>
+    <div style="padding:16px;height:320px;overflow-y:auto" id="sellerChatMessages"></div>
+    <div class="public-chat-input" style="border-top:1px solid var(--glass-border)">
+      <input type="text" id="sellerChatInput" placeholder="Type a message..." onkeydown="if(event.key==='Enter')sendSellerMsg()">
+      <button onclick="sendSellerMsg()">Send</button>
     </div>
   </div>
 </div>
@@ -2346,11 +2384,13 @@ function startPCPoll() {
 function buildPCMsg(c) {
   const isOfficial = c.user_role === 'official';
   const isAdmin = c.user_role === 'admin';
-  const tagHtml = isOfficial ? '<span class="pc-tag official"><i class="fas fa-crown"></i> Official</span>' : (isAdmin ? '<span class="pc-tag admin"><i class="fas fa-check-circle"></i> Admin</span>' : '');
+  const isSeller = c.user_verified == 1 && !isOfficial && !isAdmin;
+  let tagHtml = isOfficial ? '<span class="pc-tag official"><i class="fas fa-crown"></i> Official</span>' : (isAdmin ? '<span class="pc-tag admin"><i class="fas fa-check-circle"></i> Admin</span>' : '');
+  if (isSeller) tagHtml += '<span class="pc-tag" style="background:rgba(251,191,36,0.08);color:#fbbf24;border:1px solid rgba(251,191,36,0.15)"><i class="fas fa-store-alt"></i> Seller</span>';
   const userTags = (c.tags || []).map(t => '<span class="pc-tag" style="background:rgba(139,124,252,0.08);color:var(--primary-light);border:1px solid rgba(139,124,252,0.15)"><i class="fas fa-tag" style="font-size:7px;margin-right:2px"></i>'+t+'</span>').join('');
   const deleteBtn = (APP.user?.role === 'admin') ? '<i class="fas fa-trash" style="cursor:pointer;opacity:0.5;font-size:10px;margin-left:8px" onclick="deletePC('+c.id+')"></i>' : '';
   const avatarStyle = c.user_avatar ? `background-image:url(${c.user_avatar})` : '';
-  const isVerified = c.user_role === 'official' || c.user_role === 'admin';
+  const isVerified = isOfficial || isAdmin || isSeller;
   const verifiedClass = isVerified ? ' verified' : '';
   return '<div class="public-chat-msg" data-pcid="'+c.id+'"><div class="pc-avatar'+verifiedClass+'" style="'+avatarStyle+'">'+(c.user_avatar?'':(c.user_name||'?').charAt(0).toUpperCase())+'</div><div style="flex:1;min-width:0"><div style="display:flex;align-items:center;flex-wrap:wrap;gap:3px"><span class="pc-name" onclick="viewPublicProfile('+c.user_id+')">'+c.user_name+'</span>'+tagHtml+userTags+deleteBtn+'</div><div class="pc-text">'+c.text+'</div></div></div>';
 }
@@ -2465,6 +2505,9 @@ function renderProfile() {
   const verifiedEl = document.getElementById('profileVerified');
   const isOwner = u.email === 'Bamsj37@gmail.com';
   if (verifiedEl) verifiedEl.style.display = (u.role === 'admin' || isOwner) ? 'inline-flex' : 'none';
+  // Seller badge
+  const sellerBadge = document.getElementById('profileSellerBadge');
+  if (sellerBadge) sellerBadge.style.display = (u.verified_tag == 1 && u.role !== 'admin' && !isOwner) ? 'inline-flex' : 'none';
   // Animated border on profile avatar
   const profileAvatarWrap = document.getElementById('profileAvatarWrap');
   if (isOwner || u.role === 'admin') profileAvatarWrap?.classList.add('verified');
@@ -2550,6 +2593,7 @@ async function viewPublicProfile(userId) {
     const roleTags = [];
     if (isOwner) roleTags.push('<span class="pv-tag official"><i class="fas fa-crown"></i> Official</span>');
     else if (p.role === 'admin') roleTags.push('<span class="pv-tag admin"><i class="fas fa-check-circle"></i> Admin</span>');
+    else if (p.verified_tag == 1) roleTags.push('<span class="pv-tag" style="background:rgba(251,191,36,0.12);color:#fbbf24;border-color:rgba(251,191,36,0.25)"><i class="fas fa-store-alt"></i> Seller</span>');
     roleTagsEl.innerHTML = roleTags.join('');
     // Database tags (below XP)
     const dbTagsEl = document.getElementById('pvDbTags');
@@ -2691,20 +2735,10 @@ async function renderPublicProducts() {
     if (q) products = products.filter(p => p.name.toLowerCase().includes(q) || (p.description||'').toLowerCase().includes(q));
     if (!products.length) { grid.innerHTML = ''; empty.style.display = 'flex'; return; }
     empty.style.display = 'none';
-    grid.innerHTML = products.map(p => `
-      <div class="asset-card glass" style="overflow:hidden">
-        ${p.image ? '<img src="${p.image}" style="width:100%;height:150px;object-fit:cover" onerror="this.style.display=\'none\'">' : '<div style="height:100px;display:flex;align-items:center;justify-content:center;background:var(--bg-4)"><i class="fas fa-box" style="font-size:32px;color:var(--text-dim)"></i></div>'}
-        <div style="padding:14px">
-          <div style="font-size:11px;color:var(--secondary);margin-bottom:4px">Seller: ${p.seller_name || p.seller_email || 'Unknown'}</div>
-          <h4 style="font-size:14px;font-weight:700;margin-bottom:4px">${p.name}</h4>
-          <div style="font-size:12px;color:var(--text-muted);margin-bottom:8px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">${p.description || 'No description'}</div>
-          <div style="display:flex;justify-content:space-between;align-items:center">
-            <span class="badge badge-paid">${p.price}</span>
-            ${p.link ? '<a href="${p.link}" target="_blank" class="btn btn-outline btn-sm" style="font-size:10px;padding:4px 10px"><i class="fas fa-external-link-alt"></i> Buy</a>' : '<span style="font-size:11px;color:var(--text-dim)">Contact seller</span>'}
-          </div>
-        </div>
-      </div>
-    `).join('');
+    grid.innerHTML = products.map(p => {
+      const img = p.image ? '<img src="'+p.image+'" style="width:100%;height:150px;object-fit:cover;border-radius:var(--radius-lg) var(--radius-lg) 0 0" onerror="this.style.display=\'none\'">' : '<div style="height:120px;display:flex;align-items:center;justify-content:center;background:var(--bg-4);border-radius:var(--radius-lg) var(--radius-lg) 0 0"><i class="fas fa-box" style="font-size:36px;color:var(--text-dim)"></i></div>';
+      return '<div class="asset-card glass" style="overflow:hidden">'+img+'<div style="padding:14px"><div style="font-size:11px;color:var(--secondary);margin-bottom:4px"><i class="fas fa-store-alt" style="font-size:9px"></i> '+ (p.seller_name || p.seller_email || 'Unknown') +'</div><h4 style="font-size:14px;font-weight:700;margin-bottom:4px">'+p.name+'</h4><div style="font-size:12px;color:var(--text-muted);margin-bottom:8px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">'+(p.description||'No description')+'</div><div style="display:flex;justify-content:space-between;align-items:center;gap:6px;flex-wrap:wrap"><span class="badge badge-paid" style="font-size:11px">'+p.price+'</span><div style="display:flex;gap:4px">'+(p.link ? '<a href="'+p.link+'" target="_blank" class="btn btn-outline btn-sm" style="font-size:10px;padding:4px 10px"><i class="fas fa-external-link-alt"></i> Buy</a>' : '')+'<button class="btn btn-primary btn-sm" style="font-size:10px;padding:4px 10px" onclick="openSellerChat('+p.id+')"><i class="fas fa-comment"></i> Chat</button></div></div></div></div>';
+    }).join('');
   } catch {}
 }
 
@@ -2717,6 +2751,7 @@ async function loadSellerDashboard() {
     document.getElementById('sellerStatusSection').style.display = 'block';
     document.getElementById('sellerPendingSection').style.display = 'none';
     await loadSellerProducts();
+    await loadSellerMyChats();
   } else {
     // Check if has pending application
     try {
@@ -2738,6 +2773,31 @@ async function loadSellerDashboard() {
     }
   }
 }
+async function loadSellerMyChats() {
+  const list = document.getElementById('sellerMyChatsList');
+  try {
+    const d = await api('/seller/my-chats');
+    const all = [...(d.as_customer||[]), ...(d.as_seller||[])];
+    list.innerHTML = all.length ? all.map(c => {
+      const preview = c.last_message ? c.last_message.text.slice(0,50) : 'No messages';
+      const partner = c.customer_id == APP.user?.id ? 'Seller' : 'Customer';
+      return '<div class="glass" style="padding:10px 14px;border-radius:var(--radius);border:1px solid var(--glass-border);margin-bottom:6px;cursor:pointer;font-size:12px" onclick="openSellerChatByChatId('+c.id+')"><div style="display:flex;justify-content:space-between"><strong>'+c.product_name||'Product'+'</strong> <span style="font-size:10px;color:var(--text-dim)">#'+c.id+'</span></div><div style="color:var(--text-muted);font-size:11px">'+preview+'</div></div>';
+    }).join('') : '<div style="font-size:12px;color:var(--text-dim);padding:12px">Belum ada chat</div>';
+  } catch {}
+}
+async function openSellerChatByChatId(chatId) {
+  if (!APP.isLoggedIn) return;
+  try {
+    const detail = await api('/seller/chats/' + chatId);
+    document.getElementById('sellerChatProductName').textContent = 'Product: ' + (detail.chat.product_name || 'Unknown');
+    document.getElementById('sellerChatWith').textContent = 'Chat with ' + (detail.chat.seller?.id == APP.user.id ? detail.chat.customer?.name || 'Customer' : detail.chat.seller?.name || 'Seller');
+    sellerChatId = chatId;
+    document.getElementById('sellerChatModal').classList.add('open');
+    renderSellerChatMessages(detail.chat.messages || []);
+    if (sellerChatPoll) clearInterval(sellerChatPoll);
+    sellerChatPoll = setInterval(() => loadSellerChatMessages(), 3000);
+  } catch {}
+}
 async function loadSellerProducts() {
   const list = document.getElementById('sellerProductsList');
   try {
@@ -2746,21 +2806,59 @@ async function loadSellerProducts() {
     const statusColors = { pending: '#fbbf24', approved: '#34d399', rejected: '#ef4444' };
     list.innerHTML = products.length ? products.map(p => `
       <div class="glass" style="padding:14px 18px;border-radius:var(--radius-lg);border:1px solid var(--glass-border);margin-bottom:10px">
-        <div style="display:flex;justify-content:space-between;align-items:center">
-          <div style="flex:1">
+        <div style="display:flex;gap:12px">
+          ${p.image ? '<img src="'+p.image+'" style="width:60px;height:60px;object-fit:cover;border-radius:var(--radius);flex-shrink:0" onerror="this.style.display=\'none\'">' : ''}
+          <div style="flex:1;min-width:0">
             <div style="font-weight:600;font-size:14px">${p.name}</div>
             <div style="font-size:11px;color:var(--text-muted)">${p.price} · ${p.category||'other'}</div>
-            <div style="font-size:10px;color:var(--text-dim);margin-top:4px">${p.description || ''}</div>
+            ${p.description ? '<div style="font-size:10px;color:var(--text-dim);margin-top:4px">'+p.description+'</div>' : ''}
+            ${p.link ? '<div style="margin-top:2px"><a href="'+p.link+'" target="_blank" style="font-size:10px;color:var(--primary)"><i class="fas fa-external-link-alt"></i> Link</a></div>' : ''}
+            <div style="margin-top:6px;display:flex;gap:6px;align-items:center">
+              <span style="padding:2px 8px;border-radius:4px;font-size:9px;font-weight:600;background:${statusColors[p.status]}22;color:${statusColors[p.status]}">${p.status}</span>
+              ${p.admin_note ? '<span style="font-size:9px;color:var(--accent)">Note: '+p.admin_note+'</span>' : ''}
+            </div>
           </div>
-          <div style="text-align:right;display:flex;flex-direction:column;align-items:flex-end;gap:4px">
-            <span style="padding:2px 8px;border-radius:4px;font-size:10px;font-weight:600;background:${statusColors[p.status]}22;color:${statusColors[p.status]}">${p.status}</span>
-            ${p.admin_note ? '<span style="font-size:9px;color:var(--accent)">Note: '+p.admin_note+'</span>' : ''}
+          <div style="display:flex;flex-direction:column;gap:4px;flex-shrink:0">
+            <button class="btn btn-outline btn-sm" style="padding:3px 8px;font-size:9px" onclick="openSellerEditProduct(${p.id})"><i class="fas fa-edit"></i></button>
             <button class="btn btn-danger btn-sm" style="padding:3px 8px;font-size:9px" onclick="deleteSellerProduct(${p.id})"><i class="fas fa-trash"></i></button>
           </div>
         </div>
       </div>
     `).join('') : '<div class="empty-state"><i class="fas fa-box"></i><h3>Belum ada produk</h3><p>Tambahkan produk di atas.</p></div>';
   } catch { showToast('Failed to load products', 'error'); }
+}
+var sellerEditProductId = null;
+async function openSellerEditProduct(id) {
+  try {
+    const d = await api('/seller/my-products');
+    const p = (d.products || []).find(x => x.id == id);
+    if (!p) return;
+    sellerEditProductId = id;
+    document.getElementById('editSpName').value = p.name || '';
+    document.getElementById('editSpPrice').value = p.price || '';
+    document.getElementById('editSpDesc').value = p.description || '';
+    document.getElementById('editSpImage').value = p.image || '';
+    document.getElementById('editSpLink').value = p.link || '';
+    document.getElementById('editSpCategory').value = p.category || 'other';
+    document.getElementById('sellerEditProductModal').style.display = 'block';
+  } catch {}
+}
+async function saveSellerEditProduct() {
+  if (!sellerEditProductId) return;
+  const body = {
+    name: document.getElementById('editSpName').value.trim(),
+    price: document.getElementById('editSpPrice').value.trim() || 'Gratis',
+    description: document.getElementById('editSpDesc').value.trim(),
+    image: document.getElementById('editSpImage').value.trim(),
+    link: document.getElementById('editSpLink').value.trim(),
+    category: document.getElementById('editSpCategory').value
+  };
+  try {
+    await api('/seller/products/'+sellerEditProductId, { method: 'PUT', body });
+    document.getElementById('sellerEditProductModal').style.display = 'none';
+    showToast('Product updated!', 'success');
+    loadSellerProducts();
+  } catch (e) { showToast(e.message || 'Failed', 'error'); }
 }
 async function addSellerProduct() {
   const name = document.getElementById('spName').value.trim();
@@ -2791,6 +2889,57 @@ async function submitSellerApplication() {
     showToast('Application submitted!', 'success');
     loadSellerDashboard();
   } catch (e) { showToast(e.message || 'Failed', 'error'); }
+}
+
+// ============ SELLER CHAT ============
+var sellerChatId = null;
+var sellerChatPoll = null;
+async function openSellerChat(productId) {
+  if (!APP.isLoggedIn) { showToast('Login dulu untuk chat seller', 'error'); navigateTo('login'); return; }
+  try {
+    const d = await api('/seller/chats', { method: 'POST', body: { productId } });
+    const chat = d.chat;
+    if (!chat) return;
+    // Fetch chat details
+    const detail = await api('/seller/chats/' + chat.id);
+    document.getElementById('sellerChatProductName').textContent = 'Product: ' + (detail.chat.product_name || 'Unknown');
+    document.getElementById('sellerChatWith').textContent = 'Chat with ' + (detail.chat.seller?.id == APP.user.id ? detail.chat.customer?.name || 'Customer' : detail.chat.seller?.name || 'Seller');
+    sellerChatId = chat.id;
+    document.getElementById('sellerChatModal').classList.add('open');
+    renderSellerChatMessages(detail.chat.messages || []);
+    // Poll
+    if (sellerChatPoll) clearInterval(sellerChatPoll);
+    sellerChatPoll = setInterval(() => loadSellerChatMessages(), 3000);
+  } catch (e) { showToast(e.message || 'Failed', 'error'); }
+}
+function closeSellerChat() {
+  document.getElementById('sellerChatModal').classList.remove('open');
+  if (sellerChatPoll) { clearInterval(sellerChatPoll); sellerChatPoll = null; }
+}
+async function loadSellerChatMessages() {
+  if (!sellerChatId) return;
+  try {
+    const d = await api('/seller/chats/' + sellerChatId);
+    renderSellerChatMessages(d.chat.messages || []);
+  } catch {}
+}
+function renderSellerChatMessages(messages) {
+  const container = document.getElementById('sellerChatMessages');
+  container.innerHTML = messages.map(m => {
+    const isMe = m.sender_id == APP.user?.id;
+    return '<div style="display:flex;justify-content:'+(isMe?'flex-end':'flex-start')+';margin-bottom:8px"><div style="max-width:75%;padding:8px 12px;border-radius:var(--radius);background:'+(isMe?'var(--primary)':'var(--glass)')+';color:'+(isMe?'#fff':'var(--text)')+';font-size:12px">'+m.text+'<div style="font-size:8px;opacity:0.6;margin-top:4px;text-align:'+(isMe?'right':'left')+'">'+(m.time ? new Date(m.time).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}) : '')+'</div></div></div>';
+  }).join('');
+  container.scrollTop = container.scrollHeight;
+}
+async function sendSellerMsg() {
+  const input = document.getElementById('sellerChatInput');
+  const text = input.value.trim();
+  if (!text || !sellerChatId) return;
+  input.value = '';
+  try {
+    await api('/seller/chats/'+sellerChatId+'/message', { method: 'POST', body: { text } });
+    await loadSellerChatMessages();
+  } catch { showToast('Failed to send', 'error'); }
 }
 
 // ============ ADMIN SELLER APPS ============

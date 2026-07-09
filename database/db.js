@@ -162,6 +162,14 @@ async function initDB() {
       portfolio TEXT DEFAULT '',
       status TEXT DEFAULT 'pending',
       created_at TEXT DEFAULT (datetime('now'))
+    )`,
+    `CREATE TABLE IF NOT EXISTS seller_chats (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      product_id INTEGER NOT NULL,
+      customer_id INTEGER NOT NULL,
+      seller_id INTEGER NOT NULL,
+      messages TEXT DEFAULT '[]',
+      created_at TEXT DEFAULT (datetime('now'))
     )`
   ];
   for (const sql of tables) {
