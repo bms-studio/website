@@ -2190,17 +2190,6 @@ async function submitOrder() {
   if (appliedPromo) sub = sub * (1 - appliedPromo / 100);
   try {
     const orderRes = await api('/orders', { method: 'POST', body: { items: APP.cart, total: sub, customer_name: name, customer_email: email, payment_method: payMethod || 'N/A', store_type: [...new Set(APP.cart.map(i => i.store_type).filter(Boolean))].join(',') } });
-    // save order to localStorage for profile
-    const u = APP.user;
-    if (u && u.id) {
-      const orderId = orderRes.order?.id || Date.now();
-      const orders = JSON.parse(localStorage.getItem('bms_orders_'+u.id) || '[]');
-      orders.push({ id: orderId, items: [...APP.cart], total: sub, status: 'Pending', createdAt: new Date().toLocaleDateString() });
-      localStorage.setItem('bms_orders_'+u.id, JSON.stringify(orders));
-      const xp = parseInt(localStorage.getItem('bms_xp_'+u.id) || '0') + 5;
-      localStorage.setItem('bms_xp_'+u.id, xp.toString());
-      try { await api('/admin/profile', { method: 'PUT', body: { xp: xp } }); } catch {}
-    }
     APP.cart = []; saveCart(); renderCart(); appliedPromo = null;
     document.getElementById('checkoutModal').classList.remove('open');
     showToast('Pesanan berhasil! Silakan transfer ke '+ (payMethod || 'metode yang dipilih'), 'success');
@@ -2282,18 +2271,20 @@ function loadTestimonialOrders() {
   const sel = document.getElementById('testimonialOrderSelect');
   if (!sel || !APP.isLoggedIn || !APP.user) return;
   try {
-    const orders = JSON.parse(localStorage.getItem('bms_orders_' + APP.user.id) || '[]');
-    const recent = orders.slice(-10).reverse();
-    const opts = ['<option value="general">-- Umum (tanpa produk) --</option>'];
-    recent.forEach(o => {
-      (o.items||[]).forEach(item => {
-        const name = item.name || 'Order #'+o.id;
-        const val = encodeURIComponent(JSON.stringify({name: item.name, store_type: item.store_type, seller_name: item.sellerName}));
-        opts.push('<option value="'+val+'">'+name+(item.store_type=='public'?' (Public Store)':'')+'</option>');
+    api('/orders').then(d => {
+      const orders = (d.orders || []);
+      const recent = orders.slice(-10).reverse();
+      const opts = ['<option value="general">-- Umum (tanpa produk) --</option>'];
+      recent.forEach(o => {
+        (JSON.parse(o.items||'[]')||[]).forEach(item => {
+          const name = item.name || 'Order #'+o.id;
+          const val = encodeURIComponent(JSON.stringify({name: item.name, store_type: item.store_type, seller_name: item.sellerName}));
+          opts.push('<option value="'+val+'">'+name+(item.store_type=='public'?' (Public Store)':'')+'</option>');
+        });
       });
-    });
-    sel.innerHTML = opts.join('');
-    sel.style.display = 'block';
+      sel.innerHTML = opts.join('');
+      sel.style.display = 'block';
+    }).catch(()=>{});
   } catch {}
 }
 var rateProductId = null, rateProductType = null, rateCurrentStar = 5;
@@ -2323,7 +2314,7 @@ async function submitRating() {
 // ============ PROFILE EDIT ============
 function showEditProfile() {
   document.getElementById('editProfileName').value = APP.user?.name || '';
-  document.getElementById('editProfileBio').value = APP.user?.bio || localStorage.getItem('bms_bio_'+(APP.user?.id||'')) || '';
+  document.getElementById('editProfileBio').value = APP.user?.bio || '';
   document.getElementById('profileEditModal').classList.add('open');
 }
 async function saveProfile() {
@@ -2331,8 +2322,6 @@ async function saveProfile() {
   const bio = document.getElementById('editProfileBio').value.trim();
   if (name && APP.user) {
     APP.user.name = name;
-    localStorage.setItem('bms_bio_' + APP.user.id, bio);
-    localStorage.setItem('bms_name_' + APP.user.id, name);
     try { const d = await api('/admin/profile', { method: 'PUT', body: { name, bio } }); if (d.user) APP.user = d.user; } catch {}
   }
   document.getElementById('profileEditModal').classList.remove('open');
@@ -2833,7 +2822,7 @@ function readFileAsDataUrl(file) {
 function checkGifXp() {
   const isOwner = APP.user?.email === 'Bamsj37@gmail.com';
   if (isOwner || APP.user?.role === 'admin') return true;
-  const xp = parseInt(APP.user?.xp) || parseInt(localStorage.getItem('bms_xp_'+(APP.user?.id||'')) || '0');
+  const xp = parseInt(APP.user?.xp) || 0;
   if (xp >= 50) return true;
   showToast('Butuh 50 XP untuk upload GIF. Beli produk atau upload product ke Public Store!', 'error');
   return false;
@@ -2858,12 +2847,12 @@ function uploadBanner(input) {
   if (file.type === 'image/gif') {
     if (!checkGifXp()) return;
     readFileAsDataUrl(file).then(async (dataUrl) => {
-      try { const d = await api('/admin/profile', { method: 'PUT', body: { banner: dataUrl } }); if (d.user) { APP.user = d.user; localStorage.setItem('bms_banner_'+(APP.user?.id||''), dataUrl); renderProfile(); showToast('GIF Banner updated!', 'success'); } } catch(err) { showToast(err.message || 'Failed', 'error'); }
+      try { const d = await api('/admin/profile', { method: 'PUT', body: { banner: dataUrl } }); if (d.user) { APP.user = d.user; renderProfile(); showToast('GIF Banner updated!', 'success'); } } catch(err) { showToast(err.message || 'Failed', 'error'); }
     });
     return;
   }
   compressImage(file, 1200, 0.85).then(async (dataUrl) => {
-    try { const d = await api('/admin/profile', { method: 'PUT', body: { banner: dataUrl } }); if (d.user) { APP.user = d.user; localStorage.setItem('bms_banner_'+(APP.user?.id||''), dataUrl); renderProfile(); showToast('Banner updated!', 'success'); } } catch(err) { showToast(err.message || 'Failed. File terlalu besar?', 'error'); }
+    try { const d = await api('/admin/profile', { method: 'PUT', body: { banner: dataUrl } }); if (d.user) { APP.user = d.user; renderProfile(); showToast('Banner updated!', 'success'); } } catch(err) { showToast(err.message || 'Failed. File terlalu besar?', 'error'); }
   });
 }
 
@@ -2871,22 +2860,18 @@ function uploadBanner(input) {
 async function renderProfile() {
   if (!APP.isLoggedIn || !APP.user) { navigateTo('login'); return; }
   const u = APP.user;
-  const savedName = localStorage.getItem('bms_name_'+u.id) || u.name || '';
-  const savedBio = u.bio || localStorage.getItem('bms_bio_'+u.id) || '';
-  document.getElementById('profileName').textContent = savedName || 'User';
+  document.getElementById('profileName').textContent = u.name || 'User';
   document.getElementById('profileEmail').textContent = u.email || '';
   const bioEl = document.getElementById('profileBioDisplay');
-  if (savedBio) { bioEl.textContent = '\u201C' + savedBio + '\u201D'; bioEl.style.display = 'block'; } else { bioEl.style.display = 'none'; }
+  if (u.bio) { bioEl.textContent = '\u201C' + u.bio + '\u201D'; bioEl.style.display = 'block'; } else { bioEl.style.display = 'none'; }
   // avatar
   const avatarImg = document.getElementById('profileAvatarImg');
   const avatarText = document.getElementById('profileAvatarText');
   if (u.avatar) { avatarImg.src = u.avatar; avatarImg.style.display = 'block'; avatarText.style.display = 'none'; document.getElementById('profileAvatarWrap').style.background = 'none'; }
-  else { avatarImg.style.display = 'none'; avatarText.style.display = 'block'; avatarText.textContent = (savedName||u.email||'U').charAt(0).toUpperCase(); document.getElementById('profileAvatarWrap').style.background = ''; }
+  else { avatarImg.style.display = 'none'; avatarText.style.display = 'block'; avatarText.textContent = (u.name||u.email||'U').charAt(0).toUpperCase(); document.getElementById('profileAvatarWrap').style.background = ''; }
   // banner
   const bannerEl = document.getElementById('profileBanner');
-  const localBanner = localStorage.getItem('bms_banner_'+(u.id||''));
-  const bannerUrl = u.banner || localBanner || '';
-  if (bannerUrl) { bannerEl.style.backgroundImage = 'url('+bannerUrl+')'; bannerEl.style.backgroundSize = 'cover'; bannerEl.style.backgroundPosition = 'center'; }
+  if (u.banner) { bannerEl.style.backgroundImage = 'url('+u.banner+')'; bannerEl.style.backgroundSize = 'cover'; bannerEl.style.backgroundPosition = 'center'; }
   else { bannerEl.style.backgroundImage = ''; bannerEl.style.background = 'var(--gradient-1)'; }
   // verified badge
   const verifiedEl = document.getElementById('profileVerified');
@@ -2901,7 +2886,7 @@ async function renderProfile() {
   if (isOwner || u.role === 'admin') profileAvatarWrap?.classList.add('verified');
   else if (u.verified_tag == 1) { profileAvatarWrap?.classList.add('verified'); profileAvatarWrap?.classList.add('seller'); }
   // XP, Level
-  let xp = parseInt(u.xp) || parseInt(localStorage.getItem('bms_xp_'+u.id) || '0');
+  let xp = parseInt(u.xp) || 0;
   const levelNames = ['Basic','Bronze','Silver','Gold','Platinum','Diamond','Elite','Legendary'];
   const levelThresholds = [0,100,300,600,1000,1600,2400,3500];
   let level = 0;
@@ -2920,15 +2905,13 @@ async function renderProfile() {
   const refCode = u.ref_code || (u.email ? u.email.split('@')[0].toUpperCase() + (u.id || '') : 'BMS' + Math.floor(Math.random()*1000));
   document.getElementById('profileRefCode').value = refCode;
   loadTestimonialOrders();
-  // Orders — merge localStorage + server orders
+  // Orders from server only
   const ordersList = document.getElementById('profileOrdersList');
   try {
     let allOrders = [];
-    const localOrders = JSON.parse(localStorage.getItem('bms_orders_' + u.id) || '[]');
-    allOrders = [...localOrders];
     try {
       const serverRes = await api('/orders');
-      const serverOrders = (serverRes.orders || []).map(o => ({
+      allOrders = (serverRes.orders || []).map(o => ({
         id: o.id,
         items: JSON.parse(o.items || '[]'),
         total: o.total,
@@ -2936,9 +2919,6 @@ async function renderProfile() {
         createdAt: (o.created_at || '').slice(0,10),
         fromServer: true
       }));
-      serverOrders.forEach(so => {
-        if (!allOrders.find(o => o.id === so.id)) allOrders.push(so);
-      });
     } catch {}
     if (allOrders.length) {
       ordersList.innerHTML = allOrders.sort((a,b) => new Date(b.createdAt||0)-new Date(a.createdAt||0)).map(o => {
