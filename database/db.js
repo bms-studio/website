@@ -231,6 +231,7 @@ async function initDB() {
     "ALTER TABLE testimonials ADD COLUMN seller_name TEXT DEFAULT ''",
     "ALTER TABLE tags ADD COLUMN icon TEXT DEFAULT ''",
     "ALTER TABLE tags ADD COLUMN color TEXT DEFAULT '#8b7cfc'",
+    "ALTER TABLE announcements ADD COLUMN duration_minutes INTEGER DEFAULT 0",
   ];
   for (const sql of migrations) {
     try { await client.execute(sql); } catch {}
