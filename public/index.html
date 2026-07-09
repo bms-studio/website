@@ -188,6 +188,24 @@ ul{list-style:none}
 @keyframes medalFloat{0%,100%{transform:translateY(-8px) rotate(0deg)}25%{transform:translateY(-20px) rotate(15deg)}50%{transform:translateY(-12px) rotate(0deg)}75%{transform:translateY(-20px) rotate(-15deg)}}
 .seller-top-badge{animation:medalBounce 2s ease-in-out infinite}
 @keyframes medalBounce{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(-4px,-4px) scale(1.1)}}
+
+/* PODIUM STYLES */
+.podium-card{position:relative;cursor:pointer;transition:all 0.3s ease;display:flex;flex-direction:column;align-items:center}
+.podium-card:hover{transform:translateY(-8px)}
+.podium-rank-1{order:2;min-height:280px}
+.podium-rank-2{order:1;min-height:200px}
+.podium-rank-3{order:3;min-height:160px}
+.podium-medal{position:absolute;top:-20px;width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:20px;color:#fff;animation:medalFloat 2s ease-in-out infinite}
+.podium-medal-1{background:linear-gradient(135deg,#FFD700,#FFA500);box-shadow:0 0 20px rgba(255,215,0,0.4)}
+.podium-medal-2{background:linear-gradient(135deg,#C0C0C0,#E8E8E8);box-shadow:0 0 20px rgba(192,192,192,0.4)}
+.podium-medal-3{background:linear-gradient(135deg,#CD7F32,#E5A852);box-shadow:0 0 20px rgba(205,127,50,0.4)}
+.podium-avatar{width:72px;height:72px;border-radius:50%;margin-bottom:12px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:28px;color:#fff;overflow:hidden;border:3px solid;background-size:cover;background-position:center}
+.podium-rank-1 .podium-avatar{border-color:#8b7cfc;box-shadow:0 0 24px rgba(139,124,252,0.4)}
+.podium-rank-2 .podium-avatar{border-color:#67e8f9;box-shadow:0 0 24px rgba(103,232,249,0.4)}
+.podium-rank-3 .podium-avatar{border-color:#f472b6;box-shadow:0 0 24px rgba(244,114,182,0.4)}
+.podium-info{text-align:center}
+.podium-name{font-size:14px;font-weight:600;margin-bottom:4px}
+.podium-count{font-size:11px;color:var(--text-dim)}
 .card-float{animation:cardFloat 4s ease-in-out infinite}
 .card-float:nth-child(2){animation-delay:1s}
 .card-float:nth-child(3){animation-delay:2s}
@@ -799,9 +817,40 @@ textarea.form-input{resize:vertical;min-height:100px}
     <div style="max-width:1000px;margin:0 auto">
       <h2 class="section-title">Top <span class="text-gradient">Sellers</span></h2>
       <p class="section-desc">Seller terbaik dengan produk berkualitas.</p>
-      <div id="topSellersGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-top:20px"></div>
+      <div id="topSellersContainer" style="margin-top:20px">
+        <div id="topSellersPodium" style="display:flex;align-items:flex-end;justify-content:center;gap:20px;margin-bottom:40px;min-height:280px"></div>
+        <div style="margin-top:20px">
+          <button class="btn btn-outline btn-sm" onclick="toggleTopSellersDropdown()" style="width:100%;text-align:center"><i class="fas fa-chevron-down"></i> View More Sellers</button>
+          <div id="topSellersDropdown" style="display:none;margin-top:12px;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px"></div>
+        </div>
+      </div>
     </div>
   </section>
+
+  <!-- SELLER PROFILE MODAL -->
+  <div class="modal-overlay" id="sellerProfileModal">
+    <div class="modal-content" style="max-width:500px">
+      <div class="modal-header">
+        <h3 style="font-size:16px">Seller Profile</h3>
+        <button class="modal-close" onclick="document.getElementById('sellerProfileModal').classList.remove('open')"><i class="fas fa-times"></i></button>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:16px">
+        <div style="text-align:center">
+          <div id="sellerProfileAvatar" style="width:80px;height:80px;border-radius:50%;margin:0 auto 12px;background:var(--gradient-1);display:flex;align-items:center;justify-content:center;font-size:32px;font-weight:700;color:#fff;overflow:hidden;border:3px solid var(--primary)"></div>
+          <div id="sellerProfileName" style="font-size:18px;font-weight:600"></div>
+          <div id="sellerProfileEmail" style="font-size:12px;color:var(--text-dim)"></div>
+        </div>
+        <div style="padding:12px;background:var(--glass);border-radius:var(--radius);border:1px solid var(--glass-border)">
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;text-align:center">
+            <div><div id="sellerProfileProducts" style="font-size:18px;font-weight:700;color:var(--primary)">0</div><div style="font-size:11px;color:var(--text-dim)">Products</div></div>
+            <div><div id="sellerProfileOrders" style="font-size:18px;font-weight:700;color:var(--secondary)">0</div><div style="font-size:11px;color:var(--text-dim)">Orders</div></div>
+            <div><div id="sellerProfileRating" style="font-size:18px;font-weight:700;color:var(--accent2)">0</div><div style="font-size:11px;color:var(--text-dim)">Rating</div></div>
+          </div>
+        </div>
+        <div style="font-size:13px;color:var(--text-muted);line-height:1.6" id="sellerProfileBio">No bio yet</div>
+      </div>
+    </div>
+  </div>
 
   <!-- FAQ -->
   <section class="section section-gradient" style="background:var(--bg-2);padding:80px 20px;max-width:none">
@@ -2792,8 +2841,9 @@ function promoMove(dir) {
 }
 function promoGo(idx) { promoIdx = idx; promoMove(0); }
 async function loadTopSellers() {
-  const grid = document.getElementById('topSellersGrid');
-  if (!grid) return;
+  const podium = document.getElementById('topSellersPodium');
+  const dropdown = document.getElementById('topSellersDropdown');
+  if (!podium || !dropdown) return;
   try {
     const d = await api('/seller/products');
     const products = d.products || [];
@@ -2804,24 +2854,73 @@ async function loadTopSellers() {
       sellerMap[id].count++;
       sellerMap[id].products.push(p.name);
     });
-    const sellers = Object.values(sellerMap).sort((a,b) => b.count - a.count).slice(0, 6);
-    if (!sellers.length) { grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:30px;color:var(--text-dim)">Belum ada seller</div>'; return; }
-    grid.innerHTML = sellers.map((s, idx) => {
+    const sellers = Object.values(sellerMap).sort((a,b) => b.count - a.count);
+    if (!sellers.length) { podium.innerHTML = '<div style="text-align:center;padding:30px;color:var(--text-dim);width:100%">Belum ada seller</div>'; return; }
+    
+    const topThree = sellers.slice(0, 3);
+    const restSellers = sellers.slice(3);
+    
+    // Podium (Top 3)
+    podium.innerHTML = topThree.map((s, idx) => {
       const rank = idx + 1;
       const av = s.avatar || '';
-      const avStyle = av ? 'background-image:url('+av+');background-size:cover;background-position:center;background-color:var(--bg-4)' : 'background:var(--gradient-1)';
-      const medalImg = rank === 1 ? '/medal-1.svg' : rank === 2 ? '/medal-2.svg' : rank === 3 ? '/medal-3.svg' : '';
-      const medalClass = rank <= 3 ? 'seller-medal-rank-'+rank : '';
-      const animClass = rank <= 3 ? 'seller-top-badge' : '';
-      return '<div class="glass seller-card '+medalClass+'" style="padding:16px;border-radius:var(--radius-lg);border:1px solid var(--glass-border);text-align:center;position:relative;overflow:hidden;transition:all 0.3s ease">'+
-        (rank <= 3 ? '<img src="'+medalImg+'" class="'+animClass+'" style="position:absolute;top:-12px;right:-12px;width:56px;height:56px;animation:medalFloat '+((rank===1?2:rank===2?2.2:2.4))+'s ease-in-out infinite" alt="rank '+rank+'" />' : '')+
-        '<div style="width:64px;height:64px;border-radius:50%;margin:0 auto 12px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:24px;color:#fff;overflow:hidden;'+avStyle+';'+(rank <= 3 ? 'box-shadow:0 0 24px '+(['rgba(139,124,252,0.4)','rgba(103,232,249,0.4)','rgba(244,114,182,0.4)'][rank-1])+';border:3px solid '+(['#8b7cfc','#67e8f9','#f472b6'][rank-1]) : 'border:2px solid var(--glass-border)')+';" '+(rank <= 3 ? 'class="seller-avatar-glow"' : '')+'>'+(av?'':s.name.charAt(0).toUpperCase())+'</div>'+
-        '<div style="font-size:14px;font-weight:600;margin-bottom:4px">'+s.name+'</div>'+
-        '<div style="font-size:11px;color:var(--text-dim)">'+s.count+' products</div>'+
-        '<div style="font-size:10px;color:var(--secondary);margin-top:4px"><i class="fas fa-store-alt"></i> Verified Seller</div>'+
+      const avStyle = av ? 'background-image:url('+av+')' : 'background:var(--gradient-1)';
+      return '<div class="podium-card podium-rank-'+rank+'" onclick="showSellerProfile('+s.id+',\''+s.name.replace(/'/g,"\\'")+'\',\''+av.replace(/'/g,"\\'")+'\','+s.count+')">'+
+        '<div class="podium-medal podium-medal-'+rank+'">'+rank+'</div>'+
+        '<div class="podium-avatar" style="'+avStyle+'">'+(av?'':s.name.charAt(0).toUpperCase())+'</div>'+
+        '<div class="podium-info">'+
+        '<div class="podium-name">'+s.name+'</div>'+
+        '<div class="podium-count">'+s.count+' products</div>'+
+        '</div>'+
         '</div>';
     }).join('');
-  } catch { grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:30px;color:var(--text-dim)">Gagal memuat seller</div>'; }
+    
+    // Dropdown (Rest)
+    if (restSellers.length > 0) {
+      dropdown.style.display = 'grid';
+      dropdown.innerHTML = restSellers.map((s, idx) => {
+        const av = s.avatar || '';
+        const avStyle = av ? 'background-image:url('+av+')' : 'background:var(--gradient-1)';
+        return '<div class="glass" style="padding:12px;border-radius:var(--radius);border:1px solid var(--glass-border);text-align:center;cursor:pointer;transition:all 0.3s ease" onclick="showSellerProfile('+s.id+',\''+s.name.replace(/'/g,"\\'")+'\',\''+av.replace(/'/g,"\\'")+'\','+s.count+')" onmouseover="this.style.transform=\'translateY(-4px)\'" onmouseout="this.style.transform=\'translateY(0)\'">'+
+          '<div style="width:48px;height:48px;border-radius:50%;margin:0 auto 8px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:18px;color:#fff;overflow:hidden;'+avStyle+';border:2px solid var(--glass-border)">'+(av?'':s.name.charAt(0).toUpperCase())+'</div>'+
+          '<div style="font-size:12px;font-weight:600;margin-bottom:2px">'+s.name+'</div>'+
+          '<div style="font-size:10px;color:var(--text-dim)">'+s.count+' products</div>'+
+          '</div>';
+      }).join('');
+    } else {
+      dropdown.style.display = 'none';
+    }
+  } catch { podium.innerHTML = '<div style="text-align:center;padding:30px;color:var(--text-dim);width:100%">Gagal memuat seller</div>'; }
+}
+
+function toggleTopSellersDropdown() {
+  const dropdown = document.getElementById('topSellersDropdown');
+  const btn = event.target.closest('button');
+  const isHidden = dropdown.style.display === 'none';
+  dropdown.style.display = isHidden ? 'grid' : 'none';
+  btn.innerHTML = isHidden ? '<i class="fas fa-chevron-up"></i> Hide More Sellers' : '<i class="fas fa-chevron-down"></i> View More Sellers';
+}
+
+function showSellerProfile(sellerId, sellerName, sellerAvatar, productCount) {
+  const modal = document.getElementById('sellerProfileModal');
+  document.getElementById('sellerProfileName').textContent = sellerName;
+  document.getElementById('sellerProfileEmail').textContent = 'Seller ID: '+sellerId;
+  document.getElementById('sellerProfileProducts').textContent = productCount;
+  document.getElementById('sellerProfileOrders').textContent = '0';
+  document.getElementById('sellerProfileRating').textContent = '★ 5.0';
+  document.getElementById('sellerProfileBio').textContent = 'Premium seller with quality products';
+  
+  const avatarEl = document.getElementById('sellerProfileAvatar');
+  if (sellerAvatar) {
+    avatarEl.style.backgroundImage = 'url('+sellerAvatar+')';
+    avatarEl.style.backgroundSize = 'cover';
+    avatarEl.textContent = '';
+  } else {
+    avatarEl.style.background = 'var(--gradient-1)';
+    avatarEl.textContent = sellerName.charAt(0).toUpperCase();
+  }
+  
+  modal.classList.add('open');
 }
 
 // ============ PUBLIC CHAT ============
