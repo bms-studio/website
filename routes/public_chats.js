@@ -6,12 +6,27 @@ const router = express.Router();
 router.get('/', async (req, res) => {
   try {
     const after = parseInt(req.query.after) || 0;
+    let rows;
     if (after > 0) {
       const result = await q('SELECT * FROM public_chats WHERE id > ? ORDER BY id ASC', [after]);
-      return res.json({ chats: result.rows });
+      rows = result.rows;
+    } else {
+      const result = await q('SELECT * FROM public_chats ORDER BY id DESC LIMIT 30');
+      rows = result.rows.reverse();
     }
-    const result = await q('SELECT * FROM public_chats ORDER BY id DESC LIMIT 30');
-    res.json({ chats: result.rows.reverse() });
+    // Attach tags for each unique user
+    const userIds = [...new Set(rows.map(r => r.user_id))];
+    if (userIds.length) {
+      const placeholders = userIds.map(() => '?').join(',');
+      const tagResult = await q('SELECT user_id, tag FROM tags WHERE user_id IN (' + placeholders + ')', userIds);
+      const tagMap = {};
+      tagResult.rows.forEach(t => {
+        if (!tagMap[t.user_id]) tagMap[t.user_id] = [];
+        tagMap[t.user_id].push(t.tag);
+      });
+      rows.forEach(r => { r.tags = tagMap[r.user_id] || []; });
+    }
+    res.json({ chats: rows });
   } catch { res.status(500).json({ error: 'Server error' }); }
 });
 

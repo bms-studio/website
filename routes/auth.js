@@ -26,7 +26,7 @@ router.post('/login', async (req, res) => {
     await q('UPDATE users SET session_token = ? WHERE id = ?', [sessionToken, user.id]);
     res.cookie('session', sessionToken, COOKIE_OPTIONS);
     res.json({
-      user: { id: user.id, email: user.email, name: user.name, role: user.role, avatar: user.avatar || '', banner: user.banner || '', verified_tag: user.verified_tag || 0 }
+      user: { id: user.id, email: user.email, name: user.name, role: user.role, avatar: user.avatar || '', banner: user.banner || '', verified_tag: user.verified_tag || 0, xp: user.xp || 0, bio: user.bio || '', ref_code: user.ref_code || '' }
     });
   } catch (err) {
     res.status(500).json({ error: 'Server error' });
@@ -78,7 +78,7 @@ router.post('/verify-otp', async (req, res) => {
     res.cookie('session', sessionToken, COOKIE_OPTIONS);
     res.json({
       message: 'Registrasi berhasil!',
-      user: { id: user.id, email: user.email, name: user.name, role: 'user', avatar: '' }
+      user: { id: user.id, email: user.email, name: user.name, role: 'user', avatar: '', xp: 0, bio: '', ref_code: '' }
     });
   } catch (err) {
     res.status(500).json({ error: 'Server error' });
@@ -122,7 +122,7 @@ router.get('/me', async (req, res) => {
   const sessionToken = req.cookies?.session;
   if (!sessionToken) return res.json({ user: null });
   try {
-    const result = await q('SELECT id, email, name, role, avatar, banner, verified_tag FROM users WHERE session_token = ?', [sessionToken]);
+    const result = await q('SELECT id, email, name, role, avatar, banner, verified_tag, xp, bio, ref_code FROM users WHERE session_token = ?', [sessionToken]);
     const user = result.rows[0];
     if (!user) return res.json({ user: null });
     res.json({ user });

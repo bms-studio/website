@@ -132,6 +132,13 @@ async function initDB() {
       used_count INTEGER DEFAULT 0,
       active INTEGER DEFAULT 1,
       created_at TEXT DEFAULT (datetime('now'))
+    )`,
+    `CREATE TABLE IF NOT EXISTS tags (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      user_id INTEGER NOT NULL,
+      tag TEXT NOT NULL,
+      created_by INTEGER NOT NULL,
+      created_at TEXT DEFAULT (datetime('now'))
     )`
   ];
   for (const sql of tables) {
@@ -148,6 +155,9 @@ async function initDB() {
     "ALTER TABLE users ADD COLUMN verified_tag INTEGER DEFAULT 0",
     "ALTER TABLE users ADD COLUMN avatar TEXT DEFAULT ''",
     "ALTER TABLE users ADD COLUMN banner TEXT DEFAULT ''",
+    "ALTER TABLE users ADD COLUMN xp INTEGER DEFAULT 0",
+    "ALTER TABLE users ADD COLUMN bio TEXT DEFAULT ''",
+    "ALTER TABLE users ADD COLUMN ref_code TEXT DEFAULT ''",
   ];
   for (const sql of migrations) {
     try { await client.execute(sql); } catch {}
