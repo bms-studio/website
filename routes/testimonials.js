@@ -5,7 +5,12 @@ const router = express.Router();
 
 router.get('/', async (req, res) => {
   try {
-    const result = await q('SELECT * FROM testimonials ORDER BY created_at DESC');
+    const result = await q(
+      `SELECT t.*, u.avatar as user_avatar
+       FROM testimonials t
+       LEFT JOIN users u ON t.user_id = u.id
+       ORDER BY t.created_at DESC`
+    );
     res.json({ testimonials: result.rows });
   } catch { res.status(500).json({ error: 'Server error' }); }
 });

@@ -7,24 +7,24 @@ const router = express.Router();
 router.get('/', async (req, res) => {
   try {
     const { category, search, store_type } = req.query;
-    let sql = 'SELECT * FROM assets';
-    const params = [];
+    let sql = 'SELECT a.*, ROUND(AVG(r.rating),1) as avg_rating, COUNT(r.id) as rating_count FROM assets a LEFT JOIN product_ratings r ON r.product_id = a.id AND r.product_type = ?';
+    const params = ['store'];
     const conditions = [];
     if (store_type) {
-      conditions.push('store_type = ?');
+      conditions.push('a.store_type = ?');
       params.push(store_type);
     }
     if (category && category !== 'all') {
-      conditions.push('category = ?');
+      conditions.push('a.category = ?');
       params.push(category);
     }
     if (search) {
-      conditions.push('(name LIKE ? OR description LIKE ? OR tags LIKE ?)');
+      conditions.push('(a.name LIKE ? OR a.description LIKE ? OR a.tags LIKE ?)');
       const s = `%${search}%`;
       params.push(s, s, s);
     }
-    if (conditions.length) sql += ' WHERE ' + conditions.join(' AND ');
-    sql += ' ORDER BY created_at DESC';
+    if (conditions.length) sql += ' AND ' + conditions.join(' AND ');
+    sql += ' GROUP BY a.id ORDER BY a.created_at DESC';
     const result = await q(sql, params);
     res.json({ assets: result.rows });
   } catch (err) {

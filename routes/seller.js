@@ -7,8 +7,8 @@ const router = express.Router();
 router.get('/products', async (req, res) => {
   try {
     const result = await q(
-      'SELECT p.*, u.name as seller_name, u.email as seller_email FROM public_products p LEFT JOIN users u ON p.user_id = u.id WHERE p.status = ? ORDER BY p.created_at DESC',
-      ['approved']
+      'SELECT p.*, u.name as seller_name, u.email as seller_email, u.avatar as seller_avatar, ROUND(AVG(r.rating),1) as avg_rating, COUNT(r.id) as rating_count FROM public_products p LEFT JOIN users u ON p.user_id = u.id LEFT JOIN product_ratings r ON r.product_id = p.id AND r.product_type = ? WHERE p.status = ? GROUP BY p.id ORDER BY p.created_at DESC',
+      ['public', 'approved']
     );
     res.json({ products: result.rows });
   } catch { res.status(500).json({ error: 'Server error' }); }
@@ -139,8 +139,8 @@ router.get('/chats/:id', authenticateSession, async (req, res) => {
     const c = chat.rows[0];
     if (c.customer_id != req.user.id && c.seller_id != req.user.id) return res.status(403).json({ error: 'Not your chat' });
     const product = await q('SELECT name FROM public_products WHERE id = ?', [c.product_id]);
-    const customer = await q('SELECT id, name, email FROM users WHERE id = ?', [c.customer_id]);
-    const seller = await q('SELECT id, name, email FROM users WHERE id = ?', [c.seller_id]);
+    const customer = await q('SELECT id, name, email, avatar FROM users WHERE id = ?', [c.customer_id]);
+    const seller = await q('SELECT id, name, email, avatar FROM users WHERE id = ?', [c.seller_id]);
     res.json({ chat: { ...c, messages: JSON.parse(c.messages || '[]'), product_name: product.rows[0]?.name, customer: customer.rows[0], seller: seller.rows[0] } });
   } catch { res.status(500).json({ error: 'Server error' }); }
 });

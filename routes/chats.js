@@ -20,6 +20,20 @@ router.get('/admin/all', authenticateSession, requireAdmin, async (req, res) => 
   } catch { res.status(500).json({ error: 'Server error' }); }
 });
 
+router.post('/admin/product', authenticateSession, async (req, res) => {
+  try {
+    const { productId, productType } = req.body;
+    const asset = await q('SELECT name FROM assets WHERE id = ?', [productId]);
+    const itemName = asset.rows[0]?.name || 'Product #' + productId;
+    const items = JSON.stringify([{ id: productId, name: itemName, product_type: productType, store_type: 'store' }]);
+    const r = await q('INSERT INTO orders (user_id, items, total, status, customer_name, store_type) VALUES (?, ?, 0, ?, ?, ?)',
+      [req.user.id, items, 'pending', req.user.name || req.user.email, 'store']);
+    const orderId = Number(r.lastInsertRowid) || r.id;
+    await q('INSERT INTO chats (order_id, user_id, messages) VALUES (?, ?, ?)', [orderId, req.user.id, '[]']);
+    res.json({ success: true, orderId });
+  } catch (e) { console.error(e); res.status(500).json({ error: 'Server error' }); }
+});
+
 router.post('/:orderId/message', authenticateSession, async (req, res) => {
   try {
     const { text } = req.body;
