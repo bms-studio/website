@@ -1067,76 +1067,81 @@ textarea.form-input{resize:vertical;min-height:100px}
 
 <!-- PROFILE -->
 <div class="page" id="page-profile">
-  <div class="banner-page">
-    <div class="overlay"></div>
-    <div class="content">
-      <h1 class="hero-title" style="font-size:30px">My <span class="text-gradient">Profile</span></h1>
-      <p style="color:var(--text-muted);margin-top:6px;font-size:13px">Your stats, orders, and referral info</p>
+  <div style="max-width:860px;margin:0 auto;padding:0 16px">
+    <!-- PROFILE HEADER -->
+    <div class="glass" style="border-radius:var(--radius-xl);overflow:hidden;border:1px solid var(--glass-border);margin-top:24px">
+      <div id="profileBanner" style="height:140px;background:var(--gradient-1);background-size:cover;background-position:center;position:relative;cursor:pointer" onclick="document.getElementById('bannerInput').click()">
+        <div style="position:absolute;bottom:10px;right:10px;width:30px;height:30px;border-radius:50%;background:rgba(0,0,0,0.35);display:flex;align-items:center;justify-content:center;color:#fff;font-size:12px;backdrop-filter:blur(4px)"><i class="fas fa-camera"></i></div>
+      </div>
+      <input type="file" id="bannerInput" accept="image/*" style="display:none" onchange="uploadBanner(this)">
+      <input type="file" id="avatarInput" accept="image/*" style="display:none" onchange="uploadAvatar(this)">
+      <div style="padding:0 24px 20px;display:flex;gap:18px;margin-top:-44px;position:relative;z-index:2;align-items:flex-end">
+        <div id="profileAvatarWrap" style="width:80px;height:80px;border-radius:50%;border:3px solid var(--bg);background:var(--gradient-1);display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:700;color:#fff;flex-shrink:0;cursor:pointer;position:relative" onclick="document.getElementById('avatarInput').click()">
+          <span id="profileAvatarText" style="line-height:1;z-index:2;position:relative">U</span>
+          <img id="profileAvatarImg" style="display:none;width:100%;height:100%;object-fit:cover;position:absolute;top:0;left:0;border-radius:50%;z-index:2" alt="">
+          <div style="position:absolute;bottom:0;right:0;width:24px;height:24px;border-radius:50%;background:rgba(0,0,0,0.35);display:flex;align-items:center;justify-content:center;color:#fff;font-size:10px;backdrop-filter:blur(4px)"><i class="fas fa-camera"></i></div>
+        </div>
+        <div style="flex:1;padding-top:32px">
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+            <h2 style="font-size:20px;font-weight:700;font-family:'Syne',sans-serif" id="profileName">User</h2>
+            <span id="profileVerified" style="display:none;padding:2px 10px;border-radius:100px;font-size:10px;font-weight:600;background:rgba(56,189,248,0.12);color:#38bdf8;border:1px solid rgba(56,189,248,0.2)"><i class="fas fa-check-circle"></i> Verified</span>
+            <span id="profileSellerBadge" style="display:none;padding:2px 10px;border-radius:100px;font-size:10px;font-weight:600;background:rgba(251,191,36,0.12);color:#fbbf24;border:1px solid rgba(251,191,36,0.2)"><i class="fas fa-store-alt"></i> Seller</span>
+          </div>
+          <p style="font-size:12px;color:var(--text-muted);margin-top:2px" id="profileEmail">email@example.com</p>
+          <p style="font-size:12px;color:var(--text-dim);font-style:italic;margin-top:6px;padding:8px 12px;background:var(--bg-2);border-radius:var(--radius);border-left:2px solid var(--primary);display:none" id="profileBioDisplay"></p>
+        </div>
+        <div style="display:flex;gap:12px;flex-shrink:0;">
+          <div style="text-align:center;padding:10px 16px;background:var(--bg-2);border-radius:var(--radius);border:1px solid var(--glass-border)"><div style="font-size:22px;font-weight:800;color:var(--primary)" id="profileXP">0</div><div style="font-size:10px;color:var(--text-muted);margin-top:2px">XP</div></div>
+          <div style="text-align:center;padding:10px 16px;background:var(--bg-2);border-radius:var(--radius);border:1px solid var(--glass-border)"><div style="font-size:22px;font-weight:800;color:var(--secondary)" id="profileOrders">0</div><div style="font-size:10px;color:var(--text-muted);margin-top:2px">Orders</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- LEVEL + REFERRAL -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:20px 0">
+      <div class="glass" style="padding:20px;border-radius:var(--radius-lg);border:1px solid var(--glass-border)">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+          <span style="font-size:13px;font-weight:600"><i class="fas fa-trophy" style="color:var(--accent2)"></i> Level</span>
+          <span id="profileRankTag" style="padding:3px 14px;border-radius:100px;font-size:10px;font-weight:600"></span>
+        </div>
+        <div style="font-size:34px;font-weight:800;font-family:'Syne',sans-serif" id="profileLevel">Basic</div>
+        <div style="height:8px;background:var(--bg-3);border-radius:4px;margin-top:12px;overflow:hidden">
+          <div style="height:100%;width:0%;background:var(--gradient-1);border-radius:4px;transition:width 0.6s" id="profileLevelBar"></div>
+        </div>
+        <div style="font-size:11px;color:var(--text-dim);margin-top:6px;text-align:right" id="profileLevelNext">0 / 0 XP</div>
+      </div>
+      <div class="glass" style="padding:20px;border-radius:var(--radius-lg);border:1px solid var(--glass-border)">
+        <span style="font-size:13px;font-weight:600;margin-bottom:10px;display:block"><i class="fas fa-gift" style="color:var(--secondary)"></i> Referral Code</span>
+        <div style="display:flex;gap:8px">
+          <input class="form-input" id="profileRefCode" readonly style="font-size:14px;font-weight:700;text-align:center;letter-spacing:1px;background:var(--bg-2)">
+          <button class="btn btn-outline" onclick="copyRefCode()"><i class="fas fa-copy"></i> Copy</button>
+        </div>
+        <div style="font-size:11px;color:var(--text-muted);margin-top:8px;line-height:1.5">Bagikan kode referral dan dapatkan <strong style="color:var(--primary)">+5 XP</strong> per referral!</div>
+      </div>
+    </div>
+
+    <!-- ACTIONS -->
+    <div style="display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap">
+      <button class="btn btn-outline btn-sm" onclick="showEditProfile()"><i class="fas fa-edit"></i> Edit Profile</button>
+      <button class="btn btn-outline btn-sm" onclick="navigateTo('seller')"><i class="fas fa-store-alt"></i> Seller Dashboard</button>
+      <button class="btn btn-outline btn-sm" onclick="handleLogout()" style="color:var(--accent);border-color:var(--accent)"><i class="fas fa-sign-out-alt"></i> Logout</button>
+    </div>
+
+    <!-- TESTIMONIAL -->
+    <div class="glass" style="padding:20px;border-radius:var(--radius-lg);border:1px solid var(--glass-border);margin-bottom:16px">
+      <h3 style="font-size:14px;font-weight:700;margin-bottom:10px"><i class="fas fa-comment-dots" style="color:var(--secondary)"></i> Testimonial</h3>
+      <div style="display:flex;gap:8px">
+        <input class="form-input" id="testimonialInput" placeholder="Tulis pengalaman kamu dengan BMS Studio..." style="flex:1;font-size:13px">
+        <button class="btn btn-primary btn-sm" onclick="submitTestimonial()" style="white-space:nowrap">Send</button>
+      </div>
+    </div>
+
+    <!-- ORDER HISTORY -->
+    <div class="glass" style="padding:20px;border-radius:var(--radius-lg);border:1px solid var(--glass-border);margin-bottom:40px">
+      <h3 style="font-size:14px;font-weight:700;margin-bottom:14px"><i class="fas fa-shopping-bag" style="color:var(--primary)"></i> Order History</h3>
+      <div id="profileOrdersList" style="display:flex;flex-direction:column;gap:8px;min-height:60px"></div>
     </div>
   </div>
-  <section class="section" style="padding-top:32px">
-    <div style="max-width:800px;margin:0 auto">
-      <div class="glass" style="padding:0;border-radius:var(--radius-lg);border:1px solid var(--glass-border);overflow:hidden;margin-bottom:20px">
-        <div id="profileBanner" style="height:120px;background:var(--gradient-1);background-size:cover;background-position:center;position:relative;cursor:pointer" onclick="document.getElementById('bannerInput').click()" title="Click to change banner">
-          <div style="position:absolute;bottom:8px;right:8px;width:28px;height:28px;border-radius:50%;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;color:#fff;font-size:12px"><i class="fas fa-camera"></i></div>
-        </div>
-        <input type="file" id="bannerInput" accept="image/*" style="display:none" onchange="uploadBanner(this)">
-        <input type="file" id="avatarInput" accept="image/*" style="display:none" onchange="uploadAvatar(this)">
-        <div style="padding:0 24px 24px;display:flex;align-items:flex-end;gap:16px;margin-top:-32px;position:relative;z-index:2">
-          <div id="profileAvatarWrap" style="width:72px;height:72px;border-radius:50%;border:3px solid var(--bg);background-color:#8b7cfc;background-image:var(--gradient-1);display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:700;color:#fff;flex-shrink:0;cursor:pointer;position:relative" onclick="document.getElementById('avatarInput').click()" title="Click to change avatar">
-            <span id="profileAvatarText" style="line-height:1;z-index:2;position:relative">U</span>
-            <img id="profileAvatarImg" style="display:none;width:100%;height:100%;object-fit:cover;position:absolute;top:0;left:0;border-radius:50%;z-index:2" alt="">
-            <div style="position:absolute;bottom:0;right:0;width:22px;height:22px;border-radius:50%;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;color:#fff;font-size:9px"><i class="fas fa-camera"></i></div>
-          </div>
-          <div style="flex:1;min-width:150px;padding-top:20px">
-            <div style="display:flex;align-items:center;gap:8px">
-              <h3 style="font-size:18px;font-weight:700" id="profileName">User</h3>
-              <span id="profileVerified" style="display:none;padding:2px 8px;border-radius:5px;font-size:10px;font-weight:600;background:rgba(56,189,248,0.12);color:#38bdf8"><i class="fas fa-check-circle"></i> Verified</span>
-            <span id="profileSellerBadge" style="display:none;padding:2px 8px;border-radius:5px;font-size:10px;font-weight:600;background:rgba(251,191,36,0.12);color:#fbbf24"><i class="fas fa-store-alt"></i> Seller</span>
-
-            </div>
-            <p style="font-size:12px;color:var(--text-muted)" id="profileEmail">email@example.com</p>
-            <p style="font-size:12px;color:var(--text-muted);font-style:italic;margin-top:4px" id="profileBioDisplay"></p>
-          </div>
-        <div style="display:flex;gap:20px;flex-wrap:wrap;align-items:center">
-          <div style="text-align:center"><div style="font-size:20px;font-weight:800" id="profileXP">0</div><div style="font-size:11px;color:var(--text-muted)">XP</div></div>
-          <div style="text-align:center"><div style="font-size:20px;font-weight:800" id="profileOrders">0</div><div style="font-size:11px;color:var(--text-dim)">Orders</div></div>
-          <span id="profileRankTag" style="padding:4px 14px;border-radius:100px;font-size:11px;font-weight:600"></span>
-        </div>
-      </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px" id="profileLevelSection">
-        <div class="glass" style="padding:20px;border-radius:var(--radius-lg);border:1px solid var(--glass-border)">
-          <div style="font-size:12px;font-weight:600;margin-bottom:8px"><i class="fas fa-trophy" style="color:var(--accent2)"></i> Level</div>
-          <div style="font-size:28px;font-weight:800" id="profileLevel">Basic</div>
-          <div style="height:6px;background:var(--bg-3);border-radius:3px;margin-top:10px;overflow:hidden">
-            <div style="height:100%;width:0%;background:var(--gradient-1);border-radius:3px;transition:width 0.5s" id="profileLevelBar"></div>
-          </div>
-          <div style="font-size:11px;color:var(--text-dim);margin-top:4px" id="profileLevelNext">0 / 0 XP</div>
-        </div>
-        <div class="glass" style="padding:20px;border-radius:var(--radius-lg);border:1px solid var(--glass-border)">
-          <div style="font-size:12px;font-weight:600;margin-bottom:8px"><i class="fas fa-gift" style="color:var(--secondary)"></i> Referral</div>
-          <div style="font-size:13px;margin-bottom:6px">Kode referral kamu:</div>
-          <div style="display:flex;gap:6px">
-            <input class="form-input" id="profileRefCode" readonly style="font-size:13px;font-weight:700;text-align:center">
-            <button class="btn btn-outline btn-sm" onclick="copyRefCode()"><i class="fas fa-copy"></i></button>
-          </div>
-          <div style="font-size:11px;color:var(--text-muted);margin-top:6px">Bagikan kode ini, dapatkan <strong>5 XP</strong> per referral!</div>
-        </div>
-      </div>
-      <div style="display:flex;gap:8px;margin-bottom:16px">
-        <button class="btn btn-outline btn-sm" onclick="showEditProfile()"><i class="fas fa-edit"></i> Edit Profile</button>
-        <button class="btn btn-outline btn-sm" onclick="navigateTo('seller')"><i class="fas fa-store-alt"></i> Seller</button>
-        <button class="btn btn-outline btn-sm" onclick="handleLogout()" style="color:var(--accent);border-color:var(--accent)"><i class="fas fa-sign-out-alt"></i> Logout</button>
-      </div>
-      <h3 style="font-size:16px;font-weight:700;margin-bottom:12px">Your Testimonial</h3>
-      <div style="display:flex;gap:8px;margin-bottom:20px">
-        <input class="form-input" id="testimonialInput" placeholder="Tulis testimoni kamu..." style="flex:1">
-        <button class="btn btn-primary btn-sm" onclick="submitTestimonial()">Send</button>
-      </div>
-      <h3 style="font-size:16px;font-weight:700;margin-bottom:12px">Order History</h3>
-      <div id="profileOrdersList" style="display:flex;flex-direction:column;gap:8px"></div>
-    </div>
-  </section>
 </div>
 
 <!-- CHAT -->
@@ -2543,9 +2548,15 @@ function renderProfile() {
   try {
     const cartOrders = JSON.parse(localStorage.getItem('bms_orders_' + u.id) || '[]');
     if (cartOrders.length) {
-      ordersList.innerHTML = cartOrders.slice().reverse().map(o => '<div class="glass" style="padding:14px 18px;border-radius:var(--radius-lg);border:1px solid var(--glass-border);display:flex;justify-content:space-between;align-items:center;font-size:13px"><div><div style="font-weight:600">'+ (o.items?.[0]?.name || 'Order') +'</div><div style="font-size:11px;color:var(--text-dim)">'+ (o.createdAt || new Date().toLocaleDateString()) +'</div></div><div style="display:flex;gap:6px;align-items:center"><span style="padding:3px 10px;border-radius:5px;font-size:10px;font-weight:600;background:rgba(16,185,129,0.12);color:#34d399">'+ (o.status || 'Completed') +'</span><button class="btn btn-outline btn-sm" style="padding:4px 8px;font-size:10px" onclick="openChat('+(o.id || i)+')"><i class="fas fa-comment"></i></button></div></div>').join('');
+      ordersList.innerHTML = cartOrders.slice().reverse().map(o => {
+        const firstItem = o.items?.[0] || {};
+        const isPublic = firstItem.store_type === 'public';
+        const itemCount = o.items?.length || 1;
+        const itemLabel = itemCount > 1 ? firstItem.name + ' +' + (itemCount - 1) + ' lainnya' : firstItem.name;
+        return '<div class="glass" style="padding:14px 18px;border-radius:var(--radius-lg);border:1px solid var(--glass-border);display:flex;justify-content:space-between;align-items:center;font-size:13px"><div style="flex:1;min-width:0"><div style="font-weight:600;display:flex;align-items:center;gap:6px">'+(firstItem.image?'<img src="'+firstItem.image+'" style="width:28px;height:28px;border-radius:6px;object-fit:cover;flex-shrink:0">':'')+'<span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+(itemLabel||'Order')+'</span>'+(isPublic?'<span style="font-size:9px;padding:1px 6px;border-radius:4px;background:rgba(251,191,36,0.1);color:#fbbf24;flex-shrink:0">Store</span>':'')+'</div><div style="font-size:11px;color:var(--text-dim);margin-top:2px">'+ (o.createdAt || new Date().toLocaleDateString()) +'</div></div><div style="display:flex;gap:6px;align-items:center;flex-shrink:0"><span style="padding:3px 10px;border-radius:100px;font-size:10px;font-weight:600;background:rgba(16,185,129,0.12);color:#34d399;border:1px solid rgba(16,185,129,0.2)">'+ (o.status || 'Completed') +'</span><button class="btn btn-outline btn-sm" style="padding:4px 8px;font-size:10px" onclick="openChat('+(o.id || i)+')" title="Chat"><i class="fas fa-comment"></i></button></div></div>';
+      }).join('');
     } else {
-      ordersList.innerHTML = '<div class="empty-state" style="padding:32px"><i class="fas fa-shopping-bag" style="font-size:28px"></i><h3 style="font-size:16px">Belum ada pesanan</h3><p style="font-size:13px">Pesan pertama kamu akan muncul di sini.</p></div>';
+      ordersList.innerHTML = '<div style="padding:32px;text-align:center"><i class="fas fa-shopping-bag" style="font-size:36px;color:var(--text-dim);opacity:0.3;margin-bottom:12px"></i><div style="font-size:15px;font-weight:600;color:var(--text-muted);margin-bottom:4px">Belum ada pesanan</div><p style="font-size:12px;color:var(--text-dim)">Pesan pertama kamu akan muncul di sini.</p></div>';
     }
   } catch { ordersList.innerHTML = '<div class="empty-state" style="padding:32px"><p style="font-size:13px">Gagal memuat pesanan.</p></div>'; }
 }
