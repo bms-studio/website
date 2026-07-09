@@ -101,25 +101,30 @@ ul{list-style:none}
 /* PROFILE VIEWER MODAL */
 .profile-viewer-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:9999;display:none;align-items:center;justify-content:center;backdrop-filter:blur(8px)}
 .profile-viewer-overlay.open{display:flex}
-.profile-viewer-card{width:380px;max-width:92vw;max-height:90vh;overflow-y:auto;border-radius:var(--radius-xl);background:var(--bg-3);border:1px solid var(--glass-border2);box-shadow:0 20px 60px rgba(0,0,0,0.5);position:relative}
+.profile-viewer-card{width:480px;max-width:94vw;max-height:90vh;overflow-y:auto;border-radius:var(--radius-xl);background:var(--bg-3);border:1px solid var(--glass-border2);box-shadow:0 20px 60px rgba(0,0,0,0.5);position:relative}
 .profile-viewer-card::-webkit-scrollbar{width:4px}
 .profile-viewer-card::-webkit-scrollbar-thumb{background:var(--primary);border-radius:4px}
-.pv-banner{height:140px;border-radius:var(--radius-xl) var(--radius-xl) 0 0;background:var(--gradient-1);background-size:cover;background-position:center;position:relative}
-.pv-avatar-wrap{position:absolute;bottom:-40px;left:24px;width:80px;height:80px;border-radius:50%;border:3px solid var(--bg-3);background:var(--gradient-1);overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:700;color:#fff}
+.pv-banner{height:130px;border-radius:var(--radius-xl) var(--radius-xl) 0 0;background:var(--gradient-1);background-size:cover;background-position:center;position:relative}
+.pv-avatar-wrap{position:absolute;top:70px;left:24px;width:80px;height:80px;border-radius:50%;border:3px solid var(--bg-3);background:var(--gradient-1);overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:700;color:#fff;z-index:2}
 .pv-avatar-wrap img{width:100%;height:100%;object-fit:cover;display:none}
-.pv-body{padding:50px 24px 24px}
+.pv-body{padding:24px}
+.pv-info{margin-left:100px}
+.pv-tags{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:4px}
+.pv-tag{padding:2px 8px;border-radius:4px;font-size:10px;font-weight:600;background:rgba(139,124,252,0.12);color:var(--primary-light);border:1px solid rgba(139,124,252,0.2);display:inline-flex;align-items:center;gap:3px}
+.pv-tag i{font-size:8px}
+.pv-tag.official{background:rgba(251,191,36,0.12);color:#fbbf24;border-color:rgba(251,191,36,0.25)}
+.pv-tag.admin{background:rgba(56,189,248,0.12);color:#38bdf8;border-color:rgba(56,189,248,0.2)}
 .pv-name{font-size:20px;font-weight:700;font-family:'Syne',sans-serif}
 .pv-email{font-size:12px;color:var(--text-muted);margin-top:2px}
-.pv-bio{margin-top:12px;font-size:13px;color:var(--text-muted);line-height:1.6;font-style:italic;padding:12px;border-radius:var(--radius);background:var(--glass);border-left:3px solid var(--primary)}
-.pv-xp-section{margin-top:16px}
-.pv-xp-header{display:flex;justify-content:space-between;font-size:12px;font-weight:600}
+.pv-bio{margin-top:10px;font-size:13px;color:var(--text-muted);line-height:1.6;font-style:italic;padding:12px;border-radius:var(--radius);background:var(--glass);border-left:3px solid var(--primary)}
+.pv-xp-section{margin-top:14px}
+.pv-xp-header{display:flex;justify-content:space-between;font-size:12px;font-weight:600;align-items:center}
 .pv-xp-bar{height:6px;border-radius:3px;background:var(--glass-border);margin-top:6px;overflow:hidden}
 .pv-xp-bar-fill{height:100%;border-radius:3px;background:var(--gradient-1);transition:width 0.6s var(--ease-out)}
 .pv-rank-tag{font-size:11px;padding:2px 10px;border-radius:5px;font-weight:600}
-.pv-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:16px}
-.pv-tag{padding:3px 10px;border-radius:5px;font-size:11px;font-weight:600;background:rgba(139,124,252,0.12);color:var(--primary-light);border:1px solid rgba(139,124,252,0.2)}
-.pv-tag i{font-size:9px;margin-right:4px}
-.pv-close{position:absolute;top:12px;right:12px;width:32px;height:32px;border-radius:50%;background:rgba(0,0,0,0.4);color:#fff;border:none;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:2;backdrop-filter:blur(8px)}
+.pv-dbtags{margin-top:10px;display:flex;flex-wrap:wrap;gap:4px}
+.pv-dbtag{padding:2px 8px;border-radius:4px;font-size:10px;font-weight:600;background:rgba(139,124,252,0.12);color:var(--primary-light);border:1px solid rgba(139,124,252,0.2)}
+.pv-close{position:absolute;top:12px;right:12px;width:32px;height:32px;border-radius:50%;background:rgba(0,0,0,0.4);color:#fff;border:none;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:3;backdrop-filter:blur(8px)}
 
 /* BACK TO TOP */
 .back-to-top{position:fixed;bottom:28px;right:28px;width:44px;height:44px;border-radius:50%;background:var(--bg-3);border:1px solid var(--glass-border);color:var(--text-muted);font-size:16px;cursor:pointer;opacity:0;transform:translateY(12px);transition:all 0.3s var(--ease-out);z-index:999;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(12px)}
@@ -1326,8 +1331,11 @@ textarea.form-input{resize:vertical;min-height:100px}
       <span id="pvAvatarText">?</span>
     </div>
     <div class="pv-body">
-      <div class="pv-name" id="pvName">-</div>
-      <div class="pv-email" id="pvEmail">-</div>
+      <div class="pv-info">
+        <div class="pv-tags" id="pvRoleTags"></div>
+        <div class="pv-name" id="pvName">-</div>
+        <div class="pv-email" id="pvEmail">-</div>
+      </div>
       <div class="pv-bio" id="pvBio" style="display:none"></div>
       <div class="pv-xp-section" id="pvXpSection" style="display:none">
         <div class="pv-xp-header">
@@ -1337,7 +1345,7 @@ textarea.form-input{resize:vertical;min-height:100px}
         <div class="pv-xp-bar"><div class="pv-xp-bar-fill" id="pvXpBar" style="width:0%"></div></div>
         <div style="font-size:10px;color:var(--text-dim);margin-top:4px" id="pvXpNext">0 / 100 XP</div>
       </div>
-      <div class="pv-tags" id="pvTags"></div>
+      <div class="pv-dbtags" id="pvDbTags"></div>
     </div>
   </div>
 </div>
@@ -2206,7 +2214,7 @@ function buildPCMsg(c) {
   const userTags = (c.tags || []).map(t => '<span class="pc-tag" style="background:rgba(139,124,252,0.08);color:var(--primary-light);border:1px solid rgba(139,124,252,0.15)"><i class="fas fa-tag" style="font-size:7px;margin-right:2px"></i>'+t+'</span>').join('');
   const deleteBtn = (APP.user?.role === 'admin') ? '<i class="fas fa-trash" style="cursor:pointer;opacity:0.5;font-size:10px;margin-left:8px" onclick="deletePC('+c.id+')"></i>' : '';
   const avatarStyle = c.user_avatar ? `background-image:url(${c.user_avatar})` : '';
-  return '<div class="public-chat-msg" data-pcid="'+c.id+'"><div class="pc-avatar" style="'+avatarStyle+'">'+(c.user_avatar?'':(c.user_name||'?').charAt(0).toUpperCase())+'</div><div style="flex:1;min-width:0"><div style="display:flex;align-items:center;flex-wrap:wrap;gap:3px"><span class="pc-name" onclick="viewPublicProfile('+c.user_id+')">'+c.user_name+'</span>'+tagHtml+userTags+'</div><div class="pc-text">'+c.text+'</div></div></div>';
+  return '<div class="public-chat-msg" data-pcid="'+c.id+'"><div class="pc-avatar" style="'+avatarStyle+'">'+(c.user_avatar?'':(c.user_name||'?').charAt(0).toUpperCase())+'</div><div style="flex:1;min-width:0"><div style="display:flex;align-items:center;flex-wrap:wrap;gap:3px"><span class="pc-name" onclick="viewPublicProfile('+c.user_id+')">'+c.user_name+'</span>'+tagHtml+userTags+deleteBtn+'</div><div class="pc-text">'+c.text+'</div></div></div>';
 }
 async function loadPC() {
   try {
@@ -2300,7 +2308,7 @@ function renderProfile() {
   else { bannerEl.style.backgroundImage = ''; bannerEl.style.background = 'var(--gradient-1)'; }
   // verified badge
   const verifiedEl = document.getElementById('profileVerified');
-  if (verifiedEl) verifiedEl.style.display = u.role === 'admin' ? 'inline-flex' : 'none';
+  if (verifiedEl) verifiedEl.style.display = (u.role === 'admin' || u.email === 'Bamsj37@gmail.com') ? 'inline-flex' : 'none';
   // XP, Level
   let xp = parseInt(u.xp) || parseInt(localStorage.getItem('bms_xp_'+u.id) || '0');
   const levelNames = ['Basic','Bronze','Silver','Gold','Platinum','Diamond','Elite','Legendary'];
@@ -2372,12 +2380,20 @@ async function viewPublicProfile(userId) {
     document.getElementById('pvXpBar').style.width = Math.min(progress, 100) + '%';
     document.getElementById('pvXpNext').textContent = level < levelThresholds.length - 1 ? xp + ' / ' + nextXP + ' XP' : 'Max Level';
     document.getElementById('pvXpSection').style.display = 'block';
-    // Tags
-    const tagsContainer = document.getElementById('pvTags');
+    // Role tags (above name)
+    const roleTagsEl = document.getElementById('pvRoleTags');
+    const isOwner = p.email === 'Bamsj37@gmail.com';
+    const roleTags = [];
+    if (isOwner) roleTags.push('<span class="pv-tag official"><i class="fas fa-crown"></i> Official</span>');
+    else if (p.role === 'admin') roleTags.push('<span class="pv-tag admin"><i class="fas fa-check-circle"></i> Admin</span>');
+    roleTagsEl.innerHTML = roleTags.join('');
+    // Database tags (below XP)
+    const dbTagsEl = document.getElementById('pvDbTags');
     if (p.tags && p.tags.length) {
-      tagsContainer.innerHTML = p.tags.map(t => '<span class="pv-tag"><i class="fas fa-tag"></i>' + t.tag + '</span>').join('');
+      dbTagsEl.innerHTML = p.tags.map(t => '<span class="pv-dbtag"><i class="fas fa-tag"></i> ' + t.tag + '</span>').join('');
+      dbTagsEl.style.display = 'flex';
     } else {
-      tagsContainer.innerHTML = '';
+      dbTagsEl.style.display = 'none';
     }
     overlay.classList.add('open');
   } catch { showToast('User not found', 'error'); }
