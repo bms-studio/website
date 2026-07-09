@@ -2146,8 +2146,13 @@ async function loadPC() {
     pcLastId = chats[chats.length - 1].id;
   } catch {}
 }
-async function deletePC(id) { if (!confirm('Delete message?')) return; try { await api('/public-chats/'+id, { method: 'DELETE' }); loadPC(); } catch {} }
-
+async function sendPC() {
+  const input = document.getElementById('pcInput');
+  const text = input.value.trim();
+  if (!text) return;
+  input.value = '';
+  try { await api('/public-chats', { method: 'POST', body: { text } }); loadPC(); } catch { showToast('Failed to send message', 'error'); }
+}
 async function deletePC(id) { if (!confirm('Delete message?')) return; try { await api('/public-chats/'+id, { method: 'DELETE' }); loadPC(); } catch {} }
 function uploadAvatar(input) {
   const file = input.files[0];
