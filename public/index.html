@@ -2630,13 +2630,16 @@ function initThree() {
   renderer.setSize(w, h);
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
   const group = new THREE.Group();
-  const geo1 = new THREE.TorusKnotGeometry(1.2, 0.4, 128, 16);
-  const mat1 = new THREE.MeshPhongMaterial({ color: 0x8b7cfc, emissive: 0x8b7cfc, emissiveIntensity: 0.2, wireframe: false, transparent: true, opacity: 0.35, shininess: 80 });
+  const geo1 = new THREE.IcosahedronGeometry(1.4, 0);
+  const mat1 = new THREE.MeshPhongMaterial({ color: 0x8b7cfc, emissive: 0x8b7cfc, emissiveIntensity: 0.15, wireframe: true, transparent: true, opacity: 0.3 });
   const mesh1 = new THREE.Mesh(geo1, mat1);
-  const geo2 = new THREE.TorusGeometry(1.8, 0.08, 64, 64);
-  const mat2 = new THREE.MeshPhongMaterial({ color: 0x67e8f9, emissive: 0x67e8f9, emissiveIntensity: 0.15, transparent: true, opacity: 0.25 });
+  const geoInner = new THREE.IcosahedronGeometry(0.9, 0);
+  const matInner = new THREE.MeshPhongMaterial({ color: 0x67e8f9, emissive: 0x67e8f9, emissiveIntensity: 0.2, wireframe: false, transparent: true, opacity: 0.2 });
+  const meshInner = new THREE.Mesh(geoInner, matInner);
+  const geo2 = new THREE.RingGeometry(1.8, 2.0, 64);
+  const mat2 = new THREE.MeshPhongMaterial({ color: 0x67e8f9, emissive: 0x67e8f9, emissiveIntensity: 0.1, side: THREE.DoubleSide, transparent: true, opacity: 0.15 });
   const mesh2 = new THREE.Mesh(geo2, mat2);
-  mesh2.rotation.x = Math.PI / 3;
+  mesh2.rotation.x = Math.PI / 2.5;
   const pCount = 200;
   const positions = new Float32Array(pCount * 3);
   for (let i = 0; i < pCount * 3; i++) positions[i] = (Math.random() - 0.5) * 20;
@@ -2644,7 +2647,7 @@ function initThree() {
   pGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
   const pMat = new THREE.PointsMaterial({ color: 0x8b7cfc, size: 0.03, transparent: true, opacity: 0.5 });
   const particles = new THREE.Points(pGeo, pMat);
-  group.add(mesh1, mesh2, particles);
+  group.add(mesh1, meshInner, mesh2, particles);
   scene.add(group);
   scene.add(new THREE.AmbientLight(0x404060));
   const dl = new THREE.DirectionalLight(0x8b7cfc, 0.8);
@@ -2657,8 +2660,8 @@ function initThree() {
   function anim() {
     if (!running) return;
     requestAnimationFrame(anim);
-    group.rotation.x += 0.003;
-    group.rotation.y += 0.006;
+    group.rotation.x += 0.0008;
+    group.rotation.y += 0.0015;
     const s = 1 + Math.sin(Date.now() * 0.0005) * 0.04;
     group.scale.set(s, s, s);
     renderer.render(scene, camera);
