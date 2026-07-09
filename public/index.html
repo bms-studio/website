@@ -468,19 +468,14 @@ textarea.form-input{resize:vertical;min-height:100px}
 .footer-col a:hover{color:var(--primary-light)}
 .footer-bottom{text-align:center;padding-top:20px;margin-top:32px;border-top:1px solid var(--glass-border);font-size:12px;color:var(--text-dim)}
 
-/* ANNOUNCEMENT BAR - iOS 26 style */
-.announcement-bar{position:fixed;top:0;left:0;right:0;z-index:10000;display:none;transform:translateY(-100%);transition:transform 0.5s cubic-bezier(.16,1,.3,1),opacity 0.4s ease;opacity:0;pointer-events:none}
+/* ANNOUNCEMENT BAR - iOS 26 style (below navbar) */
+.announcement-bar{position:fixed;top:var(--nav-height);left:0;right:0;z-index:999;display:none;transform:translateY(-100%);transition:transform 0.5s cubic-bezier(.16,1,.3,1),opacity 0.4s ease;opacity:0;pointer-events:none}
 .announcement-bar.show{display:block;transform:translateY(0);opacity:1;pointer-events:auto}
 .announcement-inner{background:linear-gradient(135deg,rgba(139,124,252,0.15),rgba(99,102,241,0.08));backdrop-filter:blur(32px) saturate(1.8);-webkit-backdrop-filter:blur(32px) saturate(1.8);border-bottom:1px solid rgba(139,124,252,0.15);padding:12px 48px 12px 44px;display:flex;align-items:center;gap:10px;font-size:13px;font-weight:500;color:var(--text);justify-content:center;text-align:center;position:relative;min-height:44px}
 .announcement-icon{position:absolute;left:16px;top:50%;transform:translateY(-50%);color:var(--primary);font-size:14px;animation:annPulse 2s ease-in-out infinite}
 .announcement-close{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:15px;padding:4px 8px;border-radius:20px;transition:var(--transition);opacity:0.6;line-height:1}
 .announcement-close:hover{background:rgba(255,255,255,0.08);opacity:1;color:var(--text)}
 @keyframes annPulse{0%,100%{opacity:1}50%{opacity:0.4}}
-@keyframes announcementSlideDown{from{transform:translateY(-100%);opacity:0}to{transform:translateY(0);opacity:1}}
-/* navbar offset when announcement is visible */
-body.announcement-visible #navbar{transform:translateY(44px)}
-body.announcement-visible #navbar{transform:translateY(44px);transition:transform 0.4s cubic-bezier(.16,1,.3,1)}
-body.announcement-visible .page.active{padding-top:calc(var(--nav-height) + 44px)}
 
 /* TOAST */
 #toast-container{position:fixed;top:80px;right:16px;z-index:9999;display:flex;flex-direction:column;gap:8px;pointer-events:none}
@@ -3539,27 +3534,23 @@ async function loadAnnouncements() {
     if (!activeItem) {
       _currentAnnouncementId = 0;
       bar.classList.remove('show');
-      document.body.classList.remove('announcement-visible');
       return;
     }
     const dismissed = localStorage.getItem('announcement_dismissed_' + activeItem.id);
     if (dismissed) {
       _currentAnnouncementId = activeItem.id;
       bar.classList.remove('show');
-      document.body.classList.remove('announcement-visible');
       return;
     }
     _currentAnnouncementId = activeItem.id;
     text.innerHTML = (activeItem.title ? '<strong>' + activeItem.title + ':</strong> ' : '') + activeItem.message;
     bar.classList.add('show');
-    document.body.classList.add('announcement-visible');
   } catch {}
 }
 function dismissAnnouncement() {
   const bar = document.getElementById('announcementBar');
   if (bar) {
     bar.classList.remove('show');
-    document.body.classList.remove('announcement-visible');
   }
   if (_currentAnnouncementId) {
     localStorage.setItem('announcement_dismissed_' + _currentAnnouncementId, '1');
