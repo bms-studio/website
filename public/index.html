@@ -86,7 +86,8 @@ ul{list-style:none}
 .public-chat-header h4{font-size:14px;font-weight:700}
 .public-chat-msgs{flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:8px;min-height:200px;max-height:320px}
 .public-chat-msg{display:flex;gap:8px;align-items:flex-start;padding:8px;border-radius:var(--radius);background:var(--glass);font-size:12px}
-.public-chat-msg .pc-avatar{width:28px;height:28px;border-radius:50%;flex-shrink:0;background:var(--gradient-1);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff;background-size:cover;background-position:center}
+.public-chat-msg .pc-avatar{width:28px;height:28px;border-radius:50%;flex-shrink:0;background:var(--gradient-1);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff;background-size:cover;background-position:center;position:relative}
+.public-chat-msg .pc-avatar.verified::before{content:'';position:absolute;inset:-2px;border-radius:50%;background:conic-gradient(#8b7cfc,#67e8f9,#f472b6,#fb923c,#8b7cfc);z-index:0;animation:pvSpin 3s linear infinite;-webkit-mask:radial-gradient(circle at center,transparent 12px,#000 13px);mask:radial-gradient(circle at center,transparent 12px,#000 13px)}
 .public-chat-msg .pc-name{font-weight:600;font-size:11px;cursor:pointer}
 .public-chat-msg .pc-name:hover{color:var(--primary)}
 .public-chat-msg .pc-text{color:var(--text-muted);font-size:11px;line-height:1.4;word-break:break-word}
@@ -2233,7 +2234,9 @@ function buildPCMsg(c) {
   const userTags = (c.tags || []).map(t => '<span class="pc-tag" style="background:rgba(139,124,252,0.08);color:var(--primary-light);border:1px solid rgba(139,124,252,0.15)"><i class="fas fa-tag" style="font-size:7px;margin-right:2px"></i>'+t+'</span>').join('');
   const deleteBtn = (APP.user?.role === 'admin') ? '<i class="fas fa-trash" style="cursor:pointer;opacity:0.5;font-size:10px;margin-left:8px" onclick="deletePC('+c.id+')"></i>' : '';
   const avatarStyle = c.user_avatar ? `background-image:url(${c.user_avatar})` : '';
-  return '<div class="public-chat-msg" data-pcid="'+c.id+'"><div class="pc-avatar" style="'+avatarStyle+'">'+(c.user_avatar?'':(c.user_name||'?').charAt(0).toUpperCase())+'</div><div style="flex:1;min-width:0"><div style="display:flex;align-items:center;flex-wrap:wrap;gap:3px"><span class="pc-name" onclick="viewPublicProfile('+c.user_id+')">'+c.user_name+'</span>'+tagHtml+userTags+deleteBtn+'</div><div class="pc-text">'+c.text+'</div></div></div>';
+  const isVerified = c.user_role === 'official' || c.user_role === 'admin';
+  const verifiedClass = isVerified ? ' verified' : '';
+  return '<div class="public-chat-msg" data-pcid="'+c.id+'"><div class="pc-avatar'+verifiedClass+'" style="'+avatarStyle+'">'+(c.user_avatar?'':(c.user_name||'?').charAt(0).toUpperCase())+'</div><div style="flex:1;min-width:0"><div style="display:flex;align-items:center;flex-wrap:wrap;gap:3px"><span class="pc-name" onclick="viewPublicProfile('+c.user_id+')">'+c.user_name+'</span>'+tagHtml+userTags+deleteBtn+'</div><div class="pc-text">'+c.text+'</div></div></div>';
 }
 async function loadPC() {
   try {
