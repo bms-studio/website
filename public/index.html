@@ -1837,13 +1837,24 @@ function api(path, options = {}) {
   const { headers: optHeaders, ...rest } = options;
   const config = { headers: { 'Content-Type': 'application/json', ...optHeaders }, credentials: 'include', ...rest };
   if (config.body && typeof config.body === 'object') config.body = JSON.stringify(config.body);
-  return fetch(API + path, config).then(async res => {
-    const text = await res.text();
-    let data;
-    try { data = JSON.parse(text); } catch { throw new Error('Server returned: ' + text.slice(0,100)); }
-    if (!res.ok) throw new Error(data.error || 'Request failed');
-    return data;
-  });
+  
+  let retries = 3;
+  const attempt = () => {
+    return fetch(API + path, { ...config, timeout: 8000 }).then(async res => {
+      const text = await res.text();
+      let data;
+      try { data = JSON.parse(text); } catch { throw new Error('Server returned: ' + text.slice(0,100)); }
+      if (!res.ok) throw new Error(data.error || 'Request failed');
+      return data;
+    }).catch(err => {
+      if (retries > 0 && (err.message.includes('timeout') || err.message.includes('Failed to fetch'))) {
+        retries--;
+        return new Promise(r => setTimeout(() => r(attempt()), 500 + Math.random() * 500));
+      }
+      throw err;
+    });
+  };
+  return attempt();
 }
 const _cb = (u) => u||'';
 
