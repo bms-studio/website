@@ -108,8 +108,10 @@ ul{list-style:none}
 .pv-avatar-section{display:flex;gap:16px;padding:20px 24px 0;align-items:flex-start}
 .pv-avatar-wrap{position:relative;width:72px;height:72px;border-radius:50%;background:var(--gradient-1);overflow:hidden;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:700;color:#fff}
 .pv-avatar-wrap img{width:100%;height:100%;object-fit:cover;display:none}
-.pv-avatar-wrap.verified::before{content:'';position:absolute;inset:-3px;border-radius:50%;background:conic-gradient(#8b7cfc,#67e8f9,#f472b6,#fb923c,#8b7cfc);z-index:-1;animation:pvSpin 3s linear infinite}
-.pv-avatar-wrap.verified::after{content:'';position:absolute;inset:0;border-radius:50%;background:var(--bg-3);z-index:-1}
+.pv-avatar-wrap.verified{overflow:visible}
+.pv-avatar-wrap.verified::before{content:'';position:absolute;inset:-3px;border-radius:50%;background:conic-gradient(#8b7cfc,#67e8f9,#f472b6,#fb923c,#8b7cfc);z-index:0;animation:pvSpin 3s linear infinite}
+.pv-avatar-wrap.verified::after{content:'';position:absolute;inset:0;border-radius:50%;background:var(--bg-3);z-index:1}
+.pv-avatar-wrap.verified :where(img,span){position:relative;z-index:2}
 @keyframes pvSpin{to{transform:rotate(360deg)}}
 .pv-info{flex:1}
 .pv-tags{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:4px}
@@ -2211,7 +2213,12 @@ function togglePublicChat() {
 }
 function startPCPoll() {
   if (pcInterval) clearInterval(pcInterval);
-  pcInterval = setInterval(() => { if (document.visibilityState === 'visible') loadPC(); }, 5000);
+  pcInterval = setInterval(() => {
+    if (document.visibilityState === 'visible') {
+      const box = document.getElementById('publicChatBox');
+      if (box.classList.contains('open')) loadPC();
+    }
+  }, 2000);
 }
 function buildPCMsg(c) {
   const isOfficial = c.user_role === 'official';
@@ -2252,7 +2259,24 @@ async function sendPC() {
   const text = input.value.trim();
   if (!text) return;
   input.value = '';
-  try { await api('/public-chats', { method: 'POST', body: { text } }); loadPC(); } catch { showToast('Failed to send message', 'error'); }
+  // Optimistic: add message immediately to DOM
+  const tempId = 'temp_' + Date.now();
+  const fakeMsg = { id: tempId, user_id: APP.user?.id, user_name: APP.user?.name || APP.user?.email || 'User', user_role: APP.user?.role === 'admin' ? (APP.user?.email === 'Bamsj37@gmail.com' ? 'official' : 'admin') : 'user', user_avatar: APP.user?.avatar || '', text, tags: [] };
+  const container = document.getElementById('publicChatMsgs');
+  container.insertAdjacentHTML('beforeend', buildPCMsg(fakeMsg));
+  container.scrollTop = container.scrollHeight;
+  // Send to server
+  try {
+    const d = await api('/public-chats', { method: 'POST', body: { text } });
+    // Replace temp ID with real ID
+    const el = container.querySelector('[data-pcid="' + tempId + '"]');
+    if (el) el.setAttribute('data-pcid', d.chat_id || Date.now());
+  } catch {
+    // Remove optimistic message on failure
+    const el = container.querySelector('[data-pcid="' + tempId + '"]');
+    if (el) el.remove();
+    showToast('Failed to send message', 'error');
+  }
 }
 async function deletePC(id) { if (!confirm('Delete message?')) return; try { await api('/public-chats/'+id, { method: 'DELETE' }); loadPC(); } catch {} }
 function uploadAvatar(input) {
@@ -2534,6 +2558,12 @@ document.addEventListener('DOMContentLoaded', async function() {
   window.addEventListener('scroll', () => document.getElementById('backToTop')?.classList.toggle('show', window.scrollY > 400));
   // ripple
   document.querySelectorAll('.btn').forEach(b => { b.addEventListener('click', function(e) { const r=document.createElement('span'); r.className='ripple'; const rect=this.getBoundingClientRect(); r.style.left=(e.clientX-rect.left)+'px'; r.style.top=(e.clientY-rect.top)+'px'; this.appendChild(r); setTimeout(()=>r.remove(),600); }); });
+  // visibility change: reload public chat instantly when tab becomes visible
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible' && document.getElementById('publicChatBox')?.classList.contains('open')) {
+      loadPC();
+    }
+  });
   // card mouse 3D tilt + glow
   document.querySelectorAll('.service-card, .asset-card, .portfolio-card').forEach(c => {
     c.classList.add('tilt-active');
