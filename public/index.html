@@ -1801,7 +1801,6 @@ function api(path, options = {}) {
   });
 }
 const _cb = (u) => u && u.startsWith('http') && !u.startsWith('data:') ? (u.includes('?') ? u+'&_t='+Date.now() : u+'?_t='+Date.now()) : (u||'');
-}
 
 // ============ APP STATE ============
 const APP = {
