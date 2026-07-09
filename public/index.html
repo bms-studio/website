@@ -120,6 +120,11 @@ ul{list-style:none}
 #profileAvatarWrap.verified::after{content:'';position:absolute;inset:0;border-radius:50%;background:var(--bg-3);z-index:1}
 #profileAvatarWrap.verified :where(img,span){position:relative;z-index:2}
 @keyframes pvSpin{to{transform:rotate(360deg)}}
+/* Seller gold-black border */
+.pv-avatar-wrap.verified.seller::before{background:conic-gradient(#fbbf24,#000,#fbbf24,#000,#fbbf24)!important;animation:pvSpinGold 2s linear infinite!important}
+.public-chat-msg .pc-avatar.verified.seller::before{background:conic-gradient(#fbbf24,#000,#fbbf24,#000,#fbbf24)!important;animation:pvSpinGold 2s linear infinite!important}
+#profileAvatarWrap.verified.seller::before{background:conic-gradient(#fbbf24,#000,#fbbf24,#000,#fbbf24)!important;animation:pvSpinGold 2s linear infinite!important}
+@keyframes pvSpinGold{to{transform:rotate(360deg)}}
 .pv-info{flex:1}
 .pv-tags{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:4px}
 .pv-tag{padding:2px 8px;border-radius:4px;font-size:10px;font-weight:600;background:rgba(139,124,252,0.12);color:var(--primary-light);border:1px solid rgba(139,124,252,0.2);display:inline-flex;align-items:center;gap:3px}
@@ -1920,7 +1925,7 @@ function renderCart() {
   if (!items) return;
   if (!APP.cart.length) { items.innerHTML = ''; empty.style.display = 'block'; summary.style.display = 'none'; return; }
   empty.style.display = 'none'; summary.style.display = 'block';
-  items.innerHTML = APP.cart.map((item, i) => '<div class="cart-item"><div class="cart-item-thumb"><i class="fas fa-cube"></i></div><div class="cart-item-info"><h4>'+item.name+'</h4><p>'+(item.price === 'Gratis' ? 'Gratis' : item.price)+'</p></div><div class="cart-item-qty"><button onclick="updateCartQty('+i+',-1)"><i class="fas fa-minus"></i></button><span>'+item.qty+'</span><button onclick="updateCartQty('+i+',1)"><i class="fas fa-plus"></i></button></div><div class="cart-item-remove" onclick="removeFromCart('+i+')"><i class="fas fa-trash"></i></div></div>').join('');
+  items.innerHTML = APP.cart.map((item, i) => '<div class="cart-item"><div class="cart-item-thumb">'+(item.image?'<img src="'+item.image+'" style="width:100%;height:100%;object-fit:cover">':'<i class="fas fa-cube"></i>')+'</div><div class="cart-item-info"><h4>'+item.name+'</h4><p>'+(item.price === 'Gratis' ? 'Gratis' : item.price)+(item.store_type === 'public' ? ' <span style="font-size:10px;background:rgba(251,191,36,0.1);color:#fbbf24;padding:1px 6px;border-radius:4px;margin-left:4px">Public Store</span>' : '')+'</p></div><div class="cart-item-qty"><button onclick="updateCartQty('+i+',-1)"><i class="fas fa-minus"></i></button><span>'+item.qty+'</span><button onclick="updateCartQty('+i+',1)"><i class="fas fa-plus"></i></button></div><div class="cart-item-remove" onclick="removeFromCart('+i+')"><i class="fas fa-trash"></i></div></div>').join('');
   updateCartSummary();
 }
 function updateCartQty(i,d) { APP.cart[i].qty += d; if (APP.cart[i].qty <= 0) APP.cart.splice(i,1); saveCart(); renderCart(); }
@@ -1983,7 +1988,7 @@ async function submitOrder() {
   APP.cart.forEach(item => { const p = parseFloat(String(item.price).replace(/[^0-9]/g,'')) || 0; sub += p * item.qty; });
   if (appliedPromo) sub = sub * (1 - appliedPromo / 100);
   try {
-    const orderRes = await api('/orders', { method: 'POST', body: { items: APP.cart, total: sub, customer_name: name, customer_email: email, payment_method: payMethod || 'N/A', store_type: APP.cart[0]?.storeType || '' } });
+    const orderRes = await api('/orders', { method: 'POST', body: { items: APP.cart, total: sub, customer_name: name, customer_email: email, payment_method: payMethod || 'N/A', store_type: [...new Set(APP.cart.map(i => i.store_type).filter(Boolean))].join(',') } });
     // save order to localStorage for profile
     const u = APP.user;
     if (u && u.id) {
@@ -2392,7 +2397,8 @@ function buildPCMsg(c) {
   const avatarStyle = c.user_avatar ? `background-image:url(${c.user_avatar})` : '';
   const isVerified = isOfficial || isAdmin || isSeller;
   const verifiedClass = isVerified ? ' verified' : '';
-  return '<div class="public-chat-msg" data-pcid="'+c.id+'"><div class="pc-avatar'+verifiedClass+'" style="'+avatarStyle+'">'+(c.user_avatar?'':(c.user_name||'?').charAt(0).toUpperCase())+'</div><div style="flex:1;min-width:0"><div style="display:flex;align-items:center;flex-wrap:wrap;gap:3px"><span class="pc-name" onclick="viewPublicProfile('+c.user_id+')">'+c.user_name+'</span>'+tagHtml+userTags+deleteBtn+'</div><div class="pc-text">'+c.text+'</div></div></div>';
+  const sellerClass = isSeller ? ' seller' : '';
+  return '<div class="public-chat-msg" data-pcid="'+c.id+'"><div class="pc-avatar'+verifiedClass+sellerClass+'" style="'+avatarStyle+'">'+(c.user_avatar?'':(c.user_name||'?').charAt(0).toUpperCase())+'</div><div style="flex:1;min-width:0"><div style="display:flex;align-items:center;flex-wrap:wrap;gap:3px"><span class="pc-name" onclick="viewPublicProfile('+c.user_id+')">'+c.user_name+'</span>'+tagHtml+userTags+deleteBtn+'</div><div class="pc-text">'+c.text+'</div></div></div>';
 }
 async function loadPC() {
   try {
@@ -2510,8 +2516,9 @@ function renderProfile() {
   if (sellerBadge) sellerBadge.style.display = (u.verified_tag == 1 && u.role !== 'admin' && !isOwner) ? 'inline-flex' : 'none';
   // Animated border on profile avatar
   const profileAvatarWrap = document.getElementById('profileAvatarWrap');
+  profileAvatarWrap?.classList.remove('verified','seller');
   if (isOwner || u.role === 'admin') profileAvatarWrap?.classList.add('verified');
-  else profileAvatarWrap?.classList.remove('verified');
+  else if (u.verified_tag == 1) { profileAvatarWrap?.classList.add('verified'); profileAvatarWrap?.classList.add('seller'); }
   // XP, Level
   let xp = parseInt(u.xp) || parseInt(localStorage.getItem('bms_xp_'+u.id) || '0');
   const levelNames = ['Basic','Bronze','Silver','Gold','Platinum','Diamond','Elite','Legendary'];
@@ -2564,8 +2571,9 @@ async function viewPublicProfile(userId) {
     else { avatarImg.style.display = 'none'; avatarText.style.display = 'block'; avatarText.textContent = (p.name||p.email||'?').charAt(0).toUpperCase(); avatarWrap.style.background = ''; }
     // Verified animated border
     const isOwner = p.email === 'Bamsj37@gmail.com';
-    if (isOwner || p.role === 'admin' || p.verified_tag == 1) avatarWrap.classList.add('verified');
-    else avatarWrap.classList.remove('verified');
+    avatarWrap.classList.remove('verified','seller');
+    if (isOwner || p.role === 'admin') avatarWrap.classList.add('verified');
+    else if (p.verified_tag == 1) { avatarWrap.classList.add('verified'); avatarWrap.classList.add('seller'); }
     // Bio
     const bioEl = document.getElementById('pvBio');
     if (p.bio) { bioEl.textContent = p.bio; bioEl.style.display = 'block'; }
@@ -2725,6 +2733,13 @@ async function loadPublicStoreStats() {
       '<div class="glass" style="padding:12px 20px;border-radius:var(--radius);text-align:center"><div style="font-size:22px;font-weight:800;color:var(--secondary)">'+sellers.length+'</div><div style="font-size:11px;color:var(--text-dim)">Sellers</div></div>';
   } catch {}
 }
+function addPublicToCart(p) {
+  const existing = APP.cart.findIndex(i => i.id === 'public_'+p.id);
+  if (existing >= 0) { APP.cart[existing].qty += 1; }
+  else { APP.cart.push({ id: 'public_'+p.id, name: p.name, price: p.price, qty: 1, image: p.image, store_type: 'public', productId: p.id, sellerId: p.user_id, sellerName: p.seller_name || p.seller_email || 'Seller' }); }
+  saveCart(); renderCart(); showToast(p.name+' ditambahkan ke cart!', 'success');
+}
+var _publicProducts = [];
 async function renderPublicProducts() {
   const grid = document.getElementById('publicProductsGrid');
   const empty = document.getElementById('publicStoreEmpty');
@@ -2735,11 +2750,16 @@ async function renderPublicProducts() {
     if (q) products = products.filter(p => p.name.toLowerCase().includes(q) || (p.description||'').toLowerCase().includes(q));
     if (!products.length) { grid.innerHTML = ''; empty.style.display = 'flex'; return; }
     empty.style.display = 'none';
-    grid.innerHTML = products.map(p => {
-      const img = p.image ? '<img src="'+p.image+'" style="width:100%;height:150px;object-fit:cover;border-radius:var(--radius-lg) var(--radius-lg) 0 0" onerror="this.style.display=\'none\'">' : '<div style="height:120px;display:flex;align-items:center;justify-content:center;background:var(--bg-4);border-radius:var(--radius-lg) var(--radius-lg) 0 0"><i class="fas fa-box" style="font-size:36px;color:var(--text-dim)"></i></div>';
-      return '<div class="asset-card glass" style="overflow:hidden">'+img+'<div style="padding:14px"><div style="font-size:11px;color:var(--secondary);margin-bottom:4px"><i class="fas fa-store-alt" style="font-size:9px"></i> '+ (p.seller_name || p.seller_email || 'Unknown') +'</div><h4 style="font-size:14px;font-weight:700;margin-bottom:4px">'+p.name+'</h4><div style="font-size:12px;color:var(--text-muted);margin-bottom:8px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">'+(p.description||'No description')+'</div><div style="display:flex;justify-content:space-between;align-items:center;gap:6px;flex-wrap:wrap"><span class="badge badge-paid" style="font-size:11px">'+p.price+'</span><div style="display:flex;gap:4px">'+(p.link ? '<a href="'+p.link+'" target="_blank" class="btn btn-outline btn-sm" style="font-size:10px;padding:4px 10px"><i class="fas fa-external-link-alt"></i> Buy</a>' : '')+'<button class="btn btn-primary btn-sm" style="font-size:10px;padding:4px 10px" onclick="openSellerChat('+p.id+')"><i class="fas fa-comment"></i> Chat</button></div></div></div></div>';
+    _publicProducts = products;
+    grid.innerHTML = products.map((p,i) => {
+      return '<div class="asset-card reveal"><div class="asset-thumb" style="height:150px">'+(p.image?'<img src="'+p.image+'" alt="" loading="lazy" onerror="this.parentElement.innerHTML=\'<i class=\\\\\'fas fa-box\\\\\'></i>\'">':'<i class="fas fa-box"></i>')+'</div><div class="asset-body"><div style="font-size:11px;color:var(--secondary);margin-bottom:4px"><i class="fas fa-store-alt" style="font-size:9px"></i> '+ (p.seller_name || p.seller_email || 'Unknown') +'</div><h3>'+p.name+'</h3><div class="desc" style="-webkit-line-clamp:2">'+(p.description||'')+'</div></div><div class="asset-footer"><div><span class="asset-price">'+p.price+'</span></div><div style="display:flex;gap:4px">'+(p.link ? '<a href="'+p.link+'" target="_blank" rel="noopener" class="asset-add" onclick="event.stopPropagation()" title="Open link / Buy"><i class="fas fa-external-link-alt"></i></a>' : '')+'<button class="asset-add" onclick="addPublicToCartByIndex('+i+')" title="Add to cart"><i class="fas fa-plus"></i></button><button class="asset-add" onclick="openSellerChat('+p.id+')" title="Chat seller"><i class="fas fa-comment"></i></button></div></div></div>';
     }).join('');
+    setTimeout(initRevealObserver, 100);
   } catch {}
+}
+function addPublicToCartByIndex(i) {
+  const p = _publicProducts[i];
+  if (p) addPublicToCart(p);
 }
 
 // ============ SELLER DASHBOARD ============
