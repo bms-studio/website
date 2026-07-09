@@ -2003,7 +2003,7 @@ async function submitOrder() {
       const orders = JSON.parse(localStorage.getItem('bms_orders_'+u.id) || '[]');
       orders.push({ id: orderId, items: [...APP.cart], total: sub, status: 'Pending', createdAt: new Date().toLocaleDateString() });
       localStorage.setItem('bms_orders_'+u.id, JSON.stringify(orders));
-      const xp = parseInt(localStorage.getItem('bms_xp_'+u.id) || '0') + 10;
+      const xp = parseInt(localStorage.getItem('bms_xp_'+u.id) || '0') + 5;
       localStorage.setItem('bms_xp_'+u.id, xp.toString());
       try { await api('/admin/profile', { method: 'PUT', body: { xp: xp } }); } catch {}
     }
@@ -2476,29 +2476,47 @@ function compressImage(file, maxW, quality) {
     reader.readAsDataURL(file);
   });
 }
+function readFileAsDataUrl(file) {
+  return new Promise((resolve) => {
+    const reader = new FileReader();
+    reader.onload = e => resolve(e.target.result);
+    reader.readAsDataURL(file);
+  });
+}
+function checkGifXp() {
+  const isOwner = APP.user?.email === 'Bamsj37@gmail.com';
+  if (isOwner || APP.user?.role === 'admin') return true;
+  const xp = parseInt(APP.user?.xp) || parseInt(localStorage.getItem('bms_xp_'+(APP.user?.id||'')) || '0');
+  if (xp >= 50) return true;
+  showToast('Butuh 50 XP untuk upload GIF. Beli produk atau upload product ke Public Store!', 'error');
+  return false;
+}
 function uploadAvatar(input) {
   const file = input.files[0];
   if (!file) return;
+  if (file.type === 'image/gif') {
+    if (!checkGifXp()) return;
+    readFileAsDataUrl(file).then(async (dataUrl) => {
+      try { const d = await api('/admin/profile', { method: 'PUT', body: { avatar: dataUrl } }); if (d.user) { APP.user = d.user; renderProfile(); showToast('GIF Avatar updated!', 'success'); } } catch { showToast('Failed', 'error'); }
+    });
+    return;
+  }
   compressImage(file, 400, 0.8).then(async (dataUrl) => {
-    try {
-      const d = await api('/admin/profile', { method: 'PUT', body: { avatar: dataUrl } });
-      if (d.user) { APP.user = d.user; renderProfile(); showToast('Avatar updated!', 'success'); }
-    } catch { showToast('Failed to update avatar', 'error'); }
+    try { const d = await api('/admin/profile', { method: 'PUT', body: { avatar: dataUrl } }); if (d.user) { APP.user = d.user; renderProfile(); showToast('Avatar updated!', 'success'); } } catch { showToast('Failed', 'error'); }
   });
 }
 function uploadBanner(input) {
   const file = input.files[0];
   if (!file) return;
+  if (file.type === 'image/gif') {
+    if (!checkGifXp()) return;
+    readFileAsDataUrl(file).then(async (dataUrl) => {
+      try { const d = await api('/admin/profile', { method: 'PUT', body: { banner: dataUrl } }); if (d.user) { APP.user = d.user; localStorage.setItem('bms_banner_'+(APP.user?.id||''), dataUrl); renderProfile(); showToast('GIF Banner updated!', 'success'); } } catch(err) { showToast(err.message || 'Failed', 'error'); }
+    });
+    return;
+  }
   compressImage(file, 1200, 0.85).then(async (dataUrl) => {
-    try {
-      const d = await api('/admin/profile', { method: 'PUT', body: { banner: dataUrl } });
-      if (d.user) { 
-        APP.user = d.user;
-        localStorage.setItem('bms_banner_'+(APP.user?.id||''), dataUrl);
-        renderProfile();
-        showToast('Banner updated!', 'success');
-      }
-    } catch(err) { showToast(err.message || 'Failed. File terlalu besar?', 'error'); }
+    try { const d = await api('/admin/profile', { method: 'PUT', body: { banner: dataUrl } }); if (d.user) { APP.user = d.user; localStorage.setItem('bms_banner_'+(APP.user?.id||''), dataUrl); renderProfile(); showToast('Banner updated!', 'success'); } } catch(err) { showToast(err.message || 'Failed. File terlalu besar?', 'error'); }
   });
 }
 

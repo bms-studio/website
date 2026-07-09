@@ -54,7 +54,12 @@ router.post('/products', authenticateSession, async (req, res) => {
     if (!name) return res.status(400).json({ error: 'Name required' });
     await q('INSERT INTO public_products (user_id, name, price, description, image, link, category) VALUES (?, ?, ?, ?, ?, ?, ?)',
       [req.user.id, name, price || 'Gratis', description || '', image || '', link || '', category || 'other']);
-    res.json({ success: true, message: 'Product submitted for review!' });
+    // Add 5 XP for product upload
+    const currentXp = parseInt(req.user.xp) || 0;
+    const newXp = currentXp + 5;
+    await q('UPDATE users SET xp = ? WHERE id = ?', [newXp, req.user.id]);
+    req.user.xp = newXp;
+    res.json({ success: true, message: 'Product submitted for review! +5 XP gained!' });
   } catch { res.status(500).json({ error: 'Server error' }); }
 });
 
