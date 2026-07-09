@@ -1,6 +1,6 @@
 {
   "redirects": [
-    { "source": "/(.*)", "has": [{ "type": "host", "value": "bms-studio-website.vercel.app" }], "destination": "https://bms-platfrom.vercel.app/:1", "permanent": true },
-    { "source": "/(.*)", "has": [{ "type": "host", "value": "website-rho-three-pmy5niwf4p.vercel.app" }], "destination": "https://bms-platfrom.vercel.app/:1", "permanent": true }
+    { "source": "/(.*)", "has": [{ "type": "host", "value": "bms-studio-website.vercel.app" }], "destination": "https://bms-platfrom.vercel.app/$1", "permanent": true },
+    { "source": "/(.*)", "has": [{ "type": "host", "value": "website-rho-three-pmy5niwf4p.vercel.app" }], "destination": "https://bms-platfrom.vercel.app/$1", "permanent": true }
   ]
 }
