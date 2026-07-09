@@ -186,7 +186,7 @@ ul{list-style:none}
 
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:10px 24px;border-radius:var(--radius);font-weight:600;font-size:13px;border:none;cursor:pointer;transition:var(--transition);position:relative;overflow:hidden;font-family:'Inter',sans-serif}
 .btn-primary{background:var(--gradient-1);color:#fff;box-shadow:0 4px 20px rgba(139,124,252,0.25)}
-.btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(139,124,252,0.35)}
+.btn-primary:hover{transform:translateY(-3px);box-shadow:0 8px 35px rgba(139,124,252,0.4),0 0 60px rgba(139,124,252,0.15)}
 .btn-primary::before{content:'';position:absolute;top:0;left:-100%;width:60%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.12),transparent);animation:btnShimmer 3s ease-in-out infinite}
 
 /* 3D tilt cards - instant transform, no transition lag */
@@ -259,12 +259,26 @@ textarea.form-input{resize:vertical;min-height:100px}
 .orb-1{width:350px;height:350px;background:var(--primary);top:-120px;right:-80px;animation:orbFloat 10s ease-in-out infinite}
 .orb-2{width:280px;height:280px;background:var(--secondary);bottom:-60px;left:-60px;animation:orbFloat 12s ease-in-out infinite reverse}
 @keyframes orbFloat{0%,100%{transform:translate(0,0) scale(1)}25%{transform:translate(25px,-25px) scale(1.03)}50%{transform:translate(-15px,15px) scale(0.97)}75%{transform:translate(15px,25px) scale(1.02)}}
-.hero-content{position:relative;z-index:2;text-align:center;max-width:720px}
-.hero-badge{display:inline-flex;align-items:center;gap:6px;padding:6px 18px;background:var(--glass);border:1px solid var(--glass-border);border-radius:100px;font-size:12px;color:var(--text-muted);margin-bottom:20px}
-.hero-badge i{color:var(--secondary)}
-.hero-title{font-family:'Outfit',sans-serif;font-size:clamp(32px,5vw,60px);font-weight:800;line-height:1.15;margin-bottom:16px;letter-spacing:-0.04em}
-.hero-desc{font-size:clamp(14px,1.8vw,18px);color:var(--text-muted);line-height:1.7;max-width:540px;margin:0 auto 28px}
-.hero-cta{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+/* HERO */
+.hero-content{position:relative;z-index:2;text-align:center;max-width:800px}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;padding:8px 22px;background:linear-gradient(135deg,rgba(139,124,252,0.12),rgba(103,232,249,0.08));border:1px solid rgba(139,124,252,0.25);border-radius:100px;font-size:13px;font-weight:600;color:var(--primary-light);margin-bottom:28px;animation:badgePulse 3s ease-in-out infinite;letter-spacing:0.5px}
+.hero-badge i{color:var(--secondary);font-size:14px;animation:iconSpin 4s linear infinite}
+@keyframes badgePulse{0%,100%{box-shadow:0 0 0 0 rgba(139,124,252,0.15)}50%{box-shadow:0 0 20px 4px rgba(139,124,252,0.1)}}
+@keyframes iconSpin{0%{transform:rotate(0deg) scale(1)}25%{transform:rotate(10deg) scale(1.15)}50%{transform:rotate(0deg) scale(1)}100%{transform:rotate(0deg) scale(1)}}
+.hero-title{font-family:'Syne',sans-serif;font-size:clamp(38px,5.5vw,72px);font-weight:800;line-height:1.1;margin-bottom:20px;letter-spacing:-0.03em}
+.hero-title .word{display:inline-block;opacity:0;transform:translateY(30px) rotateX(40deg);animation:heroWordIn 0.8s cubic-bezier(0.16,1,0.3,1) forwards;filter:blur(4px)}
+.hero-title .word:nth-child(1){animation-delay:0.15s}
+.hero-title .word:nth-child(2){animation-delay:0.45s}
+.hero-title .word:nth-child(3){animation-delay:0.75s}
+@keyframes heroWordIn{to{opacity:1;transform:translateY(0) rotateX(0);filter:blur(0)}}
+.hero-title .word .glow-text{background:linear-gradient(135deg,#a99bff 0%,#67e8f9 40%,#8b7cfc 60%,#f472b6 100%);background-size:300% 300%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:glowShift 4s ease-in-out infinite;position:relative}
+.hero-title .word .glow-text::after{content:attr(data-text);position:absolute;left:0;top:0;background:linear-gradient(135deg,#a99bff,#67e8f9);background-size:300% 300%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;filter:blur(16px);opacity:0.4;animation:glowShift 4s ease-in-out infinite;z-index:-1}
+@keyframes glowShift{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+.hero-sub{font-size:clamp(15px,1.8vw,19px);color:var(--text-muted);line-height:1.7;max-width:580px;margin:0 auto 32px;font-weight:400}
+.hero-sub .glow-word{background:linear-gradient(90deg,#8b7cfc,#67e8f9,#8b7cfc);background-size:200% 100%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:glowShift 3s ease-in-out infinite;font-weight:600}
+.hero-cta{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+.hero-line{width:120px;height:2px;background:linear-gradient(90deg,transparent,var(--primary),var(--secondary),transparent);margin:0 auto 20px;border-radius:2px;animation:lineExpand 1s 0.5s cubic-bezier(0.16,1,0.3,1) forwards;transform:scaleX(0);opacity:0}
+@keyframes lineExpand{to{transform:scaleX(1);opacity:0.6}}
 
 /* SECTION */
 .section{padding:80px 20px;max-width:1200px;margin:0 auto}
@@ -664,12 +678,13 @@ textarea.form-input{resize:vertical;min-height:100px}
     <canvas id="threeCanvas"></canvas>
     <div class="hero-content">
       <div class="hero-badge"><i class="fas fa-bolt"></i> BMS Platform</div>
+      <div class="hero-line"></div>
       <h1 class="hero-title">
-        <span class="reveal-line" style="animation-delay:0.2s">Develop. </span>
-        <span class="reveal-line text-gradient" style="animation-delay:0.6s">Deliver. </span>
-        <span class="reveal-line" style="animation-delay:1s">Dominate.</span>
+        <span class="word"><span class="glow-text" data-text="Develop.">Develop.</span></span>
+        <span class="word"><span class="glow-text" data-text="Deliver.">Deliver.</span></span>
+        <span class="word"><span class="glow-text" data-text="Dominate.">Dominate.</span></span>
       </h1>
-      <p class="hero-desc">Premium Roblox Development & Digital Store — under one <span class="text-gradient">BMS Platform</span>.</p>
+      <p class="hero-sub">Premium Roblox Development & Digital Store — under one <span class="glow-word">BMS Platform</span>.</p>
       <div class="hero-cta">
         <a class="btn btn-primary btn-lg" onclick="navigateTo('services')">Our Services</a>
         <a class="btn btn-outline btn-lg" onclick="navigateTo('store')">Explore Store</a>
