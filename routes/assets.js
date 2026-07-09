@@ -7,8 +7,8 @@ const router = express.Router();
 router.get('/', async (req, res) => {
   try {
     const { category, search, store_type } = req.query;
-    let sql = 'SELECT a.*, ROUND(AVG(r.rating),1) as avg_rating, COUNT(r.id) as rating_count FROM assets a LEFT JOIN product_ratings r ON r.product_id = a.id AND r.product_type = ? WHERE 1=1';
-    const params = ['store'];
+    let sql = 'SELECT a.*, ROUND(AVG(r.rating),1) as avg_rating, COUNT(r.id) as rating_count FROM assets a LEFT JOIN product_ratings r ON r.product_id = a.id AND r.product_type = a.store_type WHERE 1=1';
+    const params = [];
     if (store_type) {
       sql += ' AND a.store_type = ?';
       params.push(store_type);
