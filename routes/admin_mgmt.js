@@ -37,9 +37,6 @@ router.put('/profile', authenticateSession, async (req, res) => {
     if (bio !== undefined) { updates.push('bio = ?'); params.push(bio); }
     if (ref_code !== undefined) { updates.push('ref_code = ?'); params.push(ref_code); }
     if (banner !== undefined) {
-      const isVerified = req.user.role === 'admin' || req.user.verified_tag == 1;
-      const xp = parseInt(userXp || req.headers['x-user-xp'] || '0');
-      if (!isVerified && xp < 20) return res.status(400).json({ error: 'Butuh 20 XP untuk memasang banner. Pesan dulu 2x agar bisa!' });
       updates.push('banner = ?'); params.push(banner);
     }
     if (userXp !== undefined) { updates.push('xp = ?'); params.push(parseInt(userXp) || 0); }

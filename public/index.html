@@ -1648,7 +1648,9 @@ async function api(path, options = {}) {
   if (config.body && typeof config.body === 'object') config.body = JSON.stringify(config.body);
   try {
     const res = await fetch(API + path, config);
-    const data = await res.json();
+    const text = await res.text();
+    let data;
+    try { data = JSON.parse(text); } catch { throw new Error('Server returned: ' + text.slice(0,100)); }
     if (!res.ok) throw new Error(data.error || 'Request failed');
     return data;
   } catch (err) { throw err; }
@@ -2455,40 +2457,49 @@ async function sendPC() {
   }
 }
 async function deletePC(id) { if (!confirm('Delete message?')) return; try { await api('/public-chats/'+id, { method: 'DELETE' }); loadPC(); } catch {} }
+function compressImage(file, maxW, quality) {
+  return new Promise((resolve) => {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      const img = new Image();
+      img.onload = function() {
+        let w = img.width, h = img.height;
+        if (w > maxW) { h = h * maxW / w; w = maxW; }
+        const c = document.createElement('canvas');
+        c.width = w; c.height = h;
+        const ctx = c.getContext('2d');
+        ctx.drawImage(img, 0, 0, w, h);
+        resolve(c.toDataURL('image/jpeg', quality));
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
+}
 function uploadAvatar(input) {
   const file = input.files[0];
   if (!file) return;
-  const reader = new FileReader();
-  reader.onload = async function(e) {
-    const dataUrl = e.target.result;
+  compressImage(file, 400, 0.8).then(async (dataUrl) => {
     try {
       const d = await api('/admin/profile', { method: 'PUT', body: { avatar: dataUrl } });
       if (d.user) { APP.user = d.user; renderProfile(); showToast('Avatar updated!', 'success'); }
     } catch { showToast('Failed to update avatar', 'error'); }
-  };
-  reader.readAsDataURL(file);
+  });
 }
 function uploadBanner(input) {
   const file = input.files[0];
   if (!file) return;
-  const reader = new FileReader();
-  reader.onload = async function(e) {
-    const dataUrl = e.target.result;
+  compressImage(file, 1200, 0.85).then(async (dataUrl) => {
     try {
-      const xp = parseInt(APP.user?.xp) || parseInt(localStorage.getItem('bms_xp_'+(APP.user?.id||'')) || '0');
-      const isVerified = APP.user?.role === 'admin' || APP.user?.verified_tag == 1;
-      console.log('Banner upload check: user='+JSON.stringify({id:APP.user?.id,role:APP.user?.role,verified_tag:APP.user?.verified_tag}), 'xp='+xp, 'isVerified='+isVerified);
-      if (!isVerified && xp < 20) { showToast('XP kamu '+xp+', butuh 20 XP (atau punya verified badge). Checkout 2x atau minta admin verified!', 'error'); return; }
-      const d = await api('/admin/profile', { method: 'PUT', body: { banner: dataUrl, xp: xp } });
+      const d = await api('/admin/profile', { method: 'PUT', body: { banner: dataUrl } });
       if (d.user) { 
         APP.user = d.user;
         localStorage.setItem('bms_banner_'+(APP.user?.id||''), dataUrl);
         renderProfile();
         showToast('Banner updated!', 'success');
       }
-    } catch(err) { showToast(err.message || 'Failed', 'error'); }
-  };
-  reader.readAsDataURL(file);
+    } catch(err) { showToast(err.message || 'Failed. File terlalu besar?', 'error'); }
+  });
 }
 
 // ============ PROFILE (updated render) ============
