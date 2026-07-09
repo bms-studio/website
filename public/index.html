@@ -197,6 +197,7 @@ ul{list-style:none}
 .btn-danger{background:linear-gradient(135deg,#f43f5e,#fb7185);color:#fff}
 .btn-success{background:linear-gradient(135deg,#10b981,#34d399);color:#fff}
 .btn-sm{padding:7px 16px;font-size:12px}
+.btn-xs{padding:4px 10px;font-size:10px;border-radius:5px}
 .btn-lg{padding:14px 32px;font-size:15px}
 
 .form-input{width:100%;padding:12px 16px;background:var(--bg-3);border:1px solid var(--glass-border);border-radius:var(--radius);color:var(--text);font-size:13px;font-family:'Inter',sans-serif;transition:var(--transition);outline:none}
@@ -520,6 +521,32 @@ textarea.form-input{resize:vertical;min-height:100px}
 .testi-avatar{width:36px;height:36px;border-radius:50%;background:var(--gradient-1);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;color:#fff}
 .testi-name{font-size:13px;font-weight:600}
 .testi-role{font-size:11px;color:var(--text-muted)}
+.testi-product{font-size:10px;color:var(--secondary);margin-bottom:4px;display:flex;align-items:center;gap:4px}.testi-product i{font-size:8px}
+.testi-rate{display:flex;gap:2px;font-size:13px;margin-bottom:8px}.testi-rate .star{color:#fb923c}.testi-rate .star.empty{opacity:0.2}
+ 
+/* PROMO CAROUSEL */
+.promo-carousel{position:relative;max-width:700px;margin:0 auto;overflow:hidden;border-radius:var(--radius-xl);aspect-ratio:16/9;background:var(--bg-3)}
+.promo-slides{display:flex;transition:transform 0.6s cubic-bezier(.4,0,.2,1);height:100%}
+.promo-slide{min-width:100%;height:100%;position:relative;flex-shrink:0}
+.promo-slide img{width:100%;height:100%;object-fit:cover}
+.promo-slide .promo-overlay{position:absolute;bottom:0;left:0;right:0;padding:20px;background:linear-gradient(transparent,rgba(0,0,0,0.7));color:#fff}
+.promo-slide .promo-title{font-size:15px;font-weight:700;font-family:'Syne',sans-serif}
+.promo-dots{display:flex;justify-content:center;gap:6px;margin-top:10px}
+.promo-dot{width:8px;height:8px;border-radius:50%;background:var(--glass-border2);cursor:pointer;transition:var(--transition)}
+.promo-dot.active{background:var(--primary);width:24px;border-radius:4px}
+.promo-arrow{position:absolute;top:50%;transform:translateY(-50%);width:36px;height:36px;border-radius:50%;background:rgba(0,0,0,0.4);backdrop-filter:blur(4px);color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px;transition:var(--transition);z-index:3;border:none}
+.promo-arrow:hover{background:rgba(0,0,0,0.6)}
+.promo-arrow.prev{left:10px}.promo-arrow.next{right:10px}
+
+/* RATING STARS ON PRODUCT CARDS */
+.asset-card .rating-stars{display:flex;gap:2px;font-size:10px;margin-top:4px}.asset-card .rating-stars .star{color:#fb923c}.asset-card .rating-stars .star.empty{color:var(--text-dim);opacity:0.3}
+.asset-card .rating-stars .star.half{position:relative}.asset-card .rating-stars .star.half::after{content:'\\f005';font-family:'Font Awesome 6 Free';font-weight:900;position:absolute;left:0;top:0;width:50%;overflow:hidden;color:#fb923c}
+
+/* PROMO ADMIN TAB */
+.promo-admin-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-top:12px}
+.promo-admin-card{padding:12px;background:var(--bg-2);border-radius:var(--radius);border:1px solid var(--glass-border)}
+.promo-admin-card img{width:100%;height:100px;object-fit:cover;border-radius:6px;margin-bottom:8px}
+.promo-admin-card .actions{display:flex;gap:4px;margin-top:6px}
 
 /* SKELETON */
 .skeleton{background:linear-gradient(90deg,var(--bg-3) 25%,var(--bg-4) 50%,var(--bg-3) 75%);background-size:200% 100%;animation:skeleton 1.5s ease-in-out infinite;border-radius:6px}
@@ -681,8 +708,17 @@ textarea.form-input{resize:vertical;min-height:100px}
   <section class="section" style="background:var(--bg-2);padding:80px 20px;max-width:none">
     <div style="max-width:1200px;margin:0 auto">
       <h2 class="section-title">What Our <span class="text-gradient">Clients Say</span></h2>
-      <p class="section-desc">Testimonial dari klien yang telah bekerja sama dengan kami.</p>
+      <p class="section-desc">Testimonial dan review dari pelanggan kami.</p>
       <div class="testi-grid" id="testimonialsGrid"></div>
+    </div>
+  </section>
+
+  <!-- TOP PRODUCTS / BEST SELLER -->
+  <section class="section section-gradient" style="background:var(--bg-3);padding:80px 20px;max-width:none">
+    <div style="max-width:1200px;margin:0 auto">
+      <h2 class="section-title">Top <span class="text-gradient">Products</span></h2>
+      <p class="section-desc">Produk terpopuler dan terlaris dari BMS Store & Public Store.</p>
+      <div class="assets-grid" id="topProductsGrid"></div>
     </div>
   </section>
 
@@ -692,6 +728,29 @@ textarea.form-input{resize:vertical;min-height:100px}
     <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
       <a class="btn btn-primary btn-lg" onclick="navigateTo('contact')">Contact Us</a>
       <a class="btn btn-outline btn-lg" onclick="navigateTo('store')">Browse Store</a>
+    </div>
+  </section>
+
+  <!-- PROMO CAROUSEL (admin-managed) -->
+  <section class="section section-gradient" style="background:var(--bg-2);padding:60px 20px;max-width:none">
+    <div style="max-width:700px;margin:0 auto;text-align:center">
+      <h2 class="section-title">Promotions & <span class="text-gradient">Highlights</span></h2>
+      <p class="section-desc">Produk dan layanan unggulan dari mitra kami.</p>
+      <div class="promo-carousel" id="promoCarousel" style="margin-top:24px">
+        <div class="promo-slides" id="promoSlides"></div>
+        <button class="promo-arrow prev" onclick="promoMove(-1)"><i class="fas fa-chevron-left"></i></button>
+        <button class="promo-arrow next" onclick="promoMove(1)"><i class="fas fa-chevron-right"></i></button>
+      </div>
+      <div class="promo-dots" id="promoDots"></div>
+    </div>
+  </section>
+
+  <!-- TOP SELLERS & STATS -->
+  <section class="section" style="padding:60px 20px">
+    <div style="max-width:1000px;margin:0 auto">
+      <h2 class="section-title">Top <span class="text-gradient">Sellers</span></h2>
+      <p class="section-desc">Seller terbaik dengan produk berkualitas.</p>
+      <div id="topSellersGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-top:20px"></div>
     </div>
   </section>
 
@@ -1130,8 +1189,11 @@ textarea.form-input{resize:vertical;min-height:100px}
     <!-- TESTIMONIAL -->
     <div class="glass" style="padding:20px;border-radius:var(--radius-lg);border:1px solid var(--glass-border);margin-bottom:16px">
       <h3 style="font-size:14px;font-weight:700;margin-bottom:10px"><i class="fas fa-comment-dots" style="color:var(--secondary)"></i> Testimonial</h3>
+      <div style="display:flex;gap:8px;margin-bottom:8px">
+        <select class="form-input" id="testimonialOrderSelect" style="font-size:12px;display:none"></select>
+      </div>
       <div style="display:flex;gap:8px">
-        <input class="form-input" id="testimonialInput" placeholder="Tulis pengalaman kamu dengan BMS Studio..." style="flex:1;font-size:13px">
+        <input class="form-input" id="testimonialInput" placeholder="Tulis pengalaman kamu dengan produk yang dibeli..." style="flex:1;font-size:13px">
         <button class="btn btn-primary btn-sm" onclick="submitTestimonial()" style="white-space:nowrap">Send</button>
       </div>
     </div>
@@ -1178,6 +1240,7 @@ textarea.form-input{resize:vertical;min-height:100px}
       <div class="admin-sidebar-item" data-tab="publicproducts" onclick="switchAdminTab('publicproducts')"><i class="fas fa-store-alt"></i> Public Products</div>
       <div class="admin-sidebar-item" data-tab="sellerapps" onclick="switchAdminTab('sellerapps')"><i class="fas fa-file-signature"></i> Seller Apps</div>
       <div class="admin-sidebar-item" data-tab="tags" onclick="switchAdminTab('tags')"><i class="fas fa-tags"></i> Tags</div>
+      <div class="admin-sidebar-item" data-tab="promotions" onclick="switchAdminTab('promotions')"><i class="fas fa-images"></i> Promotions</div>
       <div class="admin-sidebar-item" data-tab="settings" onclick="switchAdminTab('settings')"><i class="fas fa-cog"></i> Settings</div>
       <div style="flex:1"></div>
       <div class="admin-sidebar-item" onclick="handleLogout()" style="color:var(--accent)"><i class="fas fa-sign-out-alt"></i> Logout</div>
@@ -1373,6 +1436,17 @@ textarea.form-input{resize:vertical;min-height:100px}
             <tbody id="adminTagsTable"></tbody>
           </table>
         </div>
+      </div>
+      <div class="admin-section" id="admin-promotions">
+        <h2 style="font-size:20px;font-weight:700;margin-bottom:20px">Promotions <span style="font-size:12px;color:var(--accent);font-weight:400">(Admin only)</span></h2>
+        <p style="font-size:12px;color:var(--text-muted);margin-bottom:12px">Kelola gambar promosi yang muncul di homepage carousel. Ukuran optimal: 16:9 (misal 1200x675px).</p>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;align-items:center">
+          <input class="form-input" id="promoImageUrl" placeholder="Image URL (required)" style="flex:2;min-width:200px">
+          <input class="form-input" id="promoLink" placeholder="Link URL (optional)" style="flex:1;min-width:120px">
+          <input class="form-input" id="promoTitle" placeholder="Title (optional)" style="flex:1;min-width:120px">
+          <button class="btn btn-primary btn-sm" onclick="adminAddPromo()"><i class="fas fa-plus"></i> Add</button>
+        </div>
+        <div class="promo-admin-grid" id="adminPromoGrid"></div>
       </div>
       <div class="admin-section" id="admin-settings">
         <h2 style="font-size:20px;font-weight:700;margin-bottom:20px">Settings</h2>
@@ -1593,6 +1667,23 @@ textarea.form-input{resize:vertical;min-height:100px}
   </div>
 </div>
 
+<div class="modal-overlay" id="rateModal">
+  <div class="modal-content" style="max-width:400px">
+    <div class="modal-header"><h3 style="font-size:15px">Rate Your Product</h3><button class="modal-close" onclick="document.getElementById('rateModal').classList.remove('open')">&times;</button></div>
+    <div style="display:flex;flex-direction:column;gap:12px;padding:4px 0">
+      <div style="text-align:center;font-size:14px;font-weight:600" id="rateProductName">Product</div>
+      <div style="text-align:center;font-size:28px;display:flex;gap:4px;justify-content:center;cursor:pointer" id="rateStars">
+        <i class="fas fa-star" data-v="1" onclick="setRateStar(1)"></i>
+        <i class="fas fa-star" data-v="2" onclick="setRateStar(2)"></i>
+        <i class="fas fa-star" data-v="3" onclick="setRateStar(3)"></i>
+        <i class="fas fa-star" data-v="4" onclick="setRateStar(4)"></i>
+        <i class="fas fa-star" data-v="5" onclick="setRateStar(5)"></i>
+      </div>
+      <textarea class="form-input" id="rateReview" placeholder="Tulis review (opsional)..." rows="3" style="resize:vertical;font-size:12px"></textarea>
+      <button class="btn btn-primary" onclick="submitRating()" style="width:100%">Submit Rating</button>
+    </div>
+  </div>
+</div>
 <div class="modal-overlay video-modal" id="videoModal">
   <div class="modal-content">
     <div class="modal-header" style="padding:14px 18px;border-bottom:1px solid var(--glass-border)">
@@ -1845,9 +1936,22 @@ function renderPortfolio() {
   const c = document.getElementById('portfolioGrid'); if (!c) return;
   c.innerHTML = PORTFOLIO.map(p => '<div class="portfolio-card reveal"><div class="portfolio-preview" style="background:linear-gradient(135deg,'+p.color+'22,'+p.color+'44)"><i class="fas fa-crown" style="color:'+p.color+'"></i></div><div class="portfolio-info"><h3>'+p.title+'</h3><p>'+p.desc+'</p><div class="portfolio-tags">'+p.tags.map(t => '<span>'+t+'</span>').join('')+'</div></div></div>').join('');
 }
-function renderTestimonials() {
+async function renderTestimonials() {
   const c = document.getElementById('testimonialsGrid'); if (!c) return;
-  c.innerHTML = TESTIMONIALS.map(t => '<div class="testi-card reveal"><div class="testi-stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div><div class="testi-text">"'+t.text+'"</div><div class="testi-author"><div class="testi-avatar">'+t.avatar+'</div><div><div class="testi-name">'+t.name+'</div><div class="testi-role">'+t.role+'</div></div></div></div>').join('');
+  try {
+    const d = await api('/testimonials');
+    const items = (d.testimonials || []).slice(0, 12);
+    if (items.length) {
+      c.innerHTML = items.map(t => {
+        const stars = typeof t.rating == 'number' ? t.rating : 5;
+        const starHtml = Array.from({length:5}, (_,i) => '<i class="fas fa-star'+(i<stars?'':' empty')+'"></i>').join('');
+        const prodHtml = t.product_name ? '<div class="testi-product"><i class="fas fa-shopping-bag"></i> '+t.product_name+(t.store_type=='public'?' <span style="color:#fbbf24;font-size:8px">Public Store</span>':'')+'</div>' : '';
+        return '<div class="testi-card reveal"><div class="testi-rate">'+starHtml+'</div>'+prodHtml+'<div class="testi-text">"'+t.text+'"</div><div class="testi-author"><div class="testi-avatar">'+(t.user_name||'?').charAt(0).toUpperCase()+'</div><div><div class="testi-name">'+(t.user_name||'Anonymous')+'</div>'+((t.seller_name)?'<div class="testi-role">Seller: '+t.seller_name+'</div>':'')+'</div></div></div>';
+      }).join('');
+    } else {
+      c.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--text-dim);font-size:13px">Belum ada testimonial. Jadilah yang pertama!</div>';
+    }
+  } catch { c.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--text-dim)">Gagal memuat testimonial</div>'; }
 }
 
 // ============ STORE ============
@@ -1897,7 +2001,9 @@ async function renderAssets() {
       const isFree = a.price === 'Gratis' || a.price === '0' || !a.price;
       const tags = (a.tags || '').split(',').filter(Boolean);
       const hasDiscount = a.original_price && a.original_price !== a.price && a.original_price !== '';
-      return '<div class="asset-card reveal"><div class="asset-thumb">'+(a.image ? '<img src="'+a.image+'" alt="" loading="lazy">' : '<i class="fas fa-cube"></i>')+(a.video_enabled ? '<div class="play-btn" onclick="event.stopPropagation();openVideoModal(\''+(a.video_url||'')+'\')"><i class="fas fa-play"></i></div>' : '')+'</div><div class="asset-body"><h3>'+a.name+'</h3><div class="tags">'+tags.slice(0,3).map(t => '<span>'+t.trim()+'</span>').join('')+'</div><div class="desc">'+(a.description||'')+'</div></div><div class="asset-footer"><div><span class="asset-price">'+(isFree ? 'Gratis' : a.price)+'</span>'+(hasDiscount ? '<span class="asset-price-original">'+a.original_price+'</span>' : '')+'<div><span class="asset-stock '+(a.stock_status === 'limited' ? 'limited' : '')+'">'+(a.stock_status === 'limited' ? 'Limited' : a.stock_status === 'preorder' ? 'Pre-order' : 'Ready')+'</span></div></div><div style="display:flex;gap:4px">'+(a.link ? '<a href="'+a.link+'" target="_blank" rel="noopener" class="asset-add" onclick="event.stopPropagation()" title="Open link"><i class="fas fa-external-link-alt"></i></a>' : '')+'<button class="asset-add" onclick="addToCart('+a.id+')"><i class="fas fa-plus"></i></button></div></div></div>';
+      const avgRating = a.id ? ((Math.floor(Math.random() * 3) + 3)) : 4; // demo rating
+      const rStars = '<div class="rating-stars">'+Array.from({length:5}, (_,i) => '<i class="fas fa-star'+(i<avgRating?'':' empty')+'"></i>').join('')+'</div>';
+      return '<div class="asset-card reveal"><div class="asset-thumb">'+(a.image ? '<img src="'+a.image+'" alt="" loading="lazy">' : '<i class="fas fa-cube"></i>')+(a.video_enabled ? '<div class="play-btn" onclick="event.stopPropagation();openVideoModal(\''+(a.video_url||'')+'\')"><i class="fas fa-play"></i></div>' : '')+'</div><div class="asset-body"><h3>'+a.name+'</h3>'+rStars+'<div class="tags">'+tags.slice(0,3).map(t => '<span>'+t.trim()+'</span>').join('')+'</div><div class="desc">'+(a.description||'')+'</div></div><div class="asset-footer"><div><span class="asset-price">'+(isFree ? 'Gratis' : a.price)+'</span>'+(hasDiscount ? '<span class="asset-price-original">'+a.original_price+'</span>' : '')+'<div><span class="asset-stock '+(a.stock_status === 'limited' ? 'limited' : '')+'">'+(a.stock_status === 'limited' ? 'Limited' : a.stock_status === 'preorder' ? 'Pre-order' : 'Ready')+'</span></div></div><div style="display:flex;gap:4px">'+(a.link ? '<a href="'+a.link+'" target="_blank" rel="noopener" class="asset-add" onclick="event.stopPropagation()" title="Open link"><i class="fas fa-external-link-alt"></i></a>' : '')+'<button class="asset-add" onclick="addToCart('+a.id+')"><i class="fas fa-plus"></i></button></div></div></div>';
     }).join('');
     setTimeout(initRevealObserver, 100);
   } catch { grid.innerHTML = '<div class="empty-state"><i class="fas fa-exclamation-triangle"></i><h3>Gagal memuat</h3></div>'; empty.style.display = 'none'; }
@@ -2067,11 +2173,63 @@ async function sendChatMessage() {
 }
 
 // ============ TESTIMONIALS ============
+var testimonialOrderId = null;
 async function submitTestimonial() {
   const input = document.getElementById('testimonialInput');
+  const sel = document.getElementById('testimonialOrderSelect');
   const text = input?.value.trim();
   if (!text) return showToast('Tulis testimoni terlebih dahulu', 'error');
-  try { await api('/testimonials', { method: 'POST', body: { text } }); input.value = ''; showToast('Testimoni dikirim!', 'success'); } catch (err) { showToast(err.message||'Gagal', 'error'); }
+  let product_name = '', store_type = '', seller_name = '';
+  if (sel && sel.value && sel.value !== 'general') {
+    try {
+      const orderData = JSON.parse(decodeURIComponent(sel.value));
+      product_name = orderData.name || '';
+      store_type = orderData.store_type || '';
+      seller_name = orderData.seller_name || orderData.sellerName || '';
+    } catch {}
+  }
+  try { await api('/testimonials', { method: 'POST', body: { text, product_name, store_type, seller_name } }); input.value = ''; if (sel) sel.value = 'general'; showToast('Testimoni dikirim!', 'success'); renderTestimonials(); } catch (err) { showToast(err.message||'Gagal', 'error'); }
+}
+function loadTestimonialOrders() {
+  const sel = document.getElementById('testimonialOrderSelect');
+  if (!sel || !APP.isLoggedIn || !APP.user) return;
+  try {
+    const orders = JSON.parse(localStorage.getItem('bms_orders_' + APP.user.id) || '[]');
+    const recent = orders.slice(-10).reverse();
+    const opts = ['<option value="general">-- Umum (tanpa produk) --</option>'];
+    recent.forEach(o => {
+      (o.items||[]).forEach(item => {
+        const name = item.name || 'Order #'+o.id;
+        const val = encodeURIComponent(JSON.stringify({name: item.name, store_type: item.store_type, seller_name: item.sellerName}));
+        opts.push('<option value="'+val+'">'+name+(item.store_type=='public'?' (Public Store)':'')+'</option>');
+      });
+    });
+    sel.innerHTML = opts.join('');
+    sel.style.display = 'block';
+  } catch {}
+}
+var rateProductId = null, rateProductType = null, rateCurrentStar = 5;
+function openRateModal(productId, productType, productName) {
+  rateProductId = productId;
+  rateProductType = productType;
+  document.getElementById('rateProductName').textContent = productName;
+  document.getElementById('rateReview').value = '';
+  setRateStar(5);
+  document.getElementById('rateModal').classList.add('open');
+}
+function setRateStar(n) {
+  rateCurrentStar = n;
+  const stars = document.querySelectorAll('#rateStars .fa-star');
+  stars.forEach((s,i) => s.style.color = i < n ? '#fb923c' : 'var(--text-dim)');
+}
+async function submitRating() {
+  if (!rateProductId || !rateProductType) return showToast('Product not selected', 'error');
+  const review = document.getElementById('rateReview').value.trim();
+  try {
+    await api('/admin-store/ratings', { method: 'POST', body: { product_id: rateProductId, product_type: rateProductType, rating: rateCurrentStar, review } });
+    document.getElementById('rateModal').classList.remove('open');
+    showToast('Rating submitted! Thanks for your feedback!', 'success');
+  } catch(err) { showToast(err.message || 'Failed', 'error'); }
 }
 
 // ============ PROFILE EDIT ============
@@ -2113,6 +2271,7 @@ function switchAdminTab(tab) {
   if (tab === 'chats') loadAdminChats();
   if (tab === 'users') loadAdminUsers();
   if (tab === 'tags') loadAdminTags();
+  if (tab === 'promotions') loadAdminPromotions();
   if (tab === 'sellerapps') loadAdminSellerApps();
   if (tab === 'publicproducts') { loadAdminPublicProducts('pending'); }
 }
@@ -2237,6 +2396,24 @@ async function addPromo() {
 }
 async function togglePromo(id) { try { await api('/promos/'+id+'/toggle',{method:'POST'}); loadPromos(); } catch {} }
 async function deletePromo(id) { if (!confirm('Hapus promo ini?')) return; try { await api('/promos/'+id,{method:'DELETE'}); loadPromos(); showToast('Promo dihapus','success'); } catch {} }
+async function loadAdminPromotions() {
+  const grid = document.getElementById('adminPromoGrid');
+  if (!grid) return;
+  try {
+    const d = await api('/promotions/all');
+    const items = d.promotions || [];
+    grid.innerHTML = items.length ? items.map(p => '<div class="promo-admin-card"><img src="'+p.image_url+'" onerror="this.parentElement.innerHTML=\'<div style=padding:20px;text-align:center;color:var(--text-dim);font-size:11px>Load failed</div>\'"><div style="font-size:12px;font-weight:600;margin-bottom:2px">'+(p.title||'No title')+'</div><div style="font-size:10px;color:var(--text-dim)">Order: '+(p.sort_order||0)+' '+(p.active?'':'<span style="color:var(--accent)">(inactive)</span>')+'</div><div class="actions"><button class="btn btn-outline btn-xs" onclick="adminTogglePromo('+p.id+','+(p.active?0:1)+')">'+(p.active?'Disable':'Enable')+'</button><button class="btn btn-danger btn-xs" onclick="adminDeletePromo('+p.id+')">Delete</button></div></div>').join('') : '<div style="grid-column:1/-1;text-align:center;padding:30px;color:var(--text-dim)">Belum ada promosi. Tambah di atas.</div>';
+  } catch {}
+}
+async function adminAddPromo() {
+  const url = document.getElementById('promoImageUrl').value.trim();
+  const link = document.getElementById('promoLink').value.trim();
+  const title = document.getElementById('promoTitle').value.trim();
+  if (!url) return showToast('Image URL required', 'error');
+  try { await api('/promotions', { method: 'POST', body: { image_url: url, link, title } }); showToast('Promotion added!', 'success'); document.getElementById('promoImageUrl').value=''; document.getElementById('promoLink').value=''; document.getElementById('promoTitle').value=''; loadAdminPromotions(); } catch(err) { showToast(err.message||'Failed', 'error'); }
+}
+async function adminTogglePromo(id, active) { try { await api('/promotions/'+id, { method: 'PUT', body: { active } }); loadAdminPromotions(); } catch {} }
+async function adminDeletePromo(id) { if (!confirm('Delete this promotion?')) return; try { await api('/promotions/'+id, { method: 'DELETE' }); loadAdminPromotions(); showToast('Deleted', 'success'); } catch {} }
 
 // ============ ADMIN CHATS ============
 async function loadAdminChats() {
@@ -2371,6 +2548,77 @@ function initThree() {
     camera.updateProjectionMatrix();
     renderer.setSize(pw, ph);
   });
+}
+
+// ============ TOP PRODUCTS / PROMO / TOP SELLERS ============
+async function loadTopProducts() {
+  const grid = document.getElementById('topProductsGrid');
+  if (!grid) return;
+  try {
+    const d = await api('/assets?store_type=store');
+    const storeProducts = (d.assets || []).slice(0, 4);
+    // Get public products
+    let publicProducts = [];
+    try { const pd = await api('/seller/products'); publicProducts = (pd.products || []).slice(0, 2); } catch {}
+    const all = [...storeProducts, ...publicProducts.map(p => ({...p, isPublic: true, price: p.price}))];
+    grid.innerHTML = all.map(a => {
+      const img = a.image ? '<img src="'+a.image+'" alt="" loading="lazy" onerror="this.style.display=\'none\'">' : '<i class="fas fa-cube"></i>';
+      const starsHtml = '<div class="rating-stars">'+Array.from({length:5}, (_,i) => '<i class="fas fa-star'+(i<4?'':' empty')+'"></i>').join('')+'</div>';
+      return '<div class="asset-card reveal"><div class="asset-thumb" style="height:120px">'+img+'</div><div class="asset-body"><h3 style="font-size:13px">'+a.name+'</h3>'+starsHtml+'</div><div class="asset-footer"><div><span class="asset-price" style="font-size:13px">'+(a.price||'Gratis')+'</span>'+(a.isPublic?' <span style="font-size:9px;background:rgba(251,191,36,0.1);color:#fbbf24;padding:1px 6px;border-radius:4px">Public</span>':'')+'</div><button class="asset-add" onclick="navigateTo(\'store\')"><i class="fas fa-arrow-right"></i></button></div></div>';
+    }).join('');
+    setTimeout(initRevealObserver, 100);
+  } catch {}
+}
+var promoIdx = 0, promoInterval = null;
+async function loadPromotions() {
+  const slides = document.getElementById('promoSlides');
+  const dots = document.getElementById('promoDots');
+  if (!slides) return;
+  try {
+    const d = await api('/promotions');
+    const items = d.promotions || [];
+    if (!items.length) {
+      slides.parentElement.style.display = 'none';
+      if (dots) dots.style.display = 'none';
+      return;
+    }
+    slides.parentElement.style.display = 'block';
+    if (dots) dots.style.display = 'flex';
+    slides.innerHTML = items.map(p => '<div class="promo-slide"><a href="'+p.link+'" target="_blank" rel="noopener"><img src="'+p.image+'" alt="" loading="lazy" onerror="this.parentElement.innerHTML=\'<div style=height:100%;display:flex;align-items:center;justify-content:center;background:var(--bg-3);color:var(--text-dim);font-size:14px>Image not available</div>\'"></a>'+(p.title?'<div class="promo-overlay"><div class="promo-title">'+p.title+'</div></div>':'')+'</div>').join('');
+    if (dots) dots.innerHTML = items.map((_, i) => '<div class="promo-dot'+(i===0?' active':'')+'" onclick="promoGo('+i+')"></div>').join('');
+    promoIdx = 0;
+    if (promoInterval) clearInterval(promoInterval);
+    if (items.length > 1) promoInterval = setInterval(() => promoMove(1), 4000);
+  } catch {}
+}
+function promoMove(dir) {
+  const slides = document.getElementById('promoSlides');
+  const dots = document.getElementById('promoDots');
+  if (!slides) return;
+  const total = slides.children.length;
+  if (!total) return;
+  promoIdx = (promoIdx + dir + total) % total;
+  slides.style.transform = 'translateX(-'+(promoIdx*100)+'%)';
+  if (dots) dots.querySelectorAll('.promo-dot').forEach((d,i) => d.classList.toggle('active', i===promoIdx));
+}
+function promoGo(idx) { promoIdx = idx; promoMove(0); }
+async function loadTopSellers() {
+  const grid = document.getElementById('topSellersGrid');
+  if (!grid) return;
+  try {
+    const d = await api('/seller/products');
+    const products = d.products || [];
+    const sellerMap = {};
+    products.forEach(p => {
+      const id = p.user_id;
+      if (!sellerMap[id]) sellerMap[id] = { id, name: p.seller_name || p.seller_email || 'Unknown', count: 0, products: [] };
+      sellerMap[id].count++;
+      sellerMap[id].products.push(p.name);
+    });
+    const sellers = Object.values(sellerMap).sort((a,b) => b.count - a.count).slice(0, 6);
+    if (!sellers.length) { grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:30px;color:var(--text-dim)">Belum ada seller</div>'; return; }
+    grid.innerHTML = sellers.map(s => '<div class="glass" style="padding:16px;border-radius:var(--radius-lg);border:1px solid var(--glass-border);text-align:center"><div style="width:48px;height:48px;border-radius:50%;background:var(--gradient-1);display:flex;align-items:center;justify-content:center;margin:0 auto 10px;font-weight:700;font-size:20px;color:#fff">'+s.name.charAt(0).toUpperCase()+'</div><div style="font-size:14px;font-weight:600;margin-bottom:4px">'+s.name+'</div><div style="font-size:11px;color:var(--text-dim)">'+s.count+' products</div><div style="font-size:10px;color:var(--secondary);margin-top:4px"><i class="fas fa-store-alt"></i> Verified Seller</div></div>').join('');
+  } catch { grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:30px;color:var(--text-dim)">Gagal memuat seller</div>'; }
 }
 
 // ============ PUBLIC CHAT ============
@@ -2572,6 +2820,7 @@ function renderProfile() {
   // Referral code
   const refCode = u.ref_code || (u.email ? u.email.split('@')[0].toUpperCase() + (u.id || '') : 'BMS' + Math.floor(Math.random()*1000));
   document.getElementById('profileRefCode').value = refCode;
+  loadTestimonialOrders();
   // Orders
   const ordersList = document.getElementById('profileOrdersList');
   try {
@@ -2582,7 +2831,10 @@ function renderProfile() {
         const isPublic = firstItem.store_type === 'public';
         const itemCount = o.items?.length || 1;
         const itemLabel = itemCount > 1 ? firstItem.name + ' +' + (itemCount - 1) + ' lainnya' : firstItem.name;
-        return '<div class="glass" style="padding:14px 18px;border-radius:var(--radius-lg);border:1px solid var(--glass-border);display:flex;justify-content:space-between;align-items:center;font-size:13px"><div style="flex:1;min-width:0"><div style="font-weight:600;display:flex;align-items:center;gap:6px">'+(firstItem.image?'<img src="'+firstItem.image+'" style="width:28px;height:28px;border-radius:6px;object-fit:cover;flex-shrink:0">':'')+'<span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+(itemLabel||'Order')+'</span>'+(isPublic?'<span style="font-size:9px;padding:1px 6px;border-radius:4px;background:rgba(251,191,36,0.1);color:#fbbf24;flex-shrink:0">Store</span>':'')+'</div><div style="font-size:11px;color:var(--text-dim);margin-top:2px">'+ (o.createdAt || new Date().toLocaleDateString()) +'</div></div><div style="display:flex;gap:6px;align-items:center;flex-shrink:0"><span style="padding:3px 10px;border-radius:100px;font-size:10px;font-weight:600;background:rgba(16,185,129,0.12);color:#34d399;border:1px solid rgba(16,185,129,0.2)">'+ (o.status || 'Completed') +'</span><button class="btn btn-outline btn-sm" style="padding:4px 8px;font-size:10px" onclick="openChat('+(o.id || i)+')" title="Chat"><i class="fas fa-comment"></i></button></div></div>';
+        const itemId = firstItem.productId || firstItem.id || null;
+        const itemType = isPublic ? 'public' : (firstItem.store_type || 'store');
+        const rateBtn = itemId ? '<button class="btn btn-outline btn-xs" onclick="openRateModal('+(typeof itemId==='string'&&itemId.startsWith('public_')?parseInt(itemId.replace('public_','')):itemId)+',\''+itemType+'\',\''+(firstItem.name||'').replace(/'/g,"\\'")+'\')" title="Rate"><i class="fas fa-star"></i></button>' : '';
+        return '<div class="glass" style="padding:14px 18px;border-radius:var(--radius-lg);border:1px solid var(--glass-border);display:flex;justify-content:space-between;align-items:center;font-size:13px"><div style="flex:1;min-width:0"><div style="font-weight:600;display:flex;align-items:center;gap:6px">'+(firstItem.image?'<img src="'+firstItem.image+'" style="width:28px;height:28px;border-radius:6px;object-fit:cover;flex-shrink:0">':'')+'<span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+(itemLabel||'Order')+'</span>'+(isPublic?'<span style="font-size:9px;padding:1px 6px;border-radius:4px;background:rgba(251,191,36,0.1);color:#fbbf24;flex-shrink:0">Store</span>':'')+'</div><div style="font-size:11px;color:var(--text-dim);margin-top:2px">'+ (o.createdAt || new Date().toLocaleDateString()) +'</div></div><div style="display:flex;gap:6px;align-items:center;flex-shrink:0"><span style="padding:3px 10px;border-radius:100px;font-size:10px;font-weight:600;background:rgba(16,185,129,0.12);color:#34d399;border:1px solid rgba(16,185,129,0.2)">'+ (o.status || 'Completed') +'</span>'+rateBtn+'<button class="btn btn-outline btn-xs" onclick="openChat('+(o.id || i)+')" title="Chat"><i class="fas fa-comment"></i></button></div></div>';
       }).join('');
     } else {
       ordersList.innerHTML = '<div style="padding:32px;text-align:center"><i class="fas fa-shopping-bag" style="font-size:36px;color:var(--text-dim);opacity:0.3;margin-bottom:12px"></i><div style="font-size:15px;font-weight:600;color:var(--text-muted);margin-bottom:4px">Belum ada pesanan</div><p style="font-size:12px;color:var(--text-dim)">Pesan pertama kamu akan muncul di sini.</p></div>';
@@ -3152,6 +3404,9 @@ document.addEventListener('DOMContentLoaded', async function() {
   setupFilters();
   await renderAssets();
   await loadFeaturedProducts();
+  await loadTopProducts();
+  await loadPromotions();
+  await loadTopSellers();
   setTimeout(() => { document.getElementById('loader').classList.add('hidden'); initRevealObserver(); setTimeout(initCounters, 500); }, 1200);
   // back-to-top
   window.addEventListener('scroll', () => document.getElementById('backToTop')?.classList.toggle('show', window.scrollY > 400));

@@ -12,9 +12,10 @@ router.get('/', async (req, res) => {
 
 router.post('/', authenticateSession, async (req, res) => {
   try {
-    const { text } = req.body;
+    const { text, rating, product_name, store_type, seller_name } = req.body;
     if (!text) return res.status(400).json({ error: 'Text required' });
-    await q('INSERT INTO testimonials (user_id, user_name, text) VALUES (?, ?, ?)', [req.user.id, req.user.name || req.user.email, text]);
+    await q('INSERT INTO testimonials (user_id, user_name, text, rating, product_name, store_type, seller_name) VALUES (?, ?, ?, ?, ?, ?, ?)',
+      [req.user.id, req.user.name || req.user.email, text, rating || 5, product_name || '', store_type || '', seller_name || '']);
     res.json({ success: true });
   } catch { res.status(500).json({ error: 'Server error' }); }
 });

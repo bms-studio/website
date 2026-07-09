@@ -66,4 +66,32 @@ router.put('/applications/:id', authenticateSession, requireAdmin, async (req, r
   } catch { res.status(500).json({ error: 'Server error' }); }
 });
 
+// ============ RATINGS ============
+router.post('/ratings', authenticateSession, async (req, res) => {
+  try {
+    const { product_id, product_type, rating, review } = req.body;
+    if (!product_id || !product_type || !rating) return res.status(400).json({ error: 'Required fields missing' });
+    if (rating < 1 || rating > 5) return res.status(400).json({ error: 'Rating must be 1-5' });
+    // Check if already rated
+    const existing = await q('SELECT id FROM product_ratings WHERE product_id = ? AND product_type = ? AND user_id = ?', [product_id, product_type, req.user.id]);
+    if (existing.rows.length) {
+      await q('UPDATE product_ratings SET rating = ?, review = ? WHERE id = ?', [rating, review || '', existing.rows[0].id]);
+    } else {
+      await q('INSERT INTO product_ratings (product_id, product_type, user_id, rating, review) VALUES (?, ?, ?, ?, ?)',
+        [product_id, product_type, req.user.id, rating, review || '']);
+    }
+    res.json({ success: true });
+  } catch { res.status(500).json({ error: 'Server error' }); }
+});
+
+router.get('/ratings/:productType/:productId', async (req, res) => {
+  try {
+    const ratings = await q('SELECT r.*, u.name as user_name FROM product_ratings r LEFT JOIN users u ON r.user_id = u.id WHERE r.product_id = ? AND r.product_type = ? ORDER BY r.created_at DESC',
+      [req.params.productId, req.params.productType]);
+    const stats = await q('SELECT AVG(rating) as avg_rating, COUNT(*) as total FROM product_ratings WHERE product_id = ? AND product_type = ?',
+      [req.params.productId, req.params.productType]);
+    res.json({ ratings: ratings.rows, stats: stats.rows[0] || { avg_rating: 0, total: 0 } });
+  } catch { res.status(500).json({ error: 'Server error' }); }
+});
+
 module.exports = router;
