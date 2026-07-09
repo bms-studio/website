@@ -1,3 +1,6 @@
+process.on('unhandledRejection', (err) => { console.error('Unhandled Rejection:', err?.message); });
+process.on('uncaughtException', (err) => { console.error('Uncaught Exception:', err?.message); });
+
 const express = require('express');
 const path = require('path');
 const cors = require('cors');
@@ -59,12 +62,18 @@ app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-async function start() {
-  const { initDB } = require('./database/db');
-  await initDB();
+async function init() {
+  try {
+    const { initDB } = require('./database/db');
+    await initDB();
+  } catch (err) {
+    console.error('DB init failed, continuing:', err?.message);
+  }
   app.listen(PORT, () => {
-    console.log(`  BMS STUDIO Server running on http://localhost:${PORT}`);
+    console.log(`BMS STUDIO running on http://localhost:${PORT}`);
   });
 }
 
-start();
+init();
+
+module.exports = app;
