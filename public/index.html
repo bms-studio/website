@@ -819,7 +819,7 @@ textarea.form-input{resize:vertical;min-height:100px}
 <!-- ABOUT -->
 <div class="page" id="page-about">
   <div class="banner-page">
-    <img class="bg-img" src="https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3MDhhYnNnbG04MTg1dHE5MTEwZmIwZjRobnNweWp1NmtybWQ3N2l4cCZlcD12MV9naWZzX3NlYXJjaCZjdD1n/Q7vD5H5xSBkp2rca4F/giphy.gif" alt="" onerror="this.style.display='none'">
+    <img class="bg-img" src="https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3MDhhYnNnbG04MTg1dHE5MTEwZmIwZjRobnNweWp1NmtybWQ3N2l4cCZlcD12MV9naWZzX3NlYXJjaCZjdD1n/Q7vD5H5xSBkp2rca4F/giphy.gif" alt="" loading="lazy" onerror="this.style.display='none'">
     <div class="overlay"></div>
     <div class="floating-shape s1"></div>
     <div class="floating-shape s2"></div>
@@ -900,7 +900,7 @@ textarea.form-input{resize:vertical;min-height:100px}
 <!-- SERVICES -->
 <div class="page" id="page-services">
   <div class="banner-page">
-    <img class="bg-img" src="https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3ZDRqYTNhZHpzYXU1aDBiOGUxdzU5a2xnYjFlaTBxZzQ4ZHV4MDRueCZlcD12MV9naWZzX3NlYXJjaCZjdD1n/KBE31lPz2CqDMYoA6k/giphy.gif" alt="" onerror="this.style.display='none'">
+    <img class="bg-img" src="https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3ZDRqYTNhZHpzYXU1aDBiOGUxdzU5a2xnYjFlaTBxZzQ4ZHV4MDRueCZlcD12MV9naWZzX3NlYXJjaCZjdD1n/KBE31lPz2CqDMYoA6k/giphy.gif" alt="" loading="lazy" onerror="this.style.display='none'">
     <div class="overlay"></div>
     <div class="floating-shape s3"></div>
     <div class="content">
@@ -914,7 +914,7 @@ textarea.form-input{resize:vertical;min-height:100px}
 <!-- PORTFOLIO -->
 <div class="page" id="page-portfolio">
   <div class="banner-page">
-    <img class="bg-img" src="https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3aXRvamN6a2Z3b2IxdWlleGhiejI0cnB6bmozbGJuOXdjeWFkeGtieSZlcD12MV9naWZzX3NlYXJjaCZjdD1n/iIkpxu3ZteQVxPQiaC/giphy.gif" alt="" onerror="this.style.display='none'">
+    <img class="bg-img" src="https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3aXRvamN6a2Z3b2IxdWlleGhiejI0cnB6bmozbGJuOXdjeWFkeGtieSZlcD12MV9naWZzX3NlYXJjaCZjdD1n/iIkpxu3ZteQVxPQiaC/giphy.gif" alt="" loading="lazy" onerror="this.style.display='none'">
     <div class="overlay"></div>
     <div class="floating-shape s2"></div>
     <div class="content">
@@ -939,7 +939,7 @@ textarea.form-input{resize:vertical;min-height:100px}
       </div>
       <div class="store-filters" id="storeFilters"></div>
       <div class="store-search">
-        <input class="form-input" type="text" placeholder="Cari produk..." id="storeSearch" oninput="renderAssets()">
+        <input class="form-input" type="text" placeholder="Cari produk..." id="storeSearch" oninput="debounceSearch('storeSearch',renderAssets)">
       </div>
     </div>
   </div>
@@ -961,7 +961,7 @@ textarea.form-input{resize:vertical;min-height:100px}
       <h1 class="hero-title" style="font-size:30px">Public <span class="text-gradient">Store</span></h1>
       <p style="color:var(--text-muted);max-width:460px;margin:0 auto">Produk dari seller terverifikasi. Setiap produk telah diperiksa oleh admin.</p>
       <div class="store-search" style="margin-top:16px">
-        <input class="form-input" type="text" placeholder="Cari produk public..." id="publicStoreSearch" oninput="renderPublicProducts()">
+        <input class="form-input" type="text" placeholder="Cari produk public..." id="publicStoreSearch" oninput="debounceSearch('publicStoreSearch',renderPublicProducts)">
       </div>
     </div>
   </div>
@@ -1806,7 +1806,18 @@ function api(path, options = {}) {
     return data;
   });
 }
-const _cb = (u) => u && u.startsWith('http') && !u.startsWith('data:') ? (u.includes('?') ? u+'&_t='+Date.now() : u+'?_t='+Date.now()) : (u||'');
+const _cb = (u) => u||'';
+
+// ============ DEBOUNCE / THROTTLE HELPERS ============
+const _debounceTimers = {};
+function debounceSearch(inputId, fn) {
+  clearTimeout(_debounceTimers[inputId]);
+  _debounceTimers[inputId] = setTimeout(fn, 300);
+}
+function throttle(fn, limit) {
+  let inThrottle = false;
+  return function() { if (!inThrottle) { fn.apply(this, arguments); inThrottle = true; setTimeout(() => inThrottle = false, limit); } };
+}
 
 // ============ SOUND EFFECTS ============
 let _audioCtx = null;
@@ -2091,7 +2102,7 @@ async function renderAssets() {
       const hasDiscount = a.original_price && a.original_price !== a.price && a.original_price !== '';
       const avgRating = a.avg_rating ? Math.round(Number(a.avg_rating)) : 0;
       const rStars = '<div class="rating-stars">'+Array.from({length:5}, (_,i) => '<i class="fas fa-star'+(i<avgRating?'':' empty')+'"></i>').join('')+'</div>';
-      return '<div class="asset-card reveal"><div class="asset-thumb">'+(a.image ? '<img src="'+a.image+'" alt="" loading="lazy">' : '<i class="fas fa-cube"></i>')+(a.video_enabled ? '<div class="play-btn" onclick="event.stopPropagation();openVideoModal(\''+(a.video_url||'')+'\')"><i class="fas fa-play"></i></div>' : '')+'</div><div class="asset-body"><h3>'+a.name+'</h3>'+rStars+'<div class="tags">'+tags.slice(0,3).map(t => '<span>'+t.trim()+'</span>').join('')+'</div><div class="desc">'+(a.description||'')+'</div></div><div class="asset-footer"><div><span class="asset-price">'+(isFree ? 'Gratis' : a.price)+'</span>'+(hasDiscount ? '<span class="asset-price-original">'+a.original_price+'</span>' : '')+'<div><span class="asset-stock '+(a.stock_status === 'limited' ? 'limited' : '')+'">'+(a.stock_status === 'limited' ? 'Limited' : a.stock_status === 'preorder' ? 'Pre-order' : 'Ready')+'</span></div></div><div style="display:flex;gap:4px">'+(a.link ? '<a href="'+a.link+'" target="_blank" rel="noopener" class="asset-add" onclick="event.stopPropagation()" title="Open link"><i class="fas fa-external-link-alt"></i></a>' : '')+'<button class="asset-add" onclick="addToCart('+a.id+')"><i class="fas fa-plus"></i></button>'+(APP.isLoggedIn ? '<button class="asset-add" onclick="event.stopPropagation();openAdminChat('+a.id+',\'asset\')" title="Chat"><i class="fas fa-comment"></i></button>' : '')+'</div></div></div>';
+      return '<div class="asset-card reveal"><div class="asset-thumb">'+(a.image ? '<img src="'+a.image+'" alt="" loading="lazy" decoding="async">' : '<i class="fas fa-cube"></i>')+(a.video_enabled ? '<div class="play-btn" onclick="event.stopPropagation();openVideoModal(\''+(a.video_url||'')+'\')"><i class="fas fa-play"></i></div>' : '')+'</div><div class="asset-body"><h3>'+a.name+'</h3>'+rStars+'<div class="tags">'+tags.slice(0,3).map(t => '<span>'+t.trim()+'</span>').join('')+'</div><div class="desc">'+(a.description||'')+'</div></div><div class="asset-footer"><div><span class="asset-price">'+(isFree ? 'Gratis' : a.price)+'</span>'+(hasDiscount ? '<span class="asset-price-original">'+a.original_price+'</span>' : '')+'<div><span class="asset-stock '+(a.stock_status === 'limited' ? 'limited' : '')+'">'+(a.stock_status === 'limited' ? 'Limited' : a.stock_status === 'preorder' ? 'Pre-order' : 'Ready')+'</span></div></div><div style="display:flex;gap:4px">'+(a.link ? '<a href="'+a.link+'" target="_blank" rel="noopener" class="asset-add" onclick="event.stopPropagation()" title="Open link"><i class="fas fa-external-link-alt"></i></a>' : '')+'<button class="asset-add" onclick="addToCart('+a.id+')"><i class="fas fa-plus"></i></button>'+(APP.isLoggedIn ? '<button class="asset-add" onclick="event.stopPropagation();openAdminChat('+a.id+',\'asset\')" title="Chat"><i class="fas fa-comment"></i></button>' : '')+'</div></div></div>';
     }).join('');
     setTimeout(initRevealObserver, 100);
   } catch { grid.innerHTML = '<div class="empty-state"><i class="fas fa-exclamation-triangle"></i><h3>Gagal memuat</h3></div>'; empty.style.display = 'none'; }
@@ -2569,7 +2580,7 @@ async function loadFeaturedProducts() {
     const products = (data.assets || []).slice(0, 4);
     const grid = document.getElementById('featuredProducts');
     if (!grid) return;
-    grid.innerHTML = products.map(a => '<div class="asset-card reveal"><div class="asset-thumb" style="height:120px">'+(a.image?'<img src="'+a.image+'">':'<i class="fas fa-cube"></i>')+(a.video_enabled && a.video_url ? '<div class="play-btn" onclick="event.stopPropagation();openVideoModal(\''+a.video_url+'\')"><i class="fas fa-play"></i></div>' : '')+'</div><div class="asset-body"><h3 style="font-size:13px">'+a.name+'</h3><div style="display:flex;justify-content:space-between;align-items:center;margin-top:6px"><span class="asset-price" style="font-size:13px">'+(a.price==='Gratis'?'Gratis':a.price)+'</span><button class="asset-add" onclick="addToCart('+a.id+')"><i class="fas fa-plus"></i></button></div></div></div>').join('');
+    grid.innerHTML = products.map(a => '<div class="asset-card reveal"><div class="asset-thumb" style="height:120px">'+(a.image?'<img src="'+a.image+'" loading="lazy" decoding="async">':'<i class="fas fa-cube"></i>')+(a.video_enabled && a.video_url ? '<div class="play-btn" onclick="event.stopPropagation();openVideoModal(\''+a.video_url+'\')"><i class="fas fa-play"></i></div>' : '')+'</div><div class="asset-body"><h3 style="font-size:13px">'+a.name+'</h3><div style="display:flex;justify-content:space-between;align-items:center;margin-top:6px"><span class="asset-price" style="font-size:13px">'+(a.price==='Gratis'?'Gratis':a.price)+'</span><button class="asset-add" onclick="addToCart('+a.id+')"><i class="fas fa-plus"></i></button></div></div></div>').join('');
     setTimeout(initRevealObserver, 100);
   } catch {}
 }
@@ -2578,6 +2589,7 @@ async function loadFeaturedProducts() {
 function initThree() {
   const canvas = document.getElementById('threeCanvas');
   if (!canvas || typeof THREE === 'undefined') return;
+  let running = true;
   const w = canvas.parentElement.offsetWidth, h = canvas.parentElement.offsetHeight;
   const scene = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(60, w / h, 0.1, 1000);
@@ -2585,16 +2597,13 @@ function initThree() {
   renderer.setSize(w, h);
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
   const group = new THREE.Group();
-  // torus knot
   const geo1 = new THREE.TorusKnotGeometry(1.2, 0.4, 128, 16);
   const mat1 = new THREE.MeshPhongMaterial({ color: 0x8b7cfc, emissive: 0x8b7cfc, emissiveIntensity: 0.2, wireframe: false, transparent: true, opacity: 0.35, shininess: 80 });
   const mesh1 = new THREE.Mesh(geo1, mat1);
-  // torus
   const geo2 = new THREE.TorusGeometry(1.8, 0.08, 64, 64);
   const mat2 = new THREE.MeshPhongMaterial({ color: 0x67e8f9, emissive: 0x67e8f9, emissiveIntensity: 0.15, transparent: true, opacity: 0.25 });
   const mesh2 = new THREE.Mesh(geo2, mat2);
   mesh2.rotation.x = Math.PI / 3;
-  // particles
   const pCount = 200;
   const positions = new Float32Array(pCount * 3);
   for (let i = 0; i < pCount * 3; i++) positions[i] = (Math.random() - 0.5) * 20;
@@ -2604,7 +2613,6 @@ function initThree() {
   const particles = new THREE.Points(pGeo, pMat);
   group.add(mesh1, mesh2, particles);
   scene.add(group);
-  // lights
   scene.add(new THREE.AmbientLight(0x404060));
   const dl = new THREE.DirectionalLight(0x8b7cfc, 0.8);
   dl.position.set(2, 3, 4);
@@ -2614,6 +2622,7 @@ function initThree() {
   scene.add(dl2);
   camera.position.z = 5;
   function anim() {
+    if (!running) return;
     requestAnimationFrame(anim);
     group.rotation.x += 0.003;
     group.rotation.y += 0.006;
@@ -2622,12 +2631,14 @@ function initThree() {
     renderer.render(scene, camera);
   }
   anim();
-  window.addEventListener('resize', () => {
+  document.addEventListener('visibilitychange', () => { running = document.visibilityState === 'visible'; if (running) anim(); });
+  const resizeHandler = () => {
     const pw = canvas.parentElement.offsetWidth, ph = canvas.parentElement.offsetHeight;
     camera.aspect = pw / ph;
     camera.updateProjectionMatrix();
     renderer.setSize(pw, ph);
-  });
+  };
+  window.addEventListener('resize', resizeHandler);
 }
 
 // ============ TOP PRODUCTS / PROMO / TOP SELLERS ============
@@ -3674,20 +3685,26 @@ document.addEventListener('DOMContentLoaded', async function() {
   renderServices('allServices');
   renderPortfolio();
   renderTestimonials();
-  await checkSession();
+  // Parallelize all async API calls
+  await Promise.all([
+    checkSession(),
+    renderAssets().catch(()=>{}),
+    loadFeaturedProducts().catch(()=>{}),
+    loadTopProducts().catch(()=>{}),
+    loadPromotions().catch(()=>{}),
+    loadTopSellers().catch(()=>{}),
+  ]);
   updateCartBadge();
   renderCart();
   setupFilters();
-  await renderAssets();
-  await loadFeaturedProducts();
-  await loadTopProducts();
-  await loadPromotions();
-  await loadTopSellers();
   loadAnnouncements();
   startRealtimePoll();
-  setTimeout(() => { document.getElementById('loader').classList.add('hidden'); initRevealObserver(); setTimeout(initCounters, 500); }, 1200);
-  // back-to-top
-  window.addEventListener('scroll', () => document.getElementById('backToTop')?.classList.toggle('show', window.scrollY > 400));
+  document.getElementById('loader').classList.add('hidden');
+  initRevealObserver();
+  setTimeout(initCounters, 200);
+  // back-to-top (throttled)
+  const scrollHandler = throttle(() => document.getElementById('backToTop')?.classList.toggle('show', window.scrollY > 400), 100);
+  window.addEventListener('scroll', scrollHandler);
   // ripple
   document.querySelectorAll('.btn').forEach(b => { b.addEventListener('click', function(e) { const r=document.createElement('span'); r.className='ripple'; const rect=this.getBoundingClientRect(); r.style.left=(e.clientX-rect.left)+'px'; r.style.top=(e.clientY-rect.top)+'px'; this.appendChild(r); setTimeout(()=>r.remove(),600); }); });
   // visibility change: refresh on tab focus
@@ -3696,17 +3713,18 @@ document.addEventListener('DOMContentLoaded', async function() {
       loadAnnouncements();
     }
   });
-  // card mouse 3D tilt + glow
+  // card mouse 3D tilt + glow (throttled to ~30fps)
   document.querySelectorAll('.service-card, .asset-card, .portfolio-card').forEach(c => {
     c.classList.add('tilt-active');
-    c.addEventListener('mousemove', e => {
+    const tiltHandler = throttle(e => {
       const r = c.getBoundingClientRect();
       const x = (e.clientX - r.left) / r.width;
       const y = (e.clientY - r.top) / r.height;
       c.style.setProperty('--mx', (x * 100) + '%');
       c.style.setProperty('--my', (y * 100) + '%');
       c.style.transform = 'perspective(800px) rotateY(' + ((x - 0.5) * 8) + 'deg) rotateX(' + ((0.5 - y) * 8) + 'deg)';
-    });
+    }, 33);
+    c.addEventListener('mousemove', tiltHandler);
     c.addEventListener('mouseleave', () => {
       c.style.transform = 'perspective(800px) rotateY(0deg) rotateX(0deg)';
     });
