@@ -139,6 +139,29 @@ async function initDB() {
       tag TEXT NOT NULL,
       created_by INTEGER NOT NULL,
       created_at TEXT DEFAULT (datetime('now'))
+    )`,
+    `CREATE TABLE IF NOT EXISTS public_products (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      user_id INTEGER NOT NULL,
+      name TEXT NOT NULL,
+      price TEXT NOT NULL DEFAULT 'Gratis',
+      description TEXT DEFAULT '',
+      image TEXT DEFAULT '',
+      link TEXT DEFAULT '',
+      category TEXT DEFAULT 'other',
+      status TEXT DEFAULT 'pending',
+      admin_note TEXT DEFAULT '',
+      created_at TEXT DEFAULT (datetime('now'))
+    )`,
+    `CREATE TABLE IF NOT EXISTS seller_applications (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      user_id INTEGER NOT NULL,
+      name TEXT DEFAULT '',
+      email TEXT DEFAULT '',
+      reason TEXT DEFAULT '',
+      portfolio TEXT DEFAULT '',
+      status TEXT DEFAULT 'pending',
+      created_at TEXT DEFAULT (datetime('now'))
     )`
   ];
   for (const sql of tables) {

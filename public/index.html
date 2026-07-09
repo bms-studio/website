@@ -569,6 +569,7 @@ textarea.form-input{resize:vertical;min-height:100px}
       <a class="nav-tab" data-page="services" onclick="navigateTo('services')">Services</a>
       <a class="nav-tab" data-page="portfolio" onclick="navigateTo('portfolio')">Portfolio</a>
       <a class="nav-tab" data-page="store" onclick="navigateTo('store')">Store</a>
+      <a class="nav-tab" data-page="publicstore" onclick="navigateTo('publicstore')">Public Store</a>
       <a class="nav-tab" data-page="contact" onclick="navigateTo('contact')">Contact</a>
     </div>
     <div class="nav-actions">
@@ -586,6 +587,7 @@ textarea.form-input{resize:vertical;min-height:100px}
     <a class="nav-tab" data-page="services" onclick="navigateTo('services')">Services</a>
     <a class="nav-tab" data-page="portfolio" onclick="navigateTo('portfolio')">Portfolio</a>
     <a class="nav-tab" data-page="store" onclick="navigateTo('store')">Store</a>
+    <a class="nav-tab" data-page="publicstore" onclick="navigateTo('publicstore')">Public Store</a>
     <a class="nav-tab" data-page="contact" onclick="navigateTo('contact')">Contact</a>
     <a class="nav-tab" data-page="cart" onclick="navigateTo('cart')">Cart <span id="mobileCartCount" style="color:var(--primary)"></span></a>
     <a class="nav-tab" id="mobileProfileBtn" data-page="profile" onclick="navigateTo('profile')" style="display:none">Profile</a>
@@ -871,6 +873,29 @@ textarea.form-input{resize:vertical;min-height:100px}
   </section>
 </div>
 
+<!-- PUBLIC STORE -->
+<div class="page" id="page-publicstore">
+  <div class="store-banner">
+    <div class="orb orb-1" style="width:300px;height:300px;opacity:0.2"></div>
+    <div style="position:relative;z-index:2">
+      <h1 class="hero-title" style="font-size:30px">Public <span class="text-gradient">Store</span></h1>
+      <p style="color:var(--text-muted);max-width:460px;margin:0 auto">Produk dari seller terverifikasi. Setiap produk telah diperiksa oleh admin.</p>
+      <div class="store-search" style="margin-top:16px">
+        <input class="form-input" type="text" placeholder="Cari produk public..." id="publicStoreSearch" oninput="renderPublicProducts()">
+      </div>
+    </div>
+  </div>
+  <section class="section" style="padding-top:32px">
+    <div id="publicStoreStats" style="display:flex;gap:16px;justify-content:center;margin-bottom:24px;flex-wrap:wrap"></div>
+    <div id="publicProductsGrid" class="assets-grid"></div>
+    <div id="publicStoreEmpty" class="empty-state" style="display:none">
+      <i class="fas fa-store"></i>
+      <h3>Belum ada produk</h3>
+      <p>Seller belum mengupload produk. Jadilah seller pertama!</p>
+    </div>
+  </section>
+</div>
+
 <!-- CONTACT -->
 <div class="page" id="page-contact">
   <div class="banner-page">
@@ -1094,6 +1119,7 @@ textarea.form-input{resize:vertical;min-height:100px}
       </div>
       <div style="display:flex;gap:8px;margin-bottom:16px">
         <button class="btn btn-outline btn-sm" onclick="showEditProfile()"><i class="fas fa-edit"></i> Edit Profile</button>
+        <button class="btn btn-outline btn-sm" onclick="navigateTo('seller')"><i class="fas fa-store-alt"></i> Seller</button>
         <button class="btn btn-outline btn-sm" onclick="handleLogout()" style="color:var(--accent);border-color:var(--accent)"><i class="fas fa-sign-out-alt"></i> Logout</button>
       </div>
       <h3 style="font-size:16px;font-weight:700;margin-bottom:12px">Your Testimonial</h3>
@@ -1138,6 +1164,8 @@ textarea.form-input{resize:vertical;min-height:100px}
       <div class="admin-sidebar-item" data-tab="chats" onclick="switchAdminTab('chats')"><i class="fas fa-comments"></i> Chats</div>
       <div class="admin-sidebar-item" data-tab="promos" onclick="switchAdminTab('promos')"><i class="fas fa-tag"></i> Promos</div>
       <div class="admin-sidebar-item" data-tab="users" onclick="switchAdminTab('users')"><i class="fas fa-users-cog"></i> Users</div>
+      <div class="admin-sidebar-item" data-tab="publicproducts" onclick="switchAdminTab('publicproducts')"><i class="fas fa-store-alt"></i> Public Products</div>
+      <div class="admin-sidebar-item" data-tab="sellerapps" onclick="switchAdminTab('sellerapps')"><i class="fas fa-file-signature"></i> Seller Apps</div>
       <div class="admin-sidebar-item" data-tab="tags" onclick="switchAdminTab('tags')"><i class="fas fa-tags"></i> Tags</div>
       <div class="admin-sidebar-item" data-tab="settings" onclick="switchAdminTab('settings')"><i class="fas fa-cog"></i> Settings</div>
       <div style="flex:1"></div>
@@ -1292,6 +1320,35 @@ textarea.form-input{resize:vertical;min-height:100px}
           </div>
         </div>
       </div>
+      <!-- SELLER APPLICATIONS (ADMIN) -->
+      <div class="admin-section" id="admin-sellerapps">
+        <h2 style="font-size:20px;font-weight:700;margin-bottom:20px">Seller Applications</h2>
+        <div style="overflow-x:auto">
+          <table class="admin-table">
+            <thead><tr><th>ID</th><th>User</th><th>Email</th><th>Reason</th><th>Portfolio</th><th>Status</th><th>Date</th><th>Action</th></tr></thead>
+            <tbody id="adminSellerAppsTable"></tbody>
+          </table>
+        </div>
+      </div>
+      <!-- PUBLIC PRODUCTS (ADMIN) -->
+      <div class="admin-section" id="admin-publicproducts">
+        <h2 style="font-size:20px;font-weight:700;margin-bottom:20px">Public Products <span style="font-size:12px;color:var(--text-muted);font-weight:400">— Review & Manage</span></h2>
+        <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap">
+          <button class="btn btn-sm" style="background:var(--glass2)" onclick="loadAdminPublicProducts('')">All</button>
+          <button class="btn btn-sm btn-primary" onclick="loadAdminPublicProducts('pending')">Pending</button>
+          <button class="btn btn-sm" style="background:rgba(52,211,153,0.1);color:#34d399" onclick="loadAdminPublicProducts('approved')">Approved</button>
+          <button class="btn btn-sm" style="background:rgba(239,68,68,0.1);color:#ef4444" onclick="loadAdminPublicProducts('rejected')">Rejected</button>
+        </div>
+        <div id="adminPublicProductsSection">
+          <!-- User list with their products -->
+          <div id="adminPublicUsersList"></div>
+          <div id="adminPublicProductsDetail" style="display:none">
+            <button class="btn btn-outline btn-sm" style="margin-bottom:12px" onclick="closeAdminPublicProductsDetail()">Back to users</button>
+            <h3 id="adminPublicProductsDetailTitle" style="font-size:16px;margin-bottom:12px"></h3>
+            <div id="adminPublicProductsDetailList"></div>
+          </div>
+        </div>
+      </div>
       <div class="admin-section" id="admin-tags">
         <h2 style="font-size:20px;font-weight:700;margin-bottom:20px">Tag Management <span style="font-size:12px;color:var(--accent);font-weight:400">(Owner only)</span></h2>
         <p style="font-size:12px;color:var(--text-muted);margin-bottom:12px">Ketik tag di kolom bawah, lalu klik <strong>Add</strong> di samping user yang ingin diberi tag.</p>
@@ -1330,6 +1387,63 @@ textarea.form-input{resize:vertical;min-height:100px}
           <p style="font-size:12px;color:var(--text-muted);margin-bottom:10px">Logged in as: <strong id="adminEmailDisplay">Admin</strong></p>
           <button class="btn btn-danger btn-sm" onclick="handleLogout()">Logout</button>
         </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SELLER DASHBOARD -->
+<div class="page" id="page-seller">
+  <div style="max-width:800px;margin:0 auto;padding:24px">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px">
+      <h2 style="font-size:22px;font-weight:700"><i class="fas fa-store-alt" style="color:var(--primary)"></i> Seller Dashboard</h2>
+      <button class="btn btn-outline btn-sm" onclick="navigateTo('profile')">Back to Profile</button>
+    </div>
+    <!-- Application Form (if not yet applied/approved) -->
+    <div id="sellerApplySection" style="display:none">
+      <div class="glass" style="padding:24px;border-radius:var(--radius-lg);border:1px solid var(--glass-border2);margin-bottom:24px">
+        <h3 style="font-size:16px;margin-bottom:8px">Apply to Become a Seller</h3>
+        <p style="font-size:12px;color:var(--accent);margin-bottom:12px;line-height:1.5">
+          <i class="fas fa-exclamation-triangle"></i> PERINGATAN: Dilarang menjual file ilegal, akun curian, atau barang terlarang. Pelanggaran akan menyebabkan ban permanen.
+        </p>
+        <div style="display:grid;gap:12px">
+          <input class="form-input" id="sellerApplyName" placeholder="Your name / brand">
+          <textarea class="form-input" id="sellerApplyReason" placeholder="Why do you want to sell? (required)" rows="3"></textarea>
+          <input class="form-input" id="sellerApplyPortfolio" placeholder="Portfolio link (optional)">
+          <button class="btn btn-primary" onclick="submitSellerApplication()">Submit Application</button>
+        </div>
+      </div>
+    </div>
+    <!-- Seller Status -->
+    <div id="sellerStatusSection" style="display:none">
+      <div class="glass" style="padding:20px;border-radius:var(--radius-lg);border:1px solid var(--glass-border2);margin-bottom:20px;display:flex;align-items:center;gap:12px">
+        <i class="fas fa-check-circle" style="font-size:24px;color:#34d399"></i>
+        <div><div style="font-weight:600">You are a Verified Seller!</div><div style="font-size:12px;color:var(--text-muted)">Your products will appear in Public Store after admin approval.</div></div>
+      </div>
+      <!-- Add Product -->
+      <div class="glass" style="padding:20px;border-radius:var(--radius-lg);border:1px solid var(--glass-border2);margin-bottom:20px">
+        <h3 style="font-size:15px;margin-bottom:12px">Add New Product</h3>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+          <input class="form-input" id="spName" placeholder="Product name" required>
+          <input class="form-input" id="spPrice" placeholder="Price (e.g. Rp 50.000)" value="Gratis">
+          <textarea class="form-input" id="spDesc" placeholder="Description" rows="2" style="grid-column:1/-1"></textarea>
+          <input class="form-input" id="spImage" placeholder="Image URL (optional)">
+          <input class="form-input" id="spLink" placeholder="Link (optional)">
+          <select class="form-input" id="spCategory">
+            <option value="other">Other</option><option value="digital">Digital</option><option value="asset">Asset</option><option value="service">Service</option>
+          </select>
+        </div>
+        <button class="btn btn-primary" style="margin-top:12px" onclick="addSellerProduct()">Add Product</button>
+      </div>
+      <!-- My Products List -->
+      <div id="sellerProductsList"></div>
+    </div>
+    <!-- Pending application message -->
+    <div id="sellerPendingSection" style="display:none">
+      <div class="glass" style="padding:24px;text-align:center;border-radius:var(--radius-lg);border:1px solid var(--glass-border2)">
+        <i class="fas fa-hourglass-half" style="font-size:32px;color:var(--accent2);margin-bottom:12px"></i>
+        <h3 style="font-size:16px">Application Pending</h3>
+        <p style="font-size:13px;color:var(--text-muted)">Your application is being reviewed by admin.</p>
       </div>
     </div>
   </div>
@@ -1949,6 +2063,8 @@ function switchAdminTab(tab) {
   if (tab === 'chats') loadAdminChats();
   if (tab === 'users') loadAdminUsers();
   if (tab === 'tags') loadAdminTags();
+  if (tab === 'sellerapps') loadAdminSellerApps();
+  if (tab === 'publicproducts') { loadAdminPublicProducts('pending'); }
 }
 async function refreshAdminData() {
   try {
@@ -2553,6 +2669,264 @@ async function clearUserTags(userId) {
     showToast('Tags cleared!', 'success');
   } catch {}
 }
+
+// ============ PUBLIC STORE ============
+async function loadPublicStoreStats() {
+  try {
+    const d = await api('/seller/products');
+    const products = d.products || [];
+    const sellers = [...new Set(products.map(p => p.user_id))];
+    const stats = document.getElementById('publicStoreStats');
+    stats.innerHTML = '<div class="glass" style="padding:12px 20px;border-radius:var(--radius);text-align:center"><div style="font-size:22px;font-weight:800;color:var(--primary)">'+products.length+'</div><div style="font-size:11px;color:var(--text-dim)">Products</div></div>' +
+      '<div class="glass" style="padding:12px 20px;border-radius:var(--radius);text-align:center"><div style="font-size:22px;font-weight:800;color:var(--secondary)">'+sellers.length+'</div><div style="font-size:11px;color:var(--text-dim)">Sellers</div></div>';
+  } catch {}
+}
+async function renderPublicProducts() {
+  const grid = document.getElementById('publicProductsGrid');
+  const empty = document.getElementById('publicStoreEmpty');
+  const q = document.getElementById('publicStoreSearch').value.toLowerCase();
+  try {
+    const d = await api('/seller/products');
+    let products = d.products || [];
+    if (q) products = products.filter(p => p.name.toLowerCase().includes(q) || (p.description||'').toLowerCase().includes(q));
+    if (!products.length) { grid.innerHTML = ''; empty.style.display = 'flex'; return; }
+    empty.style.display = 'none';
+    grid.innerHTML = products.map(p => `
+      <div class="asset-card glass" style="overflow:hidden">
+        ${p.image ? '<img src="${p.image}" style="width:100%;height:150px;object-fit:cover" onerror="this.style.display=\'none\'">' : '<div style="height:100px;display:flex;align-items:center;justify-content:center;background:var(--bg-4)"><i class="fas fa-box" style="font-size:32px;color:var(--text-dim)"></i></div>'}
+        <div style="padding:14px">
+          <div style="font-size:11px;color:var(--secondary);margin-bottom:4px">Seller: ${p.seller_name || p.seller_email || 'Unknown'}</div>
+          <h4 style="font-size:14px;font-weight:700;margin-bottom:4px">${p.name}</h4>
+          <div style="font-size:12px;color:var(--text-muted);margin-bottom:8px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">${p.description || 'No description'}</div>
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <span class="badge badge-paid">${p.price}</span>
+            ${p.link ? '<a href="${p.link}" target="_blank" class="btn btn-outline btn-sm" style="font-size:10px;padding:4px 10px"><i class="fas fa-external-link-alt"></i> Buy</a>' : '<span style="font-size:11px;color:var(--text-dim)">Contact seller</span>'}
+          </div>
+        </div>
+      </div>
+    `).join('');
+  } catch {}
+}
+
+// ============ SELLER DASHBOARD ============
+async function loadSellerDashboard() {
+  if (!APP.isLoggedIn || !APP.user) { navigateTo('login'); return; }
+  const isVerified = APP.user?.verified_tag == 1 || APP.user?.role === 'admin' || APP.user?.email === 'Bamsj37@gmail.com';
+  document.getElementById('sellerApplySection').style.display = isVerified ? 'none' : 'block';
+  if (isVerified) {
+    document.getElementById('sellerStatusSection').style.display = 'block';
+    document.getElementById('sellerPendingSection').style.display = 'none';
+    await loadSellerProducts();
+  } else {
+    // Check if has pending application
+    try {
+      const apps = await api('/admin-store/applications');
+      const myApp = (apps.applications||[]).find(a => a.user_id == APP.user.id);
+      if (myApp && myApp.status === 'pending') {
+        document.getElementById('sellerApplySection').style.display = 'none';
+        document.getElementById('sellerPendingSection').style.display = 'block';
+        document.getElementById('sellerStatusSection').style.display = 'none';
+      } else {
+        document.getElementById('sellerApplySection').style.display = 'block';
+        document.getElementById('sellerPendingSection').style.display = 'none';
+        document.getElementById('sellerStatusSection').style.display = 'none';
+      }
+    } catch {
+      document.getElementById('sellerApplySection').style.display = 'block';
+      document.getElementById('sellerPendingSection').style.display = 'none';
+      document.getElementById('sellerStatusSection').style.display = 'none';
+    }
+  }
+}
+async function loadSellerProducts() {
+  const list = document.getElementById('sellerProductsList');
+  try {
+    const d = await api('/seller/my-products');
+    const products = d.products || [];
+    const statusColors = { pending: '#fbbf24', approved: '#34d399', rejected: '#ef4444' };
+    list.innerHTML = products.length ? products.map(p => `
+      <div class="glass" style="padding:14px 18px;border-radius:var(--radius-lg);border:1px solid var(--glass-border);margin-bottom:10px">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div style="flex:1">
+            <div style="font-weight:600;font-size:14px">${p.name}</div>
+            <div style="font-size:11px;color:var(--text-muted)">${p.price} · ${p.category||'other'}</div>
+            <div style="font-size:10px;color:var(--text-dim);margin-top:4px">${p.description || ''}</div>
+          </div>
+          <div style="text-align:right;display:flex;flex-direction:column;align-items:flex-end;gap:4px">
+            <span style="padding:2px 8px;border-radius:4px;font-size:10px;font-weight:600;background:${statusColors[p.status]}22;color:${statusColors[p.status]}">${p.status}</span>
+            ${p.admin_note ? '<span style="font-size:9px;color:var(--accent)">Note: '+p.admin_note+'</span>' : ''}
+            <button class="btn btn-danger btn-sm" style="padding:3px 8px;font-size:9px" onclick="deleteSellerProduct(${p.id})"><i class="fas fa-trash"></i></button>
+          </div>
+        </div>
+      </div>
+    `).join('') : '<div class="empty-state"><i class="fas fa-box"></i><h3>Belum ada produk</h3><p>Tambahkan produk di atas.</p></div>';
+  } catch { showToast('Failed to load products', 'error'); }
+}
+async function addSellerProduct() {
+  const name = document.getElementById('spName').value.trim();
+  if (!name) return showToast('Product name required', 'error');
+  const price = document.getElementById('spPrice').value.trim() || 'Gratis';
+  const description = document.getElementById('spDesc').value.trim();
+  const image = document.getElementById('spImage').value.trim();
+  const link = document.getElementById('spLink').value.trim();
+  const category = document.getElementById('spCategory').value;
+  try {
+    await api('/seller/products', { method: 'POST', body: { name, price, description, image, link, category } });
+    document.getElementById('spName').value = ''; document.getElementById('spDesc').value = ''; document.getElementById('spImage').value = ''; document.getElementById('spLink').value = '';
+    showToast('Product submitted for review!', 'success');
+    loadSellerProducts();
+  } catch (e) { showToast(e.message || 'Failed', 'error'); }
+}
+async function deleteSellerProduct(id) {
+  if (!confirm('Delete this product?')) return;
+  try { await api('/seller/products/'+id, { method: 'DELETE' }); loadSellerProducts(); } catch { showToast('Failed', 'error'); }
+}
+async function submitSellerApplication() {
+  const name = document.getElementById('sellerApplyName').value.trim();
+  const reason = document.getElementById('sellerApplyReason').value.trim();
+  const portfolio = document.getElementById('sellerApplyPortfolio').value.trim();
+  if (!name || !reason) return showToast('Name and reason required', 'error');
+  try {
+    await api('/seller/apply', { method: 'POST', body: { name, reason, portfolio } });
+    showToast('Application submitted!', 'success');
+    loadSellerDashboard();
+  } catch (e) { showToast(e.message || 'Failed', 'error'); }
+}
+
+// ============ ADMIN SELLER APPS ============
+async function loadAdminSellerApps() {
+  const tbody = document.getElementById('adminSellerAppsTable');
+  if (!tbody) return;
+  try {
+    const d = await api('/admin-store/applications');
+    const apps = d.applications || [];
+    tbody.innerHTML = apps.map(a => {
+      const statusColor = a.status === 'pending' ? '#fbbf24' : a.status === 'approved' ? '#34d399' : '#ef4444';
+      const actions = a.status === 'pending' ? 
+        '<button class="table-btn table-btn-edit" onclick="approveSellerApp('+a.id+')">Approve</button><button class="table-btn table-btn-del" onclick="rejectSellerApp('+a.id+')">Reject</button>' : '-';
+      return '<tr><td>'+a.id+'</td><td>'+(a.user_name||'?')+'</td><td>'+(a.user_email||'')+'</td><td style="max-width:200px;font-size:11px">'+(a.reason||'')+'</td><td style="font-size:11px">'+(a.portfolio||'-')+'</td><td><span style="color:'+statusColor+'">'+a.status+'</span></td><td style="font-size:11px">'+(a.created_at||'').slice(0,10)+'</td><td style="display:flex;gap:4px">'+actions+'</td></tr>';
+    }).join('');
+  } catch {}
+}
+async function approveSellerApp(id) {
+  if (!confirm('Approve this seller application?')) return;
+  try { await api('/admin-store/applications/'+id, { method: 'PUT', body: { status: 'approved' } }); loadAdminSellerApps(); showToast('Seller approved!', 'success'); } catch {}
+}
+async function rejectSellerApp(id) {
+  if (!confirm('Reject this application?')) return;
+  try { await api('/admin-store/applications/'+id, { method: 'PUT', body: { status: 'rejected' } }); loadAdminSellerApps(); showToast('Application rejected', 'info'); } catch {}
+}
+
+// ============ ADMIN PUBLIC PRODUCTS ============
+async function loadAdminPublicProducts(filter) {
+  const usersDiv = document.getElementById('adminPublicUsersList');
+  const detailDiv = document.getElementById('adminPublicProductsDetail');
+  detailDiv.style.display = 'none';
+  usersDiv.style.display = 'block';
+  try {
+    const d = await api('/admin-store/products' + (filter ? '?status='+filter : ''));
+    const products = d.products || [];
+    // Group by user
+    const grouped = {};
+    products.forEach(p => {
+      if (!grouped[p.user_id]) grouped[p.user_id] = { user: { id: p.user_id, name: p.seller_name, email: p.seller_email }, products: [] };
+      grouped[p.user_id].products.push(p);
+    });
+    const statusColors = { pending: '#fbbf24', approved: '#34d399', rejected: '#ef4444' };
+    usersDiv.innerHTML = Object.values(grouped).map(g => `
+      <div class="glass" style="padding:14px 18px;border-radius:var(--radius-lg);border:1px solid var(--glass-border);margin-bottom:10px;cursor:pointer" onclick="openAdminPublicProductsDetail(${g.user.id})">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div><strong>${g.user.name || 'Unknown'}</strong><br><span style="font-size:11px;color:var(--text-muted)">${g.user.email || ''}</span></div>
+          <div><span style="font-weight:600">${g.products.length}</span> products</div>
+        </div>
+        <div style="font-size:10px;color:var(--text-dim);margin-top:6px;display:flex;gap:8px">
+          <span>Pending: ${g.products.filter(p => p.status === 'pending').length}</span>
+          <span style="color:#34d399">Approved: ${g.products.filter(p => p.status === 'approved').length}</span>
+          <span style="color:#ef4444">Rejected: ${g.products.filter(p => p.status === 'rejected').length}</span>
+        </div>
+      </div>
+    `).join('') || '<div class="empty-state"><i class="fas fa-box-open"></i><h3>No products</h3></div>';
+  } catch {}
+}
+async function openAdminPublicProductsDetail(userId) {
+  const usersDiv = document.getElementById('adminPublicUsersList');
+  const detailDiv = document.getElementById('adminPublicProductsDetail');
+  usersDiv.style.display = 'none';
+  detailDiv.style.display = 'block';
+  try {
+    const d = await api('/admin-store/products/user/' + userId);
+    const products = d.products || [];
+    const user = products[0] || {};
+    document.getElementById('adminPublicProductsDetailTitle').textContent = (user.seller_name || user.seller_email || 'User') + '\'s Products';
+    const statusColors = { pending: '#fbbf24', approved: '#34d399', rejected: '#ef4444' };
+    document.getElementById('adminPublicProductsDetailList').innerHTML = products.map(p => `
+      <div class="glass" style="padding:14px;border-radius:var(--radius-lg);border:1px solid var(--glass-border);margin-bottom:10px">
+        <div style="display:flex;justify-content:space-between;gap:12px">
+          <div style="flex:1">
+            <div style="font-weight:600;font-size:14px">${p.name}</div>
+            <div style="font-size:11px;color:var(--text-muted)">Price: ${p.price} | Category: ${p.category||'other'}</div>
+            <div style="font-size:11px;color:var(--text-muted);margin-top:4px">${p.description || 'No description'}</div>
+            ${p.link ? '<div style="margin-top:4px"><a href="${p.link}" target="_blank" style="font-size:11px;color:var(--primary)"><i class="fas fa-external-link-alt"></i> ${p.link}</a></div>' : ''}
+            ${p.image ? '<img src="${p.image}" style="max-width:120px;max-height:80px;object-fit:cover;border-radius:4px;margin-top:6px" onerror="this.style.display=\'none\'">' : ''}
+            ${p.admin_note ? '<div style="margin-top:4px;font-size:10px;color:var(--accent)">Note: '+p.admin_note+'</div>' : ''}
+          </div>
+          <div style="text-align:right;display:flex;flex-direction:column;gap:4px;align-items:flex-end;flex-shrink:0">
+            <span style="padding:2px 8px;border-radius:4px;font-size:10px;font-weight:600;background:${statusColors[p.status]}22;color:${statusColors[p.status]}">${p.status}</span>
+            ${p.status === 'pending' ? `<button class="btn btn-sm" style="background:rgba(52,211,153,0.15);color:#34d399;padding:3px 10px;font-size:10px" onclick="approvePublicProduct(${p.id})">Approve</button><button class="btn btn-sm" style="background:rgba(239,68,68,0.15);color:#ef4444;padding:3px 10px;font-size:10px" onclick="rejectPublicProduct(${p.id})">Reject</button>` : ''}
+            <button class="btn btn-danger btn-sm" style="padding:2px 8px;font-size:9px" onclick="deletePublicProduct(${p.id})"><i class="fas fa-trash"></i> Delete</button>
+          </div>
+        </div>
+      </div>
+    `).join('');
+  } catch { showToast('Failed to load', 'error'); }
+}
+function closeAdminPublicProductsDetail() {
+  document.getElementById('adminPublicProductsDetail').style.display = 'none';
+  document.getElementById('adminPublicUsersList').style.display = 'block';
+  loadAdminPublicProducts('pending');
+}
+async function approvePublicProduct(id) {
+  if (!confirm('Approve this product?')) return;
+  try {
+    await api('/admin-store/products/'+id+'/status', { method: 'PUT', body: { status: 'approved' } });
+    showToast('Product approved!', 'success');
+    openAdminPublicProductsDetail(document.querySelector('#adminPublicProductsDetailList .glass')?.dataset?.userId || 0);
+    loadAdminPublicProducts('pending');
+  } catch {}
+}
+async function rejectPublicProduct(id) {
+  const note = prompt('Reason for rejection (optional):');
+  try {
+    await api('/admin-store/products/'+id+'/status', { method: 'PUT', body: { status: 'rejected', admin_note: note || '' } });
+    showToast('Product rejected', 'info');
+    loadAdminPublicProducts('pending');
+  } catch {}
+}
+async function deletePublicProduct(id) {
+  if (!confirm('Permanently delete this product?')) return;
+  try { await api('/admin-store/products/'+id, { method: 'DELETE' }); showToast('Deleted', 'info'); loadAdminPublicProducts('pending'); } catch {}
+}
+
+// Patch navigateTo to handle publicstore and seller
+(function() {
+  const _origNav = window._origNav || navigateTo;
+  window._origNav = _origNav;
+  navigateTo = function(page) {
+    if (page === 'publicstore') {
+      showPage('publicstore');
+      setTimeout(() => { loadPublicStoreStats(); renderPublicProducts(); }, 100);
+      document.title = 'Public Store - BMS Platform';
+      return;
+    }
+    if (page === 'seller') {
+      showPage('seller');
+      setTimeout(() => loadSellerDashboard(), 100);
+      document.title = 'Seller Dashboard - BMS Platform';
+      return;
+    }
+    _origNav(page);
+  };
+})();
 
 // ============ INIT ============
 document.addEventListener('DOMContentLoaded', async function() {
