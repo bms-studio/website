@@ -81,9 +81,12 @@ app.use((err, req, res, next) => {
 });
 
 async function init() {
+  console.log('Server starting... Node:', process.version, 'Vercel:', !!process.env.VERCEL);
+  console.log('TURSO_DB_URL set:', !!process.env.TURSO_DB_URL, 'TURSO_DB_TOKEN set:', !!process.env.TURSO_DB_TOKEN);
   try {
     const { initDB } = require('./database/db');
     await initDB();
+    console.log('DB initialized');
   } catch (err) {
     console.error('DB init failed, continuing:', err?.message);
   }

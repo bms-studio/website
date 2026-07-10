@@ -2,7 +2,6 @@ const { createClient } = require('@libsql/client');
 const bcrypt = require('bcryptjs');
 const path = require('path');
 const fs = require('fs');
-require('dotenv').config({ path: path.join(__dirname, '..', '.env') });
 
 let db = null;
 let initialized = false;
@@ -19,16 +18,21 @@ function getDB() {
 
   if (tursoUrl && tursoToken && tursoUrl.startsWith('libsql://') && tursoToken.length > 10) {
     try {
-      const client = createClient({ url: tursoUrl, authToken: tursoToken });
+      const client = createClient({ url: tursoUrl.trim(), authToken: tursoToken.trim() });
       db = client;
       return db;
     } catch (e) {
-      console.log('Turso connection failed, using local database.');
+      console.error('Turso connection failed:', e.message);
     }
   }
   const localPath = getLocalPath();
-  db = createClient({ url: 'file:' + localPath });
-  return db;
+  try {
+    db = createClient({ url: 'file:' + localPath });
+    return db;
+  } catch (e) {
+    console.error('Local DB failed:', e.message);
+    return null;
+  }
 }
 
 async function initDB() {
