@@ -1937,6 +1937,25 @@ function throttle(fn, limit) {
   return function() { if (!inThrottle) { fn.apply(this, arguments); inThrottle = true; setTimeout(() => inThrottle = false, limit); } };
 }
 
+// ============ ANTI-SPAM ============
+const _spamTimers = {};
+function antiSpam(key, cooldown = 1500) {
+  const now = Date.now();
+  if (_spamTimers[key] && now - _spamTimers[key] < cooldown) {
+    showToast('No no no yaa, ga boleh spam tau..', 'error');
+    return false;
+  }
+  _spamTimers[key] = now;
+  return true;
+}
+function noSpam(fn, key, cooldown) {
+  return function() {
+    const k = key || fn.name || Math.random().toString(36);
+    if (!antiSpam(k, cooldown)) return;
+    return fn.apply(this, arguments);
+  };
+}
+
 // ============ SOUND EFFECTS ============
 let _audioCtx = null;
 function _getAudioCtx() { if (!_audioCtx) _audioCtx = new (window.AudioContext || window.webkitAudioContext)(); return _audioCtx; }
@@ -2282,6 +2301,7 @@ const PAYMENTS = [
 ];
 let appliedPromo = null;
 async function applyPromoCode() {
+  if (!antiSpam('applyPromo')) return;
   const input = document.getElementById('promoInput');
   if (!input || !input.value.trim()) return showToast('Masukkan kode promo', 'error');
   const code = input.value.trim().toUpperCase();
@@ -2312,6 +2332,7 @@ function selectPayment() {
   document.getElementById('checkoutPayInfo').innerHTML = pay ? '<div style="padding:12px;border-radius:var(--radius);background:var(--glass);border:1px solid var(--glass-border);font-size:13px"><div style="font-weight:600;margin-bottom:4px">'+pay.name+'</div><div>Akun: <strong>'+pay.account+'</strong></div><div>a.n. '+pay.holder+'</div></div>' : '';
 }
 async function submitOrder() {
+  if (!antiSpam('submitOrder', 2000)) return;
   const name = document.getElementById('checkoutName').value.trim();
   const email = document.getElementById('checkoutEmail').value.trim();
   const contact = document.getElementById('checkoutContact').value.trim();
@@ -2415,6 +2436,7 @@ function renderChatMessages(msgs) {
   container.scrollTop = container.scrollHeight;
 }
 async function sendChatMessage() {
+  if (!antiSpam('sendChat', 1500)) return;
   const input = document.getElementById('chatInput');
   const text = input.value.trim();
   if (!text || APP.currentOrderId === undefined) return;
@@ -2428,6 +2450,7 @@ async function sendChatMessage() {
 // ============ TESTIMONIALS ============
 var testimonialOrderId = null;
 async function submitTestimonial() {
+  if (!antiSpam('submitTestimonial', 3000)) return;
   const input = document.getElementById('testimonialInput');
   const sel = document.getElementById('testimonialOrderSelect');
   const text = input?.value.trim();
@@ -2708,6 +2731,7 @@ async function clearAllData() {
 // ============ CONTACT ============
 async function submitContact(e) {
   e.preventDefault();
+  if (!antiSpam('contact', 3000)) return;
   const fd = new FormData(e.target);
   const btn = e.target.querySelector('button');
   btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
@@ -3011,6 +3035,7 @@ async function loadPC() {
   } catch {}
 }
 async function sendPC() {
+  if (!antiSpam('sendPC', 1000)) return;
   const input = document.getElementById('pcInput');
   const text = input.value.trim();
   if (!text) return;
@@ -3533,6 +3558,7 @@ async function saveSellerEditProduct() {
   } catch (e) { showToast(e.message || 'Failed', 'error'); }
 }
 async function addSellerProduct() {
+  if (!antiSpam('addSellerProduct', 2000)) return;
   const name = document.getElementById('spName').value.trim();
   if (!name) return showToast('Product name required', 'error');
   const price = document.getElementById('spPrice').value.trim() || 'Gratis';
@@ -3553,6 +3579,7 @@ async function deleteSellerProduct(id) {
   try { await api('/seller/products/'+id, { method: 'DELETE' }); loadSellerProducts(); } catch { showToast('Failed', 'error'); }
 }
 async function submitSellerApplication() {
+  if (!antiSpam('sellerApply', 3000)) return;
   const name = document.getElementById('sellerApplyName').value.trim();
   const reason = document.getElementById('sellerApplyReason').value.trim();
   const portfolio = document.getElementById('sellerApplyPortfolio').value.trim();
@@ -3628,6 +3655,7 @@ function renderSellerChatMessages(messages) {
   container.scrollTop = container.scrollHeight;
 }
 async function sendSellerMsg() {
+  if (!antiSpam('sendSellerMsg', 1500)) return;
   const input = document.getElementById('sellerChatInput');
   const text = input.value.trim();
   if (!text || !sellerChatId) return;
