@@ -1875,9 +1875,20 @@ async function api(path, options = {}) {
   
   const cacheKey = 'api_cache_' + path;
   
-  for (let retries = 3; retries >= 0; retries--) {
+  // Return cached data immediately if available and fresh
+  if (cache && method === 'GET') {
+    try {
+      const cached = localStorage.getItem(cacheKey);
+      if (cached) {
+        const { data, time } = JSON.parse(cached);
+        if (Date.now() - time < 600000) return data; // Use cache if < 10 min old
+      }
+    } catch {}
+  }
+  
+  for (let retries = 2; retries >= 0; retries--) {
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 10000);
+    const timeoutId = setTimeout(() => controller.abort(), 6000);
     try {
       const res = await fetch(API + path, { ...config, signal: controller.signal });
       clearTimeout(timeoutId);
@@ -1893,22 +1904,20 @@ async function api(path, options = {}) {
     } catch (err) {
       clearTimeout(timeoutId);
       
+      // Try stale cache on failure
       if (cache && method === 'GET') {
         try {
           const cached = localStorage.getItem(cacheKey);
           if (cached) {
-            const { data, time } = JSON.parse(cached);
-            const age = Date.now() - time;
-            if (age < 3600000 || retries === 0) {
-              if (retries === 0) console.warn('Using stale cache for ' + path);
-              return data;
-            }
+            const { data } = JSON.parse(cached);
+            console.warn('Using stale cache for ' + path);
+            return data;
           }
         } catch {}
       }
       
       if (retries > 0) {
-        await new Promise(r => setTimeout(r, 500 + Math.random() * 500));
+        await new Promise(r => setTimeout(r, 300 + Math.random() * 300));
       } else {
         throw err;
       }
@@ -2905,9 +2914,11 @@ async function loadTopSellers() {
   } catch { podium.innerHTML = '<div style="text-align:center;padding:30px;color:var(--text-dim);width:100%">Gagal memuat seller</div>'; }
 }
 
-function toggleTopSellersDropdown() {
+function toggleTopSellersDropdown(event) {
+  if (!event) event = window.event;
   const dropdown = document.getElementById('topSellersDropdown');
-  const btn = event.target.closest('button');
+  const btn = (event && event.target) ? event.target.closest('button') : null;
+  if (!btn) return; // fallback
   const isHidden = dropdown.style.display === 'none';
   dropdown.style.display = isHidden ? 'grid' : 'none';
   btn.innerHTML = isHidden ? '<i class="fas fa-chevron-up"></i> Hide More Sellers' : '<i class="fas fa-chevron-down"></i> View More Sellers';
