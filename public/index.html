@@ -174,35 +174,20 @@ ul{list-style:none}
 /* CARD FLOAT */
 @keyframes cardFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
 
-/* TOP SELLERS MEDAL ANIMATIONS */
-.seller-card{transition:all 0.3s ease}
-.seller-card:hover{transform:translateY(-8px);box-shadow:0 12px 40px rgba(139,124,252,0.15)}
-.seller-medal-rank-1{border-color:#8b7cfc !important;box-shadow:0 0 20px rgba(139,124,252,0.3) inset, 0 8px 32px rgba(139,124,252,0.15)}
-.seller-medal-rank-1:hover{box-shadow:0 0 30px rgba(139,124,252,0.4) inset, 0 12px 40px rgba(139,124,252,0.25)}
-.seller-medal-rank-2{border-color:#67e8f9 !important;box-shadow:0 0 20px rgba(103,232,249,0.3) inset, 0 8px 32px rgba(103,232,249,0.15)}
-.seller-medal-rank-2:hover{box-shadow:0 0 30px rgba(103,232,249,0.4) inset, 0 12px 40px rgba(103,232,249,0.25)}
-.seller-medal-rank-3{border-color:#f472b6 !important;box-shadow:0 0 20px rgba(244,114,182,0.3) inset, 0 8px 32px rgba(244,114,182,0.15)}
-.seller-medal-rank-3:hover{box-shadow:0 0 30px rgba(244,114,182,0.4) inset, 0 12px 40px rgba(244,114,182,0.25)}
-.seller-avatar-glow{animation:avatarGlowPulse 2s ease-in-out infinite}
-@keyframes avatarGlowPulse{0%,100%{filter:drop-shadow(0 0 8px currentColor)}50%{filter:drop-shadow(0 0 16px currentColor)}}
-@keyframes medalFloat{0%,100%{transform:translateY(-8px) rotate(0deg)}25%{transform:translateY(-20px) rotate(15deg)}50%{transform:translateY(-12px) rotate(0deg)}75%{transform:translateY(-20px) rotate(-15deg)}}
-.seller-top-badge{animation:medalBounce 2s ease-in-out infinite}
-@keyframes medalBounce{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(-4px,-4px) scale(1.1)}}
-
 /* PODIUM STYLES */
-.podium-card{position:relative;cursor:pointer;transition:all 0.3s ease;display:flex;flex-direction:column;align-items:center}
-.podium-card:hover{transform:translateY(-8px)}
-.podium-rank-1{order:2;min-height:280px}
-.podium-rank-2{order:1;min-height:200px}
+.podium-card{position:relative;cursor:pointer;transition:all 0.3s ease;display:flex;flex-direction:column;align-items:center;padding:20px 16px;background:var(--glass);border:1px solid var(--glass-border);border-radius:var(--radius-lg)}
+.podium-card:hover{transform:translateY(-8px);box-shadow:0 12px 40px rgba(139,124,252,0.15)}
+.podium-rank-1{order:2;min-height:240px}
+.podium-rank-2{order:1;min-height:180px}
 .podium-rank-3{order:3;min-height:160px}
-.podium-medal{position:absolute;top:-20px;width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:20px;color:#fff;animation:medalFloat 2s ease-in-out infinite}
-.podium-medal-1{background:linear-gradient(135deg,#FFD700,#FFA500);box-shadow:0 0 20px rgba(255,215,0,0.4)}
-.podium-medal-2{background:linear-gradient(135deg,#C0C0C0,#E8E8E8);box-shadow:0 0 20px rgba(192,192,192,0.4)}
-.podium-medal-3{background:linear-gradient(135deg,#CD7F32,#E5A852);box-shadow:0 0 20px rgba(205,127,50,0.4)}
-.podium-avatar{width:72px;height:72px;border-radius:50%;margin-bottom:12px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:28px;color:#fff;overflow:hidden;border:3px solid;background-size:cover;background-position:center}
-.podium-rank-1 .podium-avatar{border-color:#8b7cfc;box-shadow:0 0 24px rgba(139,124,252,0.4)}
-.podium-rank-2 .podium-avatar{border-color:#67e8f9;box-shadow:0 0 24px rgba(103,232,249,0.4)}
-.podium-rank-3 .podium-avatar{border-color:#f472b6;box-shadow:0 0 24px rgba(244,114,182,0.4)}
+.podium-medal{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;color:#fff;margin-top:8px;flex-shrink:0}
+.podium-medal-1{background:linear-gradient(135deg,#FFD700,#FFA500);box-shadow:0 2px 8px rgba(255,215,0,0.3)}
+.podium-medal-2{background:linear-gradient(135deg,#C0C0C0,#E8E8E8);box-shadow:0 2px 8px rgba(192,192,192,0.3)}
+.podium-medal-3{background:linear-gradient(135deg,#CD7F32,#E5A852);box-shadow:0 2px 8px rgba(205,127,50,0.3)}
+.podium-avatar{width:64px;height:64px;border-radius:50%;margin-bottom:12px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:24px;color:#fff;overflow:hidden;border:3px solid;background-size:cover;background-position:center}
+.podium-rank-1 .podium-avatar{border-color:#8b7cfc;box-shadow:0 0 20px rgba(139,124,252,0.3)}
+.podium-rank-2 .podium-avatar{border-color:#67e8f9;box-shadow:0 0 20px rgba(103,232,249,0.3)}
+.podium-rank-3 .podium-avatar{border-color:#f472b6;box-shadow:0 0 20px rgba(244,114,182,0.3)}
 .podium-info{text-align:center}
 .podium-name{font-size:14px;font-weight:600;margin-bottom:4px}
 .podium-count{font-size:11px;color:var(--text-dim)}
@@ -827,12 +812,12 @@ textarea.form-input{resize:vertical;min-height:100px}
     </div>
   </section>
 
-  <!-- SELLER PROFILE MODAL -->
-  <div class="modal-overlay" id="sellerProfileModal">
-    <div class="modal-content" style="max-width:500px">
+  <!-- SELLER PROFILE MODAL - POSITIONED IN TOP SELLERS SECTION -->
+  <div class="modal-overlay" id="sellerProfileModal" style="position:fixed;inset:0;display:none;z-index:1000;align-items:flex-start;justify-content:center;padding-top:200px">
+    <div class="modal-content" style="max-width:400px;position:relative">
       <div class="modal-header">
         <h3 style="font-size:16px">Seller Profile</h3>
-        <button class="modal-close" onclick="document.getElementById('sellerProfileModal').classList.remove('open')"><i class="fas fa-times"></i></button>
+        <button class="modal-close" onclick="document.getElementById('sellerProfileModal').style.display='none'"><i class="fas fa-times"></i></button>
       </div>
       <div style="display:flex;flex-direction:column;gap:16px">
         <div style="text-align:center">
@@ -2898,12 +2883,12 @@ async function loadTopSellers() {
       const av = s.avatar || '';
       const avStyle = av ? 'background-image:url('+av+')' : 'background:var(--gradient-1)';
       return '<div class="podium-card podium-rank-'+rank+'" onclick="showSellerProfile('+s.id+',\''+s.name.replace(/'/g,"\\'")+'\',\''+av.replace(/'/g,"\\'")+'\','+s.count+')">'+
-        '<div class="podium-medal podium-medal-'+rank+'">'+rank+'</div>'+
         '<div class="podium-avatar" style="'+avStyle+'">'+(av?'':s.name.charAt(0).toUpperCase())+'</div>'+
         '<div class="podium-info">'+
         '<div class="podium-name">'+s.name+'</div>'+
         '<div class="podium-count">'+s.count+' products</div>'+
         '</div>'+
+        '<div class="podium-medal podium-medal-'+rank+'">'+rank+'</div>'+
         '</div>';
     }).join('');
     
@@ -2951,6 +2936,10 @@ function showSellerProfile(sellerId, sellerName, sellerAvatar, productCount) {
     avatarEl.style.background = 'var(--gradient-1)';
     avatarEl.textContent = sellerName.charAt(0).toUpperCase();
   }
+  
+  modal.style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+}
   
   modal.classList.add('open');
 }
