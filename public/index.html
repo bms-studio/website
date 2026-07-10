@@ -1874,10 +1874,10 @@ async function api(path, options = {}) {
   if (config.body && typeof config.body === 'object') config.body = JSON.stringify(config.body);
   
   const cacheKey = 'api_cache_' + path;
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 10000);
   
   for (let retries = 3; retries >= 0; retries--) {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 10000);
     try {
       const res = await fetch(API + path, { ...config, signal: controller.signal });
       clearTimeout(timeoutId);
@@ -1893,7 +1893,6 @@ async function api(path, options = {}) {
     } catch (err) {
       clearTimeout(timeoutId);
       
-      // Try cache fallback
       if (cache && method === 'GET') {
         try {
           const cached = localStorage.getItem(cacheKey);
