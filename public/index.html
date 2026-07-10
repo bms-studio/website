@@ -1887,56 +1887,44 @@ async function api(path, options = {}) {
   
   const cacheKey = 'api_cache_' + path;
   
-  // Return cached data immediately if available and fresh
   if (cache && method === 'GET') {
     try {
       const cached = localStorage.getItem(cacheKey);
       if (cached) {
         const { data, time } = JSON.parse(cached);
-        if (Date.now() - time < 600000) return data; // Use cache if < 10 min old
+        if (Date.now() - time < 600000) return data;
       }
     } catch {}
   }
   
-  for (let retries = 2; retries >= 0; retries--) {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 6000);
-    try {
-      const res = await fetch(API + path, { ...config, signal: controller.signal });
-      clearTimeout(timeoutId);
-      const text = await res.text();
-      let data;
-      try { data = JSON.parse(text); } catch { throw new Error('Server returned: ' + text.slice(0,100)); }
-      if (!res.ok) throw new Error(data.error || 'Request failed');
-      
-      if (cache && method === 'GET') {
-        try { localStorage.setItem(cacheKey, JSON.stringify({ data, time: Date.now() })); } catch {}
-      }
-      return data;
-    } catch (err) {
-      clearTimeout(timeoutId);
-      
-      // Try stale cache on failure
-      if (cache && method === 'GET') {
-        try {
-          const cached = localStorage.getItem(cacheKey);
-          if (cached) {
-            const { data } = JSON.parse(cached);
-            console.warn('Using stale cache for ' + path);
-            return data;
-          }
-        } catch {}
-      }
-      
-      if (retries > 0) {
-        await new Promise(r => setTimeout(r, 300 + Math.random() * 300));
-      } else {
-        throw err;
-      }
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 15000);
+  try {
+    const res = await fetch(API + path, { ...config, signal: controller.signal });
+    clearTimeout(timeoutId);
+    const text = await res.text();
+    let data;
+    try { data = JSON.parse(text); } catch { throw new Error('Server returned: ' + text.slice(0,100)); }
+    if (!res.ok) throw new Error(data.error || 'Request failed');
+    
+    if (cache && method === 'GET') {
+      try { localStorage.setItem(cacheKey, JSON.stringify({ data, time: Date.now() })); } catch {}
     }
+    return data;
+  } catch (err) {
+    clearTimeout(timeoutId);
+    if (cache && method === 'GET') {
+      try {
+        const cached = localStorage.getItem(cacheKey);
+        if (cached) {
+          const { data } = JSON.parse(cached);
+          return data;
+        }
+      } catch {}
+    }
+    throw err;
   }
-}
-const _cb = (u) => u||'';
+}const _cb = (u) => u||'';
 
 // ============ DEBOUNCE / THROTTLE HELPERS ============
 const _debounceTimers = {};
