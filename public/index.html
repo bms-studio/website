@@ -1883,8 +1883,8 @@ textarea.form-input{resize:vertical;min-height:100px}
 // ============ API CLIENT ============
 const API = '/api';
 function api(path, options = {}) {
-  const { headers: optHeaders, cache = true, ...rest } = options;
-  const config = { headers: { 'Content-Type': 'application/json', ...optHeaders }, credentials: 'include', ...rest };
+  const { headers: optHeaders, cache = true, method = 'GET', ...rest } = options;
+  const config = { headers: { 'Content-Type': 'application/json', ...optHeaders }, credentials: 'include', method, ...rest };
   if (config.body && typeof config.body === 'object') config.body = JSON.stringify(config.body);
   
   const cacheKey = 'api_cache_' + path;
@@ -1897,8 +1897,8 @@ function api(path, options = {}) {
       try { data = JSON.parse(text); } catch { throw new Error('Server returned: ' + text.slice(0,100)); }
       if (!res.ok) throw new Error(data.error || 'Request failed');
       
-      // Cache successful response
-      if (cache && path.includes('GET') === false && !path.includes('POST')) {
+      // Cache successful GET responses
+      if (cache && method === 'GET') {
         try { localStorage.setItem(cacheKey, JSON.stringify({ data, time: Date.now() })); } catch {}
       }
       return data;
@@ -1906,7 +1906,7 @@ function api(path, options = {}) {
       if (retries > 0 && (err.message.includes('timeout') || err.message.includes('Failed to fetch'))) {
         retries--;
         // Try fallback cache before retry
-        if (cache) {
+        if (cache && method === 'GET') {
           try {
             const cached = localStorage.getItem(cacheKey);
             if (cached) {
@@ -1920,7 +1920,7 @@ function api(path, options = {}) {
       }
       
       // Last resort: use stale cache
-      if (cache) {
+      if (cache && method === 'GET') {
         try {
           const cached = localStorage.getItem(cacheKey);
           if (cached) {
