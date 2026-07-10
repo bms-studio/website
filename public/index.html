@@ -453,6 +453,10 @@ textarea.form-input{resize:vertical;min-height:100px}
 [data-theme="light"] .auth-card{background:linear-gradient(135deg,rgba(124,108,240,0.03),rgba(12,175,207,0.015));box-shadow:0 4px 24px rgba(0,0,0,0.06),0 1px 0 rgba(255,255,255,0.5) inset,0 -1px 0 rgba(0,0,0,0.04) inset;border-color:rgba(0,0,0,0.06);border-top-color:rgba(255,255,255,0.6);border-bottom-color:rgba(0,0,0,0.08)}
 .auth-card h2{font-family:'Plus Jakarta Sans',sans-serif;font-size:24px;font-weight:800;text-align:center;margin-bottom:4px}
 .auth-card .sub{text-align:center;color:var(--text-muted);font-size:13px;margin-bottom:24px}
+.auth-tabs{display:flex;gap:4px;background:var(--bg-3);padding:4px;border-radius:var(--radius);margin-bottom:20px}
+.auth-tab{flex:1;padding:10px;border:none;background:transparent;color:var(--text-muted);font-size:13px;font-weight:600;border-radius:var(--radius-sm);cursor:pointer;transition:var(--transition);display:flex;align-items:center;justify-content:center;gap:6px;font-family:'Inter',sans-serif}
+.auth-tab:hover{color:var(--text);background:var(--glass)}
+.auth-tab.active{background:var(--primary);color:#fff;box-shadow:0 4px 16px rgba(139,124,252,0.3)}
 .auth-form{display:flex;flex-direction:column;gap:14px}
 .auth-form .input-wrap{position:relative}
 .auth-form .input-wrap i{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--text-dim);font-size:14px}
@@ -1113,50 +1117,58 @@ textarea.form-input{resize:vertical;min-height:100px}
     <div class="orb orb-1" style="width:300px;height:300px;top:-80px;right:-80px"></div>
     <div class="orb orb-2" style="width:220px;height:220px;bottom:-60px;left:-60px"></div>
     <div class="auth-card">
-      <h2>Welcome Back</h2>
-      <p class="sub">Sign in to your account</p>
-      <form class="auth-form" id="loginForm" onsubmit="handleLogin(event)">
-        <div class="input-wrap">
-          <i class="fas fa-envelope"></i>
-          <input class="form-input" type="email" placeholder="Email" required>
-        </div>
-        <div class="input-wrap">
-          <i class="fas fa-lock"></i>
-          <input class="form-input" type="password" placeholder="Password" required>
-        </div>
-        <button class="btn btn-primary" type="submit" id="loginBtnSubmit">Sign In</button>
-      </form>
-      <div class="auth-divider">or</div>
-      <p style="text-align:center;font-size:12px;color:var(--text-muted)">Belum punya akun? <a href="#" onclick="switchAuthTab('register');return false" style="color:var(--primary)">Register</a></p>
-
-      <div id="registerSection" style="display:none;margin-top:16px">
-        <form class="auth-form" id="registerForm" onsubmit="handleRegister(event)">
-          <div class="input-wrap">
-            <i class="fas fa-user"></i>
-            <input class="form-input" type="text" placeholder="Full Name" required>
-          </div>
+      <div class="auth-tabs">
+        <button class="auth-tab active" data-tab="login" onclick="switchAuthTab('login')"><i class="fas fa-sign-in-alt"></i> Sign In</button>
+        <button class="auth-tab" data-tab="register" onclick="switchAuthTab('register')"><i class="fas fa-user-plus"></i> Register</button>
+      </div>
+      
+      <div id="loginSection">
+        <form class="auth-form" id="loginForm" onsubmit="handleLogin(event)">
           <div class="input-wrap">
             <i class="fas fa-envelope"></i>
-            <input class="form-input" type="email" placeholder="Email" required>
+            <input class="form-input" type="email" placeholder="Email" autocomplete="email" required>
           </div>
           <div class="input-wrap">
             <i class="fas fa-lock"></i>
-            <input class="form-input" type="password" placeholder="Password (min 6 chars)" required minlength="6">
+            <input class="form-input" type="password" placeholder="Password" autocomplete="current-password" required>
           </div>
-          <button class="btn btn-primary" type="submit">Register</button>
+          <button class="btn btn-primary" type="submit" id="loginBtnSubmit"><i class="fas fa-sign-in-alt"></i> Sign In</button>
+        </form>
+      </div>
+
+      <div id="registerSection" style="display:none">
+        <form class="auth-form" id="registerForm" onsubmit="handleRegister(event)">
+          <div class="input-wrap">
+            <i class="fas fa-user"></i>
+            <input class="form-input" type="text" placeholder="Full Name" autocomplete="name" required>
+          </div>
+          <div class="input-wrap">
+            <i class="fas fa-envelope"></i>
+            <input class="form-input" type="email" placeholder="Email active" id="regEmail" autocomplete="email" required>
+          </div>
+          <div class="input-wrap">
+            <i class="fas fa-lock"></i>
+            <input class="form-input" type="password" placeholder="Password (min 6 chars)" autocomplete="new-password" required minlength="6">
+          </div>
+          <div class="input-wrap" style="margin-bottom:0">
+            <i class="fas fa-gift"></i>
+            <input class="form-input" type="text" placeholder="Referral code (optional)" id="regRef" style="text-transform:uppercase">
+          </div>
+          <div style="font-size:11px;color:var(--text-dim);margin-top:4px;margin-bottom:12px"><i class="fas fa-info-circle"></i> Punya kode referral? Masukkan di atas untuk bonus +5 XP!</div>
+          <button class="btn btn-primary" type="submit" id="registerBtn"><i class="fas fa-user-plus"></i> Register</button>
         </form>
         <div id="otpSection" style="display:none;margin-top:16px;padding:16px;background:var(--bg-3);border-radius:var(--radius);text-align:center">
-          <p style="font-size:13px;margin-bottom:12px">Kode OTP telah dikirim ke email Anda.</p>
+          <p style="font-size:13px;margin-bottom:12px"><i class="fas fa-envelope-open-text" style="color:var(--secondary);font-size:24px;display:block;margin-bottom:8px"></i>Kode OTP telah dikirim ke email Anda.</p>
           <form class="auth-form" onsubmit="verifyOTP(event)">
             <div class="input-wrap">
               <i class="fas fa-key"></i>
               <input class="form-input" type="text" placeholder="Masukkan kode OTP" id="otpInput" maxlength="6" required>
             </div>
-            <button class="btn btn-primary" type="submit">Verifikasi</button>
+            <button class="btn btn-primary" type="submit"><i class="fas fa-check"></i> Verifikasi</button>
           </form>
           <p style="font-size:11px;color:var(--text-muted);margin-top:8px">Tidak terima? <a href="#" onclick="resendOTP();return false" style="color:var(--primary)">Kirim ulang</a></p>
         </div>
-        <p style="text-align:center;font-size:12px;color:var(--text-muted);margin-top:12px">Sudah punya akun? <a href="#" onclick="switchAuthTab('login');return false" style="color:var(--primary)">Sign In</a></p>
+      </div>
       </div>
     </div>
   </div>
@@ -2072,7 +2084,13 @@ function updateAuthUI() {
     if (mobileProfileBtn) mobileProfileBtn.style.display = 'none';
   }
 }
+function switchAuthTab(tab) {
+  document.querySelectorAll('.auth-tab').forEach(t => t.classList.toggle('active', t.dataset.tab === tab));
+  document.getElementById('loginSection').style.display = tab === 'login' ? 'block' : 'none';
+  document.getElementById('registerSection').style.display = tab === 'register' ? 'block' : 'none';
+}
 async function handleLogin(e) {
+  if (!antiSpam('login', 2000)) return;
   e.preventDefault();
   const inputs = e.target.querySelectorAll('input');
   const btn = e.target.querySelector('button');
@@ -2082,25 +2100,35 @@ async function handleLogin(e) {
     APP.isLoggedIn = true; APP.user = data.user; updateAuthUI();
     showToast('Login berhasil!', 'success'); navigateTo(data.user.role === 'admin' ? 'admin' : 'profile');
   } catch (err) { showToast(err.message || 'Login gagal', 'error'); }
-  btn.disabled = false; btn.innerHTML = 'Sign In';
+  btn.disabled = false; btn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Sign In';
 }
 let registeredEmail = '';
 async function handleRegister(e) {
+  if (!antiSpam('register', 3000)) return;
   e.preventDefault();
   const inputs = e.target.querySelectorAll('input');
   const btn = e.target.querySelector('button');
-  registeredEmail = inputs[1].value;
+  const email = inputs[1].value.replace(/\s/g, '');
+  const refCode = document.getElementById('regRef')?.value?.trim().toUpperCase() || '';
+  
+  // Basic email validation
+  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return showToast('Masukkan email yang valid', 'error');
+  
+  registeredEmail = email;
   btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Registering...';
   try {
-    await api('/auth/register', { method: 'POST', body: { name: inputs[0].value, email: inputs[1].value, password: inputs[2].value } });
+    const body = { name: inputs[0].value, email, password: inputs[2].value };
+    if (refCode) body.ref_code = refCode;
+    await api('/auth/register', { method: 'POST', body });
     document.getElementById('registerForm').style.display = 'none';
     document.getElementById('otpSection').style.display = 'block';
     document.getElementById('otpInput').focus();
     showToast('Kode OTP dikirim ke email Anda!', 'success');
   } catch (err) { showToast(err.message || 'Registrasi gagal', 'error'); }
-  btn.disabled = false; btn.innerHTML = 'Register';
+  btn.disabled = false; btn.innerHTML = '<i class="fas fa-user-plus"></i> Register';
 }
 async function verifyOTP(e) {
+  if (!antiSpam('verifyOTP', 2000)) return;
   e.preventDefault();
   const otp = document.getElementById('otpInput').value;
   if (!otp) return showToast('Masukkan kode OTP', 'error');
@@ -2111,6 +2139,7 @@ async function verifyOTP(e) {
   } catch (err) { showToast(err.message || 'Kode OTP salah', 'error'); }
 }
 async function resendOTP() {
+  if (!antiSpam('resendOTP', 10000)) return; // 10s cooldown for resend
   if (!registeredEmail) return showToast('Email tidak ditemukan', 'error');
   try { await api('/auth/resend-otp', { method: 'POST', body: { email: registeredEmail } }); showToast('OTP dikirim ulang!', 'success'); } catch (err) { showToast(err.message, 'error'); }
 }
@@ -3989,12 +4018,27 @@ document.addEventListener('DOMContentLoaded', async function() {
   window.addEventListener('scroll', scrollHandler);
   // ripple
   document.querySelectorAll('.btn').forEach(b => { b.addEventListener('click', function(e) { const r=document.createElement('span'); r.className='ripple'; const rect=this.getBoundingClientRect(); r.style.left=(e.clientX-rect.left)+'px'; r.style.top=(e.clientY-rect.top)+'px'; this.appendChild(r); setTimeout(()=>r.remove(),600); }); });
-  // visibility change: refresh on tab focus
+  // visibility change: refresh all data on tab focus
   document.addEventListener('visibilitychange', () => {
     if (document.visibilityState === 'visible') {
       loadAnnouncements();
+      renderAssets().catch(()=>{});
+      loadFeaturedProducts().catch(()=>{});
+      loadTopProducts().catch(()=>{});
+      loadPromotions().catch(()=>{});
+      loadTopSellers().catch(()=>{});
     }
   });
+  // Periodic data refresh every 60s (silent, no loader)
+  setInterval(() => {
+    if (!document.hidden) {
+      renderAssets().catch(()=>{});
+      loadFeaturedProducts().catch(()=>{});
+      loadTopProducts().catch(()=>{});
+      loadPromotions().catch(()=>{});
+      loadTopSellers().catch(()=>{});
+    }
+  }, 60000);
   // card mouse 3D tilt + glow (throttled to ~30fps)
   document.querySelectorAll('.service-card, .asset-card, .portfolio-card').forEach(c => {
     c.classList.add('tilt-active');
