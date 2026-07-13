@@ -2920,7 +2920,7 @@ async function loadPromotions() {
     }
     slides.parentElement.style.display = 'block';
     if (dots) dots.style.display = 'flex';
-    slides.innerHTML = items.map(p => '<div class="promo-slide"><a href="'+p.link+'" target="_blank" rel="noopener"><img src="'+p.image+'" alt="" loading="lazy" onerror="this.onerror=null;this.parentElement.innerHTML=\'<div class=promo-fallback></div>\'"></a>'+(p.title?'<div class="promo-overlay"><div class="promo-title">'+esc(p.title)+'</div></div>':'')+'</div>').join('');
+    slides.innerHTML = items.map(p => '<div class="promo-slide"><a href="'+(p.link||'')+'" target="_blank" rel="noopener"><img src="'+(p.image_url||p.image||'')+'" alt="" loading="lazy" onerror="this.onerror=null;this.parentElement.innerHTML=\'<div class=promo-fallback></div>\'"></a>'+(p.title?'<div class="promo-overlay"><div class="promo-title">'+esc(p.title)+'</div></div>':'')+'</div>').join('');
     if (dots) dots.innerHTML = items.map((_, i) => '<div class="promo-dot'+(i===0?' active':'')+'" onclick="promoGo('+i+')"></div>').join('');
     promoIdx = 0;
     if (promoInterval) clearInterval(promoInterval);
