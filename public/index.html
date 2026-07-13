@@ -816,28 +816,26 @@ textarea.form-input{resize:vertical;min-height:100px}
     </div>
   </section>
 
-  <!-- SELLER PROFILE MODAL - POSITIONED IN TOP SELLERS SECTION -->
-  <div class="modal-overlay" id="sellerProfileModal">
-    <div class="modal-content" style="max-width:400px">
-      <div class="modal-header">
-        <h3 style="font-size:16px">Seller Profile</h3>
-        <button class="modal-close" onclick="document.getElementById('sellerProfileModal').style.display='none'"><i class="fas fa-times"></i></button>
+  <!-- SELLER PROFILE (inline in top sellers section) -->
+  <div class="glass" id="sellerProfileModal" style="display:none;max-width:400px;margin:20px auto 0;padding:20px;border-radius:var(--radius-lg);border:1px solid var(--glass-border2)">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+      <h3 style="font-size:16px">Seller Profile</h3>
+      <button class="btn btn-outline btn-xs" style="font-size:11px;padding:3px 10px" onclick="document.getElementById('sellerProfileModal').style.display='none';document.body.style.overflow=''"><i class="fas fa-times"></i> Close</button>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:16px">
+      <div style="text-align:center">
+        <div id="sellerProfileAvatar" style="width:80px;height:80px;border-radius:50%;margin:0 auto 12px;background:var(--gradient-1);display:flex;align-items:center;justify-content:center;font-size:32px;font-weight:700;color:#fff;overflow:hidden;border:3px solid var(--primary)"></div>
+        <div id="sellerProfileName" style="font-size:18px;font-weight:600"></div>
+        <div id="sellerProfileEmail" style="font-size:12px;color:var(--text-dim)"></div>
       </div>
-      <div style="display:flex;flex-direction:column;gap:16px">
-        <div style="text-align:center">
-          <div id="sellerProfileAvatar" style="width:80px;height:80px;border-radius:50%;margin:0 auto 12px;background:var(--gradient-1);display:flex;align-items:center;justify-content:center;font-size:32px;font-weight:700;color:#fff;overflow:hidden;border:3px solid var(--primary)"></div>
-          <div id="sellerProfileName" style="font-size:18px;font-weight:600"></div>
-          <div id="sellerProfileEmail" style="font-size:12px;color:var(--text-dim)"></div>
+      <div style="padding:12px;background:var(--glass);border-radius:var(--radius);border:1px solid var(--glass-border)">
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;text-align:center">
+          <div><div id="sellerProfileProducts" style="font-size:18px;font-weight:700;color:var(--primary)">0</div><div style="font-size:11px;color:var(--text-dim)">Products</div></div>
+          <div><div id="sellerProfileOrders" style="font-size:18px;font-weight:700;color:var(--secondary)">0</div><div style="font-size:11px;color:var(--text-dim)">Orders</div></div>
+          <div><div id="sellerProfileRating" style="font-size:18px;font-weight:700;color:var(--accent2)">0</div><div style="font-size:11px;color:var(--text-dim)">Rating</div></div>
         </div>
-        <div style="padding:12px;background:var(--glass);border-radius:var(--radius);border:1px solid var(--glass-border)">
-          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;text-align:center">
-            <div><div id="sellerProfileProducts" style="font-size:18px;font-weight:700;color:var(--primary)">0</div><div style="font-size:11px;color:var(--text-dim)">Products</div></div>
-            <div><div id="sellerProfileOrders" style="font-size:18px;font-weight:700;color:var(--secondary)">0</div><div style="font-size:11px;color:var(--text-dim)">Orders</div></div>
-            <div><div id="sellerProfileRating" style="font-size:18px;font-weight:700;color:var(--accent2)">0</div><div style="font-size:11px;color:var(--text-dim)">Rating</div></div>
-          </div>
-        </div>
-        <div style="font-size:13px;color:var(--text-muted);line-height:1.6" id="sellerProfileBio">No bio yet</div>
       </div>
+      <div style="font-size:13px;color:var(--text-muted);line-height:1.6" id="sellerProfileBio">No bio yet</div>
     </div>
   </div>
 
@@ -2436,11 +2434,6 @@ function openVideoModal(url) {
 function closeVideoModal() { document.getElementById('videoModal').classList.remove('open'); document.getElementById('videoEmbed').innerHTML = ''; }
 function toggleFaq(el) { const a=el.querySelector('.faq-answer'); const i=el.querySelector('.fa-chevron-down'); if (!a) return; const open=a.style.maxHeight!=='0px'&&a.style.maxHeight!==''; a.style.maxHeight=open?'0':a.scrollHeight+'px'; if(i)i.style.transform=open?'rotate(0deg)':'rotate(180deg)'; }
 document.getElementById('videoModal')?.addEventListener('click', function(e) { if (e.target === this) closeVideoModal(); });
-document.addEventListener('click', function(e) {
-  const spm = document.getElementById('sellerProfileModal');
-  if (spm && spm.classList.contains('open') && e.target === spm) { spm.classList.remove('open'); document.body.style.overflow = ''; }
-});
-
 // ============ CHAT ============
 let chatPollInterval = null;
 async function openChat(orderId) {
@@ -3005,8 +2998,8 @@ function showSellerProfile(sellerId, sellerName, sellerAvatar, productCount) {
       avatarEl.textContent = sellerName ? sellerName.charAt(0).toUpperCase() : '?';
     }
   }
-  modal.classList.add('open');
-  document.body.style.overflow = 'hidden';
+  modal.style.display = 'block';
+  setTimeout(() => modal.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 100);
 }
 
 // ============ PUBLIC CHAT ============
