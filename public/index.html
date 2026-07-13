@@ -1909,6 +1909,14 @@ async function api(path, options = {}) {
     
     if (cache && method === 'GET') {
       try { localStorage.setItem(cacheKey, JSON.stringify({ data, time: Date.now() })); } catch {}
+    } else if (method !== 'GET') {
+      // Invalidate all caches on mutation (POST/PUT/DELETE)
+      try {
+        const keys = Object.keys(localStorage);
+        for (const key of keys) {
+          if (key.startsWith('api_cache_')) localStorage.removeItem(key);
+        }
+      } catch {}
     }
     return data;
   } catch (err) {
@@ -3228,7 +3236,7 @@ async function renderProfile() {
 // ============ PUBLIC PROFILE VIEWER ============
 async function viewPublicProfile(userId) {
   try {
-    const d = await api('/admin/public/' + userId);
+    const d = await api('/admin/public/' + userId, { cache: false });
     if (!d.profile) return showToast('User not found', 'error');
     const p = d.profile;
     const overlay = document.getElementById('profileViewer');
@@ -3302,7 +3310,7 @@ async function loadAdminUsers() {
   const tbody = document.getElementById('adminUsersTable');
   if (!tbody) return;
   try {
-    const d = await api('/admin/users'); const users = d.users||[];
+    const d = await api('/admin/users', { cache: false }); const users = d.users||[];
     const isOwner = APP.user?.email === 'Bamsj37@gmail.com';
     tbody.innerHTML = users.map(u => {
       const roleActions = u.role==='admin' ? '<button class="table-btn table-btn-del" onclick="setUserRole('+u.id+',\'user\')">Demote</button>' : '<button class="table-btn table-btn-edit" onclick="setUserRole('+u.id+',\'admin\')">Make Admin</button>';
@@ -3314,7 +3322,7 @@ async function loadAdminUsers() {
 let adminEditUserId = null;
 async function openAdminEditUser(userId) {
   try {
-    const d = await api('/admin/public/' + userId);
+    const d = await api('/admin/public/' + userId, { cache: false });
     if (!d.profile) return showToast('User not found', 'error');
     const p = d.profile;
     adminEditUserId = userId;
@@ -3355,7 +3363,7 @@ async function loadAdminTags() {
   try {
     const [tagData, userData] = await Promise.all([
       api('/tags'),
-      api('/admin/users')
+      api('/admin/users', { cache: false })
     ]);
     const tags = tagData.tags || [];
     const users = userData.users || [];
@@ -3468,7 +3476,7 @@ async function loadSellerDashboard() {
   } else {
     // Check if has pending application
     try {
-      const apps = await api('/admin-store/applications');
+      const apps = await api('/admin-store/applications', { cache: false });
       const myApp = (apps.applications||[]).find(a => a.user_id == APP.user.id);
       if (myApp && myApp.status === 'pending') {
         document.getElementById('sellerApplySection').style.display = 'none';
@@ -3688,7 +3696,7 @@ async function loadAdminSellerApps() {
   const tbody = document.getElementById('adminSellerAppsTable');
   if (!tbody) return;
   try {
-    const d = await api('/admin-store/applications');
+    const d = await api('/admin-store/applications', { cache: false });
     const apps = d.applications || [];
     tbody.innerHTML = apps.map(a => {
       const statusColor = a.status === 'pending' ? '#fbbf24' : a.status === 'approved' ? '#34d399' : '#ef4444';
@@ -3714,7 +3722,7 @@ async function loadAdminPublicProducts(filter) {
   detailDiv.style.display = 'none';
   usersDiv.style.display = 'block';
   try {
-    const d = await api('/admin-store/products' + (filter ? '?status='+filter : ''));
+    const d = await api('/admin-store/products' + (filter ? '?status='+filter : ''), { cache: false });
     const products = d.products || [];
     // Group by user
     const grouped = {};
@@ -3744,7 +3752,7 @@ async function openAdminPublicProductsDetail(userId) {
   usersDiv.style.display = 'none';
   detailDiv.style.display = 'block';
   try {
-    const d = await api('/admin-store/products/user/' + userId);
+    const d = await api('/admin-store/products/user/' + userId, { cache: false });
     const products = d.products || [];
     const user = products[0] || {};
     document.getElementById('adminPublicProductsDetailTitle').textContent = (user.seller_name || user.seller_email || 'User') + '\'s Products';
