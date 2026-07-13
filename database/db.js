@@ -249,9 +249,30 @@ async function initDB() {
 async function initDBFast() {
   if (initialized) return;
   initialized = true;
-  // On Vercel, skip heavy init - trust the DB is already set up
-  if (process.env.VERCEL) return;
-  await initDB();
+  let client = getDB();
+  if (!client) return;
+  // Only create tables if missing (fast, each uses IF NOT EXISTS)
+  const tableDefs = [
+    `CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY AUTOINCREMENT, email TEXT UNIQUE NOT NULL, name TEXT NOT NULL DEFAULT '', password TEXT NOT NULL, role TEXT NOT NULL DEFAULT 'user', avatar TEXT DEFAULT '', otp TEXT DEFAULT '', otp_expires TEXT DEFAULT '', verified INTEGER DEFAULT 0, session_token TEXT DEFAULT '', verified_tag INTEGER DEFAULT 0, banner TEXT DEFAULT '', xp INTEGER DEFAULT 0, bio TEXT DEFAULT '', ref_code TEXT DEFAULT '', created_at TEXT DEFAULT (datetime('now')))`,
+    `CREATE TABLE IF NOT EXISTS assets (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, price TEXT NOT NULL DEFAULT 'Gratis', original_price TEXT DEFAULT '', description TEXT NOT NULL DEFAULT '', tags TEXT DEFAULT '', category TEXT NOT NULL DEFAULT 'other', store_type TEXT NOT NULL DEFAULT 'store', image TEXT DEFAULT '', video_enabled INTEGER DEFAULT 0, video_url TEXT DEFAULT '', stock_status TEXT DEFAULT 'ready', link TEXT DEFAULT '', created_at TEXT DEFAULT (datetime('now')))`,
+    `CREATE TABLE IF NOT EXISTS orders (id INTEGER PRIMARY KEY AUTOINCREMENT, user_id INTEGER, items TEXT NOT NULL DEFAULT '[]', total REAL DEFAULT 0, status TEXT DEFAULT 'pending', customer_name TEXT DEFAULT '', customer_email TEXT DEFAULT '', payment_method TEXT DEFAULT '', store_type TEXT DEFAULT '', created_at TEXT DEFAULT (datetime('now')))`,
+    `CREATE TABLE IF NOT EXISTS messages (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, email TEXT NOT NULL, project TEXT DEFAULT '', budget TEXT DEFAULT '', message TEXT NOT NULL, read INTEGER DEFAULT 0, created_at TEXT DEFAULT (datetime('now')))`,
+    `CREATE TABLE IF NOT EXISTS promos (id INTEGER PRIMARY KEY AUTOINCREMENT, code TEXT UNIQUE NOT NULL, discount INTEGER NOT NULL DEFAULT 10, max_uses INTEGER DEFAULT 0, used_count INTEGER DEFAULT 0, active INTEGER DEFAULT 1, created_at TEXT DEFAULT (datetime('now')))`,
+    `CREATE TABLE IF NOT EXISTS testimonials (id INTEGER PRIMARY KEY AUTOINCREMENT, user_id INTEGER, user_name TEXT DEFAULT '', text TEXT NOT NULL, rating INTEGER DEFAULT 5, product_name TEXT DEFAULT '', store_type TEXT DEFAULT '', seller_name TEXT DEFAULT '', created_at TEXT DEFAULT (datetime('now')))`,
+    `CREATE TABLE IF NOT EXISTS public_products (id INTEGER PRIMARY KEY AUTOINCREMENT, user_id INTEGER NOT NULL, name TEXT NOT NULL, price TEXT NOT NULL DEFAULT 'Gratis', description TEXT DEFAULT '', image TEXT DEFAULT '', link TEXT DEFAULT '', category TEXT DEFAULT 'other', status TEXT DEFAULT 'pending', admin_note TEXT DEFAULT '', created_at TEXT DEFAULT (datetime('now')))`,
+    `CREATE TABLE IF NOT EXISTS seller_applications (id INTEGER PRIMARY KEY AUTOINCREMENT, user_id INTEGER NOT NULL, name TEXT DEFAULT '', email TEXT DEFAULT '', reason TEXT DEFAULT '', portfolio TEXT DEFAULT '', status TEXT DEFAULT 'pending', created_at TEXT DEFAULT (datetime('now')))`,
+    `CREATE TABLE IF NOT EXISTS announcements (id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT DEFAULT '', message TEXT NOT NULL, active INTEGER DEFAULT 1, created_by INTEGER NOT NULL, duration_minutes INTEGER DEFAULT 0, created_at TEXT DEFAULT (datetime('now')))`,
+    `CREATE TABLE IF NOT EXISTS public_chats (id INTEGER PRIMARY KEY AUTOINCREMENT, user_id INTEGER NOT NULL, user_name TEXT DEFAULT '', user_role TEXT DEFAULT 'user', user_avatar TEXT DEFAULT '', text TEXT NOT NULL, created_at TEXT DEFAULT (datetime('now')))`,
+    `CREATE TABLE IF NOT EXISTS tags (id INTEGER PRIMARY KEY AUTOINCREMENT, user_id INTEGER NOT NULL, tag TEXT NOT NULL, created_by INTEGER NOT NULL, icon TEXT DEFAULT '', color TEXT DEFAULT '#8b7cfc', created_at TEXT DEFAULT (datetime('now')))`,
+    `CREATE TABLE IF NOT EXISTS promotions (id INTEGER PRIMARY KEY AUTOINCREMENT, image_url TEXT NOT NULL, link TEXT DEFAULT '', title TEXT DEFAULT '', sort_order INTEGER DEFAULT 0, active INTEGER DEFAULT 1, created_at TEXT DEFAULT (datetime('now')))`,
+    `CREATE TABLE IF NOT EXISTS chats (id INTEGER PRIMARY KEY AUTOINCREMENT, order_id INTEGER NOT NULL, user_id INTEGER, messages TEXT DEFAULT '[]', created_at TEXT DEFAULT (datetime('now')))`,
+    `CREATE TABLE IF NOT EXISTS product_ratings (id INTEGER PRIMARY KEY AUTOINCREMENT, product_id INTEGER NOT NULL, product_type TEXT NOT NULL, user_id INTEGER NOT NULL, rating INTEGER NOT NULL DEFAULT 5, review TEXT DEFAULT '', created_at TEXT DEFAULT (datetime('now')))`,
+    `CREATE TABLE IF NOT EXISTS seller_chats (id INTEGER PRIMARY KEY AUTOINCREMENT, product_id INTEGER NOT NULL, customer_id INTEGER NOT NULL, seller_id INTEGER NOT NULL, messages TEXT DEFAULT '[]', created_at TEXT DEFAULT (datetime('now')))`,
+    `CREATE TABLE IF NOT EXISTS seller_promos (id INTEGER PRIMARY KEY AUTOINCREMENT, seller_id INTEGER NOT NULL, code TEXT NOT NULL, discount INTEGER NOT NULL DEFAULT 10, product_id INTEGER DEFAULT 0, max_uses INTEGER DEFAULT 0, used_count INTEGER DEFAULT 0, active INTEGER DEFAULT 1, created_at TEXT DEFAULT (datetime('now')))`,
+  ];
+  for (const sql of tableDefs) {
+    try { await client.execute(sql); } catch {}
+  }
 }
 
 async function q(sql, params = []) {

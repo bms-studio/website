@@ -86,17 +86,13 @@ app.use((err, req, res, next) => {
   res.status(500).json({ error: 'Internal server error' });
 });
 
+// Lightweight DB init (creates tables if missing, no migrations/seed on Vercel)
+const { initDBFast } = require('./database/db');
+initDBFast().catch(err => console.error('DB fast init failed:', err?.message));
+
 if (!IS_VERCEL) {
-  const { initDBFast } = require('./database/db');
-  initDBFast().then(() => {
-    app.listen(PORT, () => {
-      console.log(`BMS STUDIO running on http://localhost:${PORT}`);
-    });
-  }).catch(err => {
-    console.error('DB init failed:', err?.message);
-    app.listen(PORT, () => {
-      console.log(`BMS STUDIO running on http://localhost:${PORT} (no DB)`);
-    });
+  app.listen(PORT, () => {
+    console.log(`BMS STUDIO running on http://localhost:${PORT}`);
   });
 }
 
