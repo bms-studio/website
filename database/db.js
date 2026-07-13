@@ -246,6 +246,14 @@ async function initDB() {
   await seedData(client);
 }
 
+async function initDBFast() {
+  if (initialized) return;
+  initialized = true;
+  // On Vercel, skip heavy init - trust the DB is already set up
+  if (process.env.VERCEL) return;
+  await initDB();
+}
+
 async function q(sql, params = []) {
   const client = getDB();
   const result = await client.execute({ sql, args: params });
@@ -315,4 +323,4 @@ async function seedData(client) {
   } catch {}
 }
 
-module.exports = { getDB, initDB, q };
+module.exports = { getDB, initDB, initDBFast, q };

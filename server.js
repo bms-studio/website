@@ -8,10 +8,10 @@ const helmet = require('helmet');
 const cookieParser = require('cookie-parser');
 const compression = require('compression');
 const rateLimit = require('express-rate-limit');
-require('dotenv').config({ path: path.join(__dirname, '.env') });
 
 const app = express();
 const PORT = process.env.PORT || 4000;
+const IS_VERCEL = !!process.env.VERCEL;
 
 app.use(compression());
 app.use(helmet({
@@ -31,12 +31,19 @@ app.use(cookieParser());
 
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 200,
+  max: 500,
   message: { error: 'Too many requests' }
 });
 app.use('/api/', limiter);
 
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, 'public'), {
+  maxAge: IS_VERCEL ? '1h' : 0,
+  setHeaders: (res, filePath) => {
+    if (filePath.endsWith('.html')) {
+      res.setHeader('Cache-Control', 'no-cache');
+    }
+  }
+}));
 
 const authRoutes = require('./routes/auth');
 const assetRoutes = require('./routes/assets');
@@ -74,27 +81,23 @@ app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-// Global error handler
 app.use((err, req, res, next) => {
   console.error('Unhandled error:', err?.message);
   res.status(500).json({ error: 'Internal server error' });
 });
 
-async function init() {
-  console.log('Server starting... Node:', process.version, 'Vercel:', !!process.env.VERCEL);
-  console.log('TURSO_DB_URL set:', !!process.env.TURSO_DB_URL, 'TURSO_DB_TOKEN set:', !!process.env.TURSO_DB_TOKEN);
-  try {
-    const { initDB } = require('./database/db');
-    await initDB();
-    console.log('DB initialized');
-  } catch (err) {
-    console.error('DB init failed, continuing:', err?.message);
-  }
-  app.listen(PORT, () => {
-    console.log(`BMS STUDIO running on http://localhost:${PORT}`);
+if (!IS_VERCEL) {
+  const { initDBFast } = require('./database/db');
+  initDBFast().then(() => {
+    app.listen(PORT, () => {
+      console.log(`BMS STUDIO running on http://localhost:${PORT}`);
+    });
+  }).catch(err => {
+    console.error('DB init failed:', err?.message);
+    app.listen(PORT, () => {
+      console.log(`BMS STUDIO running on http://localhost:${PORT} (no DB)`);
+    });
   });
 }
-
-init();
 
 module.exports = app;
