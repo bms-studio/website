@@ -606,24 +606,51 @@ textarea.form-input{resize:vertical;min-height:100px}
   .contact-grid{grid-template-columns:1fr}
   .stats-grid{grid-template-columns:repeat(2,1fr)}
   .admin-sidebar{width:180px}
+  .hero-title{font-size:clamp(28px,4.5vw,48px)}
 }
 @media(max-width:768px){
   .nav-links{display:none}
   .hamburger{display:flex}
   .nav-actions .nav-btn-outline{display:none}
   .hero-cta{flex-direction:column;align-items:center}
+  .hero-content{max-width:100%;padding:0 10px}
+  .hero-title{font-size:clamp(24px,5vw,36px)}
+  .hero-sub{font-size:14px}
   .stats-grid{grid-template-columns:repeat(2,1fr)}
   .admin-layout{flex-direction:column}
   .admin-sidebar{width:100%;flex-direction:row;overflow-x:auto;padding:10px;border-right:none;border-bottom:1px solid var(--glass-border)}
   .admin-sidebar-item{white-space:nowrap;flex-shrink:0;font-size:11px}
   .admin-main{padding:14px}
   .services-grid,.portfolio-grid,.assets-grid{grid-template-columns:1fr}
+  .podium-card.podium-rank-1{min-height:200px}
+  .podium-card.podium-rank-2{min-height:150px}
+  .podium-card.podium-rank-3{min-height:130px}
+  #topSellersPodium{gap:8px;min-height:200px}
+  .podium-avatar{width:52px;height:52px;font-size:20px}
+  .public-chat-box{width:300px;right:10px;bottom:70px}
+  .section-title{font-size:clamp(18px,4vw,24px)}
+  .auth-card{padding:20px;max-width:100%;margin:0 10px}
+  #sellerProfileModal{max-width:100%;margin:12px 10px 0}
 }
 @media(max-width:480px){
+  .hero-badge{font-size:12px;padding:6px 14px}
+  .hero-title{font-size:clamp(20px,6vw,28px)}
+  .hero-sub{font-size:13px}
   .stats-grid{grid-template-columns:1fr}
   .footer-inner{grid-template-columns:1fr}
-  .section{padding:48px 14px}
-  .auth-card{padding:24px}
+  .section{padding:36px 12px}
+  .auth-card{padding:16px}
+  #topSellersPodium{gap:6px}
+  .podium-card{padding:12px 8px}
+  .podium-avatar{width:44px;height:44px;font-size:16px}
+  .podium-name{font-size:12px}
+  .podium-medal{width:22px;height:22px;font-size:12px}
+  .public-chat-box{width:calc(100% - 20px);right:10px;bottom:60px;max-height:50vh}
+  .public-chat-header{font-size:13px;padding:10px 12px}
+  .public-chat-msgs{padding:8px;max-height:35vh;font-size:12px}
+  .public-chat-input{padding:8px 10px}
+  .btn-lg{padding:10px 20px;font-size:14px}
+  .auth-tab{font-size:12px;padding:8px}
 }
 </style>
 </head>
@@ -3010,7 +3037,7 @@ function togglePublicChat() {
   const box = document.getElementById('publicChatBox');
   const open = box.classList.toggle('open');
   document.getElementById('pcBadge').style.display = 'none'; pcUnread = 0;
-  if (open) { pcLastId = 0; document.getElementById('publicChatMsgs').innerHTML = ''; loadPC(); startPCPoll(); }
+  if (open) { pcLastId = 0; document.getElementById('publicChatMsgs').innerHTML = '<div style="text-align:center;padding:20px;color:var(--text-dim);font-size:13px"><i class="fas fa-spinner fa-spin"></i> Loading messages...</div>'; loadPC(); startPCPoll(); }
   else if (pcInterval) { clearInterval(pcInterval); pcInterval = null; }
 }
 function startPCPoll() {
@@ -3045,11 +3072,18 @@ async function loadPC() {
     const url = pcLastId > 0 ? '/public-chats?after='+pcLastId : '/public-chats';
     const d = await api(url, { cache: false });
     const chats = d.chats || [];
-    if (!chats.length) return;
+    if (!chats.length) {
+      // Remove loading indicator on first empty load (no messages yet)
+      const container = document.getElementById('publicChatMsgs');
+      if (container && container.querySelector('.fa-spinner')) container.innerHTML = '<div style="text-align:center;padding:20px;color:var(--text-dim);font-size:13px">Belum ada pesan. Jadilah yang pertama!</div>';
+      return;
+    }
     const container = document.getElementById('publicChatMsgs');
     const box = document.getElementById('publicChatBox');
     const isOpen = box.classList.contains('open');
     if (isOpen) {
+      // Clear loading indicator
+      if (container.querySelector('.fa-spinner')) container.innerHTML = '';
       chats.forEach(c => {
         if (!document.querySelector('[data-pcid="'+c.id+'"]')) {
           container.insertAdjacentHTML('beforeend', buildPCMsg(c));
