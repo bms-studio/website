@@ -809,7 +809,7 @@ textarea.form-input{resize:vertical;min-height:100px}
       <div id="topSellersContainer" style="margin-top:20px">
         <div id="topSellersPodium" style="display:flex;align-items:flex-end;justify-content:center;gap:20px;margin-bottom:40px;min-height:280px"></div>
         <div style="margin-top:20px">
-          <button class="btn btn-outline btn-sm" onclick="toggleTopSellersDropdown()" style="width:100%;text-align:center"><i class="fas fa-chevron-down"></i> View More Sellers</button>
+          <button class="btn btn-outline btn-sm" onclick="toggleTopSellersDropdown(event)" style="width:100%;text-align:center"><i class="fas fa-chevron-down"></i> View More Sellers</button>
           <div id="topSellersDropdown" style="display:none;margin-top:12px;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px"></div>
         </div>
       </div>
@@ -1932,7 +1932,13 @@ async function api(path, options = {}) {
     }
     throw err;
   }
-}const _cb = (u) => u||'';
+}
+// ============ SANITIZE HTML ============
+function esc(str) {
+  const el = document.createElement('div');
+  el.textContent = str || '';
+  return el.innerHTML;
+}
 
 // ============ DEBOUNCE / THROTTLE HELPERS ============
 const _debounceTimers = {};
@@ -2080,14 +2086,9 @@ function updateAuthUI() {
     if (mobileProfileBtn) mobileProfileBtn.style.display = 'none';
   }
 }
-function switchAuthTab(tab) {
-  document.querySelectorAll('.auth-tab').forEach(t => t.classList.toggle('active', t.dataset.tab === tab));
-  document.getElementById('loginSection').style.display = tab === 'login' ? 'block' : 'none';
-  document.getElementById('registerSection').style.display = tab === 'register' ? 'block' : 'none';
-}
 async function handleLogin(e) {
-  if (!antiSpam('login', 2000)) return;
   e.preventDefault();
+  if (!antiSpam('login', 2000)) return;
   const inputs = e.target.querySelectorAll('input');
   const btn = e.target.querySelector('button');
   btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Signing in...';
@@ -2100,8 +2101,8 @@ async function handleLogin(e) {
 }
 let registeredEmail = '';
 async function handleRegister(e) {
-  if (!antiSpam('register', 3000)) return;
   e.preventDefault();
+  if (!antiSpam('register', 3000)) return;
   const inputs = e.target.querySelectorAll('input');
   const btn = e.target.querySelector('button');
   const email = inputs[1].value.replace(/\s/g, '');
@@ -2152,7 +2153,8 @@ function copyRefCode() {
   showToast('Kode referral disalin!', 'success');
 }
 function switchAuthTab(tab) {
-  document.getElementById('loginForm').style.display = tab === 'login' ? 'block' : 'none';
+  document.querySelectorAll('.auth-tab').forEach(t => t.classList.toggle('active', t.dataset.tab === tab));
+  document.getElementById('loginSection').style.display = tab === 'login' ? 'block' : 'none';
   document.getElementById('registerSection').style.display = tab === 'register' ? 'block' : 'none';
   document.getElementById('otpSection').style.display = 'none';
   document.getElementById('registerForm').style.display = 'block';
@@ -2266,7 +2268,7 @@ async function renderAssets() {
       const hasDiscount = a.original_price && a.original_price !== a.price && a.original_price !== '';
       const avgRating = a.avg_rating ? Math.round(Number(a.avg_rating)) : 0;
       const rStars = '<div class="rating-stars">'+Array.from({length:5}, (_,i) => '<i class="fas fa-star'+(i<avgRating?'':' empty')+'"></i>').join('')+'</div>';
-      return '<div class="asset-card reveal"><div class="asset-thumb">'+(a.image ? '<img src="'+a.image+'" alt="" loading="lazy" decoding="async">' : '<i class="fas fa-cube"></i>')+(a.video_enabled ? '<div class="play-btn" onclick="event.stopPropagation();openVideoModal(\''+(a.video_url||'')+'\')"><i class="fas fa-play"></i></div>' : '')+'</div><div class="asset-body"><h3>'+a.name+'</h3>'+rStars+'<div class="tags">'+tags.slice(0,3).map(t => '<span>'+t.trim()+'</span>').join('')+'</div><div class="desc">'+(a.description||'')+'</div></div><div class="asset-footer"><div><span class="asset-price">'+(isFree ? 'Gratis' : a.price)+'</span>'+(hasDiscount ? '<span class="asset-price-original">'+a.original_price+'</span>' : '')+'<div><span class="asset-stock '+(a.stock_status === 'limited' ? 'limited' : '')+'">'+(a.stock_status === 'limited' ? 'Limited' : a.stock_status === 'preorder' ? 'Pre-order' : 'Ready')+'</span></div></div><div style="display:flex;gap:4px">'+(a.link ? '<a href="'+a.link+'" target="_blank" rel="noopener" class="asset-add" onclick="event.stopPropagation()" title="Open link"><i class="fas fa-external-link-alt"></i></a>' : '')+'<button class="asset-add" onclick="addToCart('+a.id+')"><i class="fas fa-plus"></i></button>'+(APP.isLoggedIn ? '<button class="asset-add" onclick="event.stopPropagation();openAdminChat('+a.id+',\'asset\')" title="Chat"><i class="fas fa-comment"></i></button>' : '')+'</div></div></div>';
+      return '<div class="asset-card reveal"><div class="asset-thumb">'+(a.image ? '<img src="'+esc(a.image)+'" alt="" loading="lazy" decoding="async">' : '<i class="fas fa-cube"></i>')+(a.video_enabled ? '<div class="play-btn" onclick="event.stopPropagation();openVideoModal(\''+(a.video_url||'')+'\')"><i class="fas fa-play"></i></div>' : '')+'</div><div class="asset-body"><h3>'+esc(a.name)+'</h3>'+rStars+'<div class="tags">'+tags.slice(0,3).map(t => '<span>'+esc(t.trim())+'</span>').join('')+'</div><div class="desc">'+esc(a.description||'')+'</div></div><div class="asset-footer"><div><span class="asset-price">'+(isFree ? 'Gratis' : esc(a.price))+'</span>'+(hasDiscount ? '<span class="asset-price-original">'+esc(a.original_price)+'</span>' : '')+'<div><span class="asset-stock '+(a.stock_status === 'limited' ? 'limited' : '')+'">'+(a.stock_status === 'limited' ? 'Limited' : a.stock_status === 'preorder' ? 'Pre-order' : 'Ready')+'</span></div></div><div style="display:flex;gap:4px">'+(a.link ? '<a href="'+a.link+'" target="_blank" rel="noopener" class="asset-add" onclick="event.stopPropagation()" title="Open link"><i class="fas fa-external-link-alt"></i></a>' : '')+'<button class="asset-add" onclick="addToCart('+a.id+')"><i class="fas fa-plus"></i></button>'+(APP.isLoggedIn ? '<button class="asset-add" onclick="event.stopPropagation();openAdminChat('+a.id+',\'asset\')" title="Chat"><i class="fas fa-comment"></i></button>' : '')+'</div></div></div>';
     }).join('');
     setTimeout(initRevealObserver, 100);
   } catch { grid.innerHTML = '<div class="empty-state"><i class="fas fa-exclamation-triangle"></i><h3>Gagal memuat</h3></div>'; empty.style.display = 'none'; }
@@ -2367,7 +2369,7 @@ async function submitOrder() {
   APP.cart.forEach(item => { const p = parseFloat(String(item.price).replace(/[^0-9]/g,'')) || 0; sub += p * item.qty; });
   if (appliedPromo) sub = sub * (1 - appliedPromo / 100);
   try {
-    const orderRes = await api('/orders', { method: 'POST', body: { items: APP.cart, total: sub, customer_name: name, customer_email: email, payment_method: payMethod || 'N/A', store_type: [...new Set(APP.cart.map(i => i.store_type).filter(Boolean))].join(',') } });
+    const orderRes = await api('/orders', { method: 'POST', body: { items: APP.cart, total: sub, customer_name: name, customer_email: email, customer_contact: contact, payment_method: payMethod || 'N/A', store_type: [...new Set(APP.cart.map(i => i.store_type).filter(Boolean))].join(',') } });
     APP.cart = []; saveCart(); renderCart(); appliedPromo = null;
     document.getElementById('checkoutModal').classList.remove('open');
     showToast('Pesanan berhasil! Silakan transfer ke '+ (payMethod || 'metode yang dipilih'), 'success');
@@ -2591,7 +2593,7 @@ async function refreshAdminData() {
     document.getElementById('statUsers').textContent = '2+';
     const filtered = adminFilter === 'all' ? assets : assets.filter(a => a.store_type === adminFilter);
     renderAdminTable(filtered);
-    document.getElementById('recentAssets').innerHTML = assets.slice(0,5).map(a => '<tr><td style="padding:6px 10px">'+a.name+'</td><td style="padding:6px 10px;color:var(--text-muted)">'+a.store_type+'</td><td style="padding:6px 10px"><span class="badge '+(a.price==='Gratis'?'badge-free':'badge-paid')+'">'+(a.price==='Gratis'?'Free':a.price)+'</span></td></tr>').join('') || '<tr><td style="padding:10px;color:var(--text-muted)">Belum ada asset</td></tr>';
+    document.getElementById('recentAssets').innerHTML = assets.slice(0,5).map(a => '<tr><td style="padding:6px 10px">'+esc(a.name)+'</td><td style="padding:6px 10px;color:var(--text-muted)">'+a.store_type+'</td><td style="padding:6px 10px"><span class="badge '+(a.price==='Gratis'?'badge-free':'badge-paid')+'">'+(a.price==='Gratis'?'Free':a.price)+'</span></td></tr>').join('') || '<tr><td style="padding:10px;color:var(--text-muted)">Belum ada asset</td></tr>';
     document.getElementById('recentMessages').innerHTML = messages.slice(0,5).map(m => '<tr><td style="padding:6px 10px">'+m.name+'</td><td style="padding:6px 10px;color:var(--text-muted)">'+m.email+'</td></tr>').join('') || '<tr><td style="padding:10px;color:var(--text-muted)">Belum ada pesan</td></tr>';
   } catch {}
 }
@@ -2601,7 +2603,7 @@ function renderAdminTable(assets) {
   if (!tbody) return;
   if (!assets.length) { tbody.innerHTML = ''; empty.style.display = 'block'; return; }
   empty.style.display = 'none';
-  tbody.innerHTML = assets.map(a => '<tr><td>'+(a.image ? '<img src="'+a.image+'" class="thumb">' : '<div class="thumb" style="display:inline-flex;align-items:center;justify-content:center;background:var(--bg-4);font-size:14px"><i class="fas fa-cube"></i></div>')+'</td><td>'+a.name+'</td><td><span class="badge badge-free">'+(a.store_type === 'studio' ? 'STUDIO' : 'STORE')+'</span></td><td><span class="badge '+(a.price==='Gratis'?'badge-free':'badge-paid')+'">'+(a.price==='Gratis'?'Free':a.price)+'</span></td><td><span class="asset-stock '+(a.stock_status==='limited'?'limited':'')+'">'+(a.stock_status||'ready')+'</span></td><td><button class="table-btn table-btn-edit" onclick="openAssetForm('+a.id+')"><i class="fas fa-edit"></i></button> <button class="table-btn table-btn-del" onclick="deleteAsset('+a.id+')"><i class="fas fa-trash"></i></button></td></tr>').join('');
+  tbody.innerHTML = assets.map(a => '<tr><td>'+(a.image ? '<img src="'+esc(a.image)+'" class="thumb">' : '<div class="thumb" style="display:inline-flex;align-items:center;justify-content:center;background:var(--bg-4);font-size:14px"><i class="fas fa-cube"></i></div>')+'</td><td>'+esc(a.name)+'</td><td><span class="badge badge-free">'+(a.store_type === 'studio' ? 'STUDIO' : 'STORE')+'</span></td><td><span class="badge '+(a.price==='Gratis'?'badge-free':'badge-paid')+'">'+(a.price==='Gratis'?'Free':a.price)+'</span></td><td><span class="asset-stock '+(a.stock_status==='limited'?'limited':'')+'">'+(a.stock_status||'ready')+'</span></td><td><button class="table-btn table-btn-edit" onclick="openAssetForm('+a.id+')"><i class="fas fa-edit"></i></button> <button class="table-btn table-btn-del" onclick="deleteAsset('+a.id+')"><i class="fas fa-trash"></i></button></td></tr>').join('');
 }
 async function submitAdminAsset(e) {
   e.preventDefault();
@@ -2794,7 +2796,7 @@ async function loadFeaturedProducts() {
     const products = (data.assets || []).slice(0, 4);
     const grid = document.getElementById('featuredProducts');
     if (!grid) return;
-    grid.innerHTML = products.map(a => '<div class="asset-card reveal"><div class="asset-thumb" style="height:120px">'+(a.image?'<img src="'+a.image+'" loading="lazy" decoding="async">':'<i class="fas fa-cube"></i>')+(a.video_enabled && a.video_url ? '<div class="play-btn" onclick="event.stopPropagation();openVideoModal(\''+a.video_url+'\')"><i class="fas fa-play"></i></div>' : '')+'</div><div class="asset-body"><h3 style="font-size:13px">'+a.name+'</h3><div style="display:flex;justify-content:space-between;align-items:center;margin-top:6px"><span class="asset-price" style="font-size:13px">'+(a.price==='Gratis'?'Gratis':a.price)+'</span><button class="asset-add" onclick="addToCart('+a.id+')"><i class="fas fa-plus"></i></button></div></div></div>').join('');
+    grid.innerHTML = products.map(a => '<div class="asset-card reveal"><div class="asset-thumb" style="height:120px">'+(a.image?'<img src="'+esc(a.image)+'" loading="lazy" decoding="async">':'<i class="fas fa-cube"></i>')+(a.video_enabled && a.video_url ? '<div class="play-btn" onclick="event.stopPropagation();openVideoModal(\''+a.video_url+'\')"><i class="fas fa-play"></i></div>' : '')+'</div><div class="asset-body"><h3 style="font-size:13px">'+esc(a.name)+'</h3><div style="display:flex;justify-content:space-between;align-items:center;margin-top:6px"><span class="asset-price" style="font-size:13px">'+(a.price==='Gratis'?'Gratis':a.price)+'</span><button class="asset-add" onclick="addToCart('+a.id+')"><i class="fas fa-plus"></i></button></div></div></div>').join('');
     setTimeout(initRevealObserver, 100);
   } catch {}
 }
@@ -2870,9 +2872,9 @@ async function loadTopProducts() {
     try { const pd = await api('/seller/products'); publicProducts = (pd.products || []).slice(0, 2); } catch {}
     const all = [...storeProducts, ...publicProducts.map(p => ({...p, isPublic: true, price: p.price}))];
     grid.innerHTML = all.map(a => {
-      const img = a.image ? '<img src="'+a.image+'" alt="" loading="lazy" onerror="this.style.display=\'none\'">' : '<i class="fas fa-cube"></i>';
+      const img = a.image ? '<img src="'+esc(a.image)+'" alt="" loading="lazy" onerror="this.style.display=\'none\'">' : '<i class="fas fa-cube"></i>';
       const vidBtn = a.video_enabled && a.video_url ? '<div class="play-btn" onclick="event.stopPropagation();openVideoModal(\''+a.video_url+'\')"><i class="fas fa-play"></i></div>' : '';
-      return '<div class="asset-card reveal"><div class="asset-thumb" style="height:120px">'+img+vidBtn+'</div><div class="asset-body"><h3 style="font-size:13px">'+a.name+'</h3>'+starsHtml+'</div><div class="asset-footer"><div><span class="asset-price" style="font-size:13px">'+(a.price||'Gratis')+'</span>'+(a.isPublic?' <span style="font-size:9px;background:rgba(251,191,36,0.1);color:#fbbf24;padding:1px 6px;border-radius:4px">Public</span>':'')+'</div><button class="asset-add" onclick="navigateTo(\'store\')"><i class="fas fa-arrow-right"></i></button></div></div>';
+      return '<div class="asset-card reveal"><div class="asset-thumb" style="height:120px">'+img+vidBtn+'</div><div class="asset-body"><h3 style="font-size:13px">'+esc(a.name)+'</h3>'+starsHtml+'</div><div class="asset-footer"><div><span class="asset-price" style="font-size:13px">'+(a.price||'Gratis')+'</span>'+(a.isPublic?' <span style="font-size:9px;background:rgba(251,191,36,0.1);color:#fbbf24;padding:1px 6px;border-radius:4px">Public</span>':'')+'</div><button class="asset-add" onclick="navigateTo(\'store\')"><i class="fas fa-arrow-right"></i></button></div></div>';
     }).join('');
     setTimeout(initRevealObserver, 100);
   } catch {}
@@ -2975,23 +2977,30 @@ function toggleTopSellersDropdown(event) {
 
 function showSellerProfile(sellerId, sellerName, sellerAvatar, productCount) {
   const modal = document.getElementById('sellerProfileModal');
-  document.getElementById('sellerProfileName').textContent = sellerName;
-  document.getElementById('sellerProfileEmail').textContent = 'Seller ID: '+sellerId;
-  document.getElementById('sellerProfileProducts').textContent = productCount;
-  document.getElementById('sellerProfileOrders').textContent = '0';
-  document.getElementById('sellerProfileRating').textContent = '★ 5.0';
-  document.getElementById('sellerProfileBio').textContent = 'Premium seller with quality products';
-  
+  if (!modal) return;
+  const nameEl = document.getElementById('sellerProfileName');
+  const emailEl = document.getElementById('sellerProfileEmail');
+  const prodEl = document.getElementById('sellerProfileProducts');
+  const ordEl = document.getElementById('sellerProfileOrders');
+  const ratingEl = document.getElementById('sellerProfileRating');
+  const bioEl = document.getElementById('sellerProfileBio');
   const avatarEl = document.getElementById('sellerProfileAvatar');
-  if (sellerAvatar) {
-    avatarEl.style.backgroundImage = 'url('+sellerAvatar+')';
-    avatarEl.style.backgroundSize = 'cover';
-    avatarEl.textContent = '';
-  } else {
-    avatarEl.style.background = 'var(--gradient-1)';
-    avatarEl.textContent = sellerName.charAt(0).toUpperCase();
+  if (nameEl) nameEl.textContent = sellerName || 'Unknown';
+  if (emailEl) emailEl.textContent = 'Seller ID: '+sellerId;
+  if (prodEl) prodEl.textContent = productCount || 0;
+  if (ordEl) ordEl.textContent = '0';
+  if (ratingEl) ratingEl.textContent = '★ 5.0';
+  if (bioEl) bioEl.textContent = 'Premium seller with quality products';
+  if (avatarEl) {
+    if (sellerAvatar) {
+      avatarEl.style.backgroundImage = 'url('+sellerAvatar+')';
+      avatarEl.style.backgroundSize = 'cover';
+      avatarEl.textContent = '';
+    } else {
+      avatarEl.style.background = 'var(--gradient-1)';
+      avatarEl.textContent = sellerName ? sellerName.charAt(0).toUpperCase() : '?';
+    }
   }
-  
   modal.style.display = 'flex';
   document.body.style.overflow = 'hidden';
 }

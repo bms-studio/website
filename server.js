@@ -21,8 +21,7 @@ app.use(helmet({
 }));
 app.use(cors({ origin: true, credentials: true }));
 app.use((req, res, next) => {
-  res.setHeader('X-Frame-Options', 'ALLOWALL');
-  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('X-Frame-Options', 'SAMEORIGIN');
   next();
 });
 app.use(express.json({ limit: '1mb' }));

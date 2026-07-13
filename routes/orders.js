@@ -15,10 +15,8 @@ router.get('/', authenticateSession, async (req, res) => {
 
 router.get('/all', authenticateSession, requireAdmin, async (req, res) => {
   try {
-    const result = await q('SELECT * FROM orders ORDER BY created_at DESC');
-    // Admin sees all orders except public store orders (those belong to sellers)
-    const filtered = result.rows.filter(o => o.store_type !== 'public');
-    res.json({ orders: filtered });
+    const result = await q("SELECT * FROM orders WHERE store_type != 'public' OR store_type IS NULL ORDER BY created_at DESC");
+    res.json({ orders: result.rows });
   } catch (err) {
     res.status(500).json({ error: 'Server error' });
   }
@@ -26,7 +24,7 @@ router.get('/all', authenticateSession, requireAdmin, async (req, res) => {
 
 router.post('/', async (req, res) => {
   try {
-    const { items, total, customer_name, customer_email, payment_method, store_type } = req.body;
+    const { items, total, customer_name, customer_email, customer_contact, payment_method, store_type } = req.body;
     if (!items || !items.length) return res.status(400).json({ error: 'Cart kosong' });
     let userId = null;
     const sessionToken = req.cookies?.session;
@@ -37,8 +35,8 @@ router.post('/', async (req, res) => {
       } catch {}
     }
     const r = await q(
-      'INSERT INTO orders (user_id, items, total, status, customer_name, customer_email, payment_method, store_type) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
-      [userId, JSON.stringify(items), total || 0, 'pending', customer_name || '', customer_email || '', payment_method || '', store_type || '']
+      'INSERT INTO orders (user_id, items, total, status, customer_name, customer_email, customer_contact, payment_method, store_type) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
+      [userId, JSON.stringify(items), total || 0, 'pending', customer_name || '', customer_email || '', customer_contact || '', payment_method || '', store_type || '']
     );
     const order = await q('SELECT * FROM orders WHERE id = ?', [r.lastInsertRowid]);
     res.json({ order: order.rows[0] });
