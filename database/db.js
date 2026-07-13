@@ -239,6 +239,7 @@ async function initDB() {
     "ALTER TABLE assets ADD COLUMN video_enabled INTEGER DEFAULT 0",
     "ALTER TABLE assets ADD COLUMN video_url TEXT DEFAULT ''",
     "ALTER TABLE orders ADD COLUMN customer_contact TEXT DEFAULT ''",
+    "ALTER TABLE users ADD COLUMN referred_by INTEGER DEFAULT NULL",
   ];
   for (const sql of migrations) {
     try { await client.execute(sql); } catch {}
@@ -254,7 +255,7 @@ async function initDBFast() {
   if (!client) return;
   // Only create tables if missing (fast, each uses IF NOT EXISTS)
   const tableDefs = [
-    `CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY AUTOINCREMENT, email TEXT UNIQUE NOT NULL, name TEXT NOT NULL DEFAULT '', password TEXT NOT NULL, role TEXT NOT NULL DEFAULT 'user', avatar TEXT DEFAULT '', otp TEXT DEFAULT '', otp_expires TEXT DEFAULT '', verified INTEGER DEFAULT 0, session_token TEXT DEFAULT '', verified_tag INTEGER DEFAULT 0, banner TEXT DEFAULT '', xp INTEGER DEFAULT 0, bio TEXT DEFAULT '', ref_code TEXT DEFAULT '', created_at TEXT DEFAULT (datetime('now')))`,
+    `CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY AUTOINCREMENT, email TEXT UNIQUE NOT NULL, name TEXT NOT NULL DEFAULT '', password TEXT NOT NULL, role TEXT NOT NULL DEFAULT 'user', avatar TEXT DEFAULT '', otp TEXT DEFAULT '', otp_expires TEXT DEFAULT '', verified INTEGER DEFAULT 0, session_token TEXT DEFAULT '', verified_tag INTEGER DEFAULT 0, banner TEXT DEFAULT '', xp INTEGER DEFAULT 0, bio TEXT DEFAULT '', ref_code TEXT DEFAULT '', referred_by INTEGER DEFAULT NULL, created_at TEXT DEFAULT (datetime('now')))`,
     `CREATE TABLE IF NOT EXISTS assets (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, price TEXT NOT NULL DEFAULT 'Gratis', original_price TEXT DEFAULT '', description TEXT NOT NULL DEFAULT '', tags TEXT DEFAULT '', category TEXT NOT NULL DEFAULT 'other', store_type TEXT NOT NULL DEFAULT 'store', image TEXT DEFAULT '', video_enabled INTEGER DEFAULT 0, video_url TEXT DEFAULT '', stock_status TEXT DEFAULT 'ready', link TEXT DEFAULT '', created_at TEXT DEFAULT (datetime('now')))`,
     `CREATE TABLE IF NOT EXISTS orders (id INTEGER PRIMARY KEY AUTOINCREMENT, user_id INTEGER, items TEXT NOT NULL DEFAULT '[]', total REAL DEFAULT 0, status TEXT DEFAULT 'pending', customer_name TEXT DEFAULT '', customer_email TEXT DEFAULT '', customer_contact TEXT DEFAULT '', payment_method TEXT DEFAULT '', store_type TEXT DEFAULT '', created_at TEXT DEFAULT (datetime('now')))`,
     `CREATE TABLE IF NOT EXISTS messages (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, email TEXT NOT NULL, project TEXT DEFAULT '', budget TEXT DEFAULT '', message TEXT NOT NULL, read INTEGER DEFAULT 0, created_at TEXT DEFAULT (datetime('now')))`,

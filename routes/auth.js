@@ -34,7 +34,7 @@ router.post('/login', async (req, res) => {
 });
 
 router.post('/register', async (req, res) => {
-  const { email, password, name } = req.body;
+  const { email, password, name, ref_code } = req.body;
   if (!email || !password) return res.status(400).json({ error: 'Email dan password diperlukan' });
   if (password.length < 6) return res.status(400).json({ error: 'Password minimal 6 karakter' });
   try {
@@ -45,8 +45,15 @@ router.post('/register', async (req, res) => {
     const otpExpires = new Date(Date.now() + 10 * 60 * 1000).toISOString();
     const hashed = bcrypt.hashSync(password, 10);
 
-    await q('INSERT INTO users (email, name, password, role, otp, otp_expires, verified) VALUES (?, ?, ?, ?, ?, ?, ?)',
-      [email, name || email.split('@')[0], hashed, 'user', otp, otpExpires, 0]);
+    // Look up referrer if ref_code provided
+    let referredBy = null;
+    if (ref_code) {
+      const refUser = await q('SELECT id FROM users WHERE ref_code = ?', [ref_code.toUpperCase()]);
+      if (refUser.rows.length) referredBy = refUser.rows[0].id;
+    }
+
+    await q('INSERT INTO users (email, name, password, role, otp, otp_expires, verified, ref_code, referred_by) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
+      [email, name || email.split('@')[0], hashed, 'user', otp, otpExpires, 0, ref_code ? ref_code.toUpperCase() : '', referredBy]);
 
     const sent = await sendOTPEmail(email, otp);
     if (!sent) {
@@ -73,12 +80,21 @@ router.post('/verify-otp', async (req, res) => {
 
     await q('UPDATE users SET verified = 1, otp = \'\', otp_expires = \'\' WHERE email = ?', [email]);
 
+    // Process referral bonus
+    if (user.referred_by) {
+      await q('UPDATE users SET xp = COALESCE(xp, 0) + 10 WHERE id = ?', [user.referred_by]);
+      await q('UPDATE users SET xp = COALESCE(xp, 0) + 5 WHERE id = ?', [user.id]);
+    }
+
+    const updatedUser = await q('SELECT id, email, name, role, avatar, banner, verified_tag, xp, bio, ref_code FROM users WHERE id = ?', [user.id]);
+    const u = updatedUser.rows[0];
+
     const sessionToken = generateSessionToken();
-    await q('UPDATE users SET session_token = ? WHERE email = ?', [sessionToken, email]);
+    await q('UPDATE users SET session_token = ? WHERE id = ?', [sessionToken, user.id]);
     res.cookie('session', sessionToken, COOKIE_OPTIONS);
     res.json({
       message: 'Registrasi berhasil!',
-      user: { id: user.id, email: user.email, name: user.name, role: 'user', avatar: '', xp: 0, bio: '', ref_code: '' }
+      user: { id: u.id, email: u.email, name: u.name, role: u.role, avatar: u.avatar || '', banner: u.banner || '', xp: u.xp || 0, bio: u.bio || '', ref_code: u.ref_code || '' }
     });
   } catch (err) {
     res.status(500).json({ error: 'Server error' });
