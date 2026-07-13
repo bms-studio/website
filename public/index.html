@@ -1892,7 +1892,7 @@ async function api(path, options = {}) {
       const cached = localStorage.getItem(cacheKey);
       if (cached) {
         const { data, time } = JSON.parse(cached);
-        if (Date.now() - time < 600000) return data;
+        if (Date.now() - time < 15000) return data;
       }
     } catch {}
   }
@@ -3023,7 +3023,7 @@ function startPCPoll() {
       const box = document.getElementById('publicChatBox');
       if (box.classList.contains('open')) loadPC();
     }
-  }, 2000);
+  }, 1000); // Public chat poll every 1s for real-time
 }
 function buildPCMsg(c) {
   const isOfficial = c.user_role === 'official';
@@ -3046,7 +3046,7 @@ function buildPCMsg(c) {
 async function loadPC() {
   try {
     const url = pcLastId > 0 ? '/public-chats?after='+pcLastId : '/public-chats';
-    const d = await api(url);
+    const d = await api(url, { cache: false });
     const chats = d.chats || [];
     if (!chats.length) return;
     const container = document.getElementById('publicChatMsgs');
@@ -3186,6 +3186,14 @@ async function renderProfile() {
   profileAvatarWrap?.classList.remove('verified','seller');
   if (isOwner || u.role === 'admin') profileAvatarWrap?.classList.add('verified');
   else if (u.verified_tag == 1) { profileAvatarWrap?.classList.add('verified'); profileAvatarWrap?.classList.add('seller'); }
+  // Role tags (Official / Admin)
+  const roleTagsEl = document.getElementById('pvRoleTags');
+  if (roleTagsEl) {
+    const tags = [];
+    if (isOwner) tags.push('<span class="pv-tag official"><i class="fas fa-crown"></i> Official</span>');
+    else if (u.role === 'admin') tags.push('<span class="pv-tag admin"><i class="fas fa-check-circle"></i> Admin</span>');
+    roleTagsEl.innerHTML = tags.join('');
+  }
   // XP, Level
   let xp = parseInt(u.xp) || 0;
   const levelNames = ['Basic','Bronze','Silver','Gold','Platinum','Diamond','Elite','Legendary'];
@@ -4034,7 +4042,7 @@ document.addEventListener('DOMContentLoaded', async function() {
       loadTopSellers().catch(()=>{});
     }
   });
-  // Periodic data refresh every 60s (silent, no loader)
+  // Periodic data refresh every 30s (silent, no loader)
   setInterval(() => {
     if (!document.hidden) {
       renderAssets().catch(()=>{});
