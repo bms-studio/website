@@ -817,8 +817,8 @@ textarea.form-input{resize:vertical;min-height:100px}
   </section>
 
   <!-- SELLER PROFILE MODAL - POSITIONED IN TOP SELLERS SECTION -->
-  <div class="modal-overlay" id="sellerProfileModal" style="position:fixed;inset:0;display:none;z-index:1000;align-items:flex-start;justify-content:center;padding-top:200px">
-    <div class="modal-content" style="max-width:400px;position:relative">
+  <div class="modal-overlay" id="sellerProfileModal">
+    <div class="modal-content" style="max-width:400px">
       <div class="modal-header">
         <h3 style="font-size:16px">Seller Profile</h3>
         <button class="modal-close" onclick="document.getElementById('sellerProfileModal').style.display='none'"><i class="fas fa-times"></i></button>
@@ -2436,6 +2436,10 @@ function openVideoModal(url) {
 function closeVideoModal() { document.getElementById('videoModal').classList.remove('open'); document.getElementById('videoEmbed').innerHTML = ''; }
 function toggleFaq(el) { const a=el.querySelector('.faq-answer'); const i=el.querySelector('.fa-chevron-down'); if (!a) return; const open=a.style.maxHeight!=='0px'&&a.style.maxHeight!==''; a.style.maxHeight=open?'0':a.scrollHeight+'px'; if(i)i.style.transform=open?'rotate(0deg)':'rotate(180deg)'; }
 document.getElementById('videoModal')?.addEventListener('click', function(e) { if (e.target === this) closeVideoModal(); });
+document.addEventListener('click', function(e) {
+  const spm = document.getElementById('sellerProfileModal');
+  if (spm && spm.classList.contains('open') && e.target === spm) { spm.classList.remove('open'); document.body.style.overflow = ''; }
+});
 
 // ============ CHAT ============
 let chatPollInterval = null;
@@ -3001,7 +3005,7 @@ function showSellerProfile(sellerId, sellerName, sellerAvatar, productCount) {
       avatarEl.textContent = sellerName ? sellerName.charAt(0).toUpperCase() : '?';
     }
   }
-  modal.style.display = 'flex';
+  modal.classList.add('open');
   document.body.style.overflow = 'hidden';
 }
 
