@@ -572,21 +572,18 @@ textarea.form-input{resize:vertical;min-height:100px}
 .testi-product{font-size:10px;color:var(--secondary);margin-bottom:4px;display:flex;align-items:center;gap:4px}.testi-product i{font-size:8px}
 .testi-rate{display:flex;gap:2px;font-size:13px;margin-bottom:8px}.testi-rate .star{color:#fb923c}.testi-rate .star.empty{opacity:0.2}
  
-/* PROMO CAROUSEL */
-.promo-carousel{position:relative;max-width:700px;margin:0 auto;overflow:hidden;border-radius:var(--radius-xl);aspect-ratio:16/9;background:var(--bg-3)}
-.promo-slides{display:flex;transition:transform 0.6s cubic-bezier(.4,0,.2,1);height:100%}
-.promo-slide{min-width:100%;height:100%;position:relative;flex-shrink:0}
-.promo-slide img{width:100%;height:100%;object-fit:cover}
+/* PROMO MARQUEE */
+.promo-marquee{position:relative;max-width:100%;overflow:hidden;border-radius:var(--radius-xl);background:var(--bg-3);padding:16px 0}
+.promo-track{display:flex;gap:20px;width:max-content;animation:promoScroll 30s linear infinite}
+.promo-track:hover{animation-play-state:paused}
+.promo-mcard{width:260px;flex-shrink:0;border-radius:var(--radius-lg);overflow:hidden;position:relative;aspect-ratio:16/9;background:var(--bg-4);transition:transform 0.3s ease}
+.promo-mcard:hover{transform:translateY(-6px)}
+.promo-mcard img{width:100%;height:100%;object-fit:cover;display:block}
+.promo-mcard .promo-overlay{position:absolute;bottom:0;left:0;right:0;padding:16px;background:linear-gradient(transparent 0%,rgba(0,0,0,0.75) 100%);color:#fff}
+.promo-mcard .promo-title{font-size:14px;font-weight:700;font-family:'Syne',sans-serif}
 .promo-fallback{height:100%;display:flex;align-items:center;justify-content:center;background:var(--bg-3);color:var(--text-dim);font-size:14px;background-image:radial-gradient(circle at 20% 30%,rgba(139,124,252,0.08),transparent 60%)}
 .promo-fallback::after{content:'No Image';opacity:0.5}
-.promo-slide .promo-overlay{position:absolute;bottom:0;left:0;right:0;padding:20px;background:linear-gradient(transparent,rgba(0,0,0,0.7));color:#fff}
-.promo-slide .promo-title{font-size:15px;font-weight:700;font-family:'Syne',sans-serif}
-.promo-dots{display:flex;justify-content:center;gap:6px;margin-top:10px}
-.promo-dot{width:8px;height:8px;border-radius:50%;background:var(--glass-border2);cursor:pointer;transition:var(--transition)}
-.promo-dot.active{background:var(--primary);width:24px;border-radius:4px}
-.promo-arrow{position:absolute;top:50%;transform:translateY(-50%);width:36px;height:36px;border-radius:50%;background:rgba(0,0,0,0.4);backdrop-filter:blur(4px);color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px;transition:var(--transition);z-index:3;border:none}
-.promo-arrow:hover{background:rgba(0,0,0,0.6)}
-.promo-arrow.prev{left:10px}.promo-arrow.next{right:10px}
+@keyframes promoScroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
 
 /* RATING STARS ON PRODUCT CARDS */
 .asset-card .rating-stars{display:flex;gap:2px;font-size:10px;margin-top:4px}.asset-card .rating-stars .star{color:#fb923c}.asset-card .rating-stars .star.empty{color:var(--text-dim);opacity:0.3}
@@ -759,6 +756,18 @@ textarea.form-input{resize:vertical;min-height:100px}
       <span class="marquee-item"><i class="fas fa-music"></i> Audio Production</span>
       <span class="marquee-item"><i class="fas fa-database"></i> Server Management</span>
       <span class="marquee-item"><i class="fas fa-chalkboard-teacher"></i> Consultation</span>
+      <!-- duplicate for seamless infinite scroll -->
+      <span class="marquee-item"><i class="fas fa-code"></i> Web Development</span>
+      <span class="marquee-item"><i class="fas fa-gamepad"></i> Roblox Game Dev</span>
+      <span class="marquee-item"><i class="fas fa-mobile-alt"></i> Mobile App</span>
+      <span class="marquee-item"><i class="fas fa-paint-brush"></i> UI/UX Design</span>
+      <span class="marquee-item"><i class="fas fa-robot"></i> Discord Bot</span>
+      <span class="marquee-item"><i class="fas fa-server"></i> Backend & API</span>
+      <span class="marquee-item"><i class="fas fa-cube"></i> 3D Modeling</span>
+      <span class="marquee-item"><i class="fas fa-code-branch"></i> Game Scripting</span>
+      <span class="marquee-item"><i class="fas fa-music"></i> Audio Production</span>
+      <span class="marquee-item"><i class="fas fa-database"></i> Server Management</span>
+      <span class="marquee-item"><i class="fas fa-chalkboard-teacher"></i> Consultation</span>
     </div>
   </div>
 
@@ -821,12 +830,9 @@ textarea.form-input{resize:vertical;min-height:100px}
     <div style="max-width:700px;margin:0 auto;text-align:center">
       <h2 class="section-title">Promotions & <span class="text-gradient">Highlights</span></h2>
       <p class="section-desc">Produk dan layanan unggulan dari mitra kami.</p>
-      <div class="promo-carousel" id="promoCarousel" style="margin-top:24px">
-        <div class="promo-slides" id="promoSlides"></div>
-        <button class="promo-arrow prev" onclick="promoMove(-1)"><i class="fas fa-chevron-left"></i></button>
-        <button class="promo-arrow next" onclick="promoMove(1)"><i class="fas fa-chevron-right"></i></button>
+      <div class="promo-marquee" id="promoCarousel" style="margin-top:24px">
+        <div class="promo-track" id="promoTrack"></div>
       </div>
-      <div class="promo-dots" id="promoDots"></div>
     </div>
   </section>
 
@@ -2886,7 +2892,21 @@ function initThree() {
   window.addEventListener('resize', resizeHandler);
 }
 
-// ============ TOP PRODUCTS / PROMO / TOP SELLERS ============
+// ============ PROMOTIONS ============
+async function loadPromotions() {
+  const track = document.getElementById('promoTrack');
+  if (!track) return;
+  try {
+    const d = await api('/promotions');
+    const items = d.promotions || [];
+    if (!items.length) { track.parentElement.style.display = 'none'; return; }
+    track.parentElement.style.display = 'block';
+    const card = p => '<div class="promo-mcard"><a href="'+(p.link||'')+'" target="_blank" rel="noopener"><img src="'+(p.image_url||p.image||'')+'" alt="" loading="lazy" onerror="this.onerror=null;this.parentElement.innerHTML=\'<div class=promo-fallback></div>\'">'+(p.title?'<div class="promo-overlay"><div class="promo-title">'+esc(p.title)+'</div></div>':'')+'</a></div>';
+    track.innerHTML = items.map(card).join('') + items.map(card).join('');
+  } catch {}
+}
+
+// ============ TOP PRODUCTS / TOP SELLERS ============
 async function loadTopProducts() {
   const grid = document.getElementById('topProductsGrid');
   if (!grid) return;
@@ -2905,39 +2925,6 @@ async function loadTopProducts() {
     setTimeout(initRevealObserver, 100);
   } catch {}
 }
-var promoIdx = 0, promoInterval = null;
-async function loadPromotions() {
-  const slides = document.getElementById('promoSlides');
-  const dots = document.getElementById('promoDots');
-  if (!slides) return;
-  try {
-    const d = await api('/promotions');
-    const items = d.promotions || [];
-    if (!items.length) {
-      slides.parentElement.style.display = 'none';
-      if (dots) dots.style.display = 'none';
-      return;
-    }
-    slides.parentElement.style.display = 'block';
-    if (dots) dots.style.display = 'flex';
-    slides.innerHTML = items.map(p => '<div class="promo-slide"><a href="'+(p.link||'')+'" target="_blank" rel="noopener"><img src="'+(p.image_url||p.image||'')+'" alt="" loading="lazy" onerror="this.onerror=null;this.parentElement.innerHTML=\'<div class=promo-fallback></div>\'"></a>'+(p.title?'<div class="promo-overlay"><div class="promo-title">'+esc(p.title)+'</div></div>':'')+'</div>').join('');
-    if (dots) dots.innerHTML = items.map((_, i) => '<div class="promo-dot'+(i===0?' active':'')+'" onclick="promoGo('+i+')"></div>').join('');
-    promoIdx = 0;
-    if (promoInterval) clearInterval(promoInterval);
-    if (items.length > 1) promoInterval = setInterval(() => promoMove(1), 4000);
-  } catch {}
-}
-function promoMove(dir) {
-  const slides = document.getElementById('promoSlides');
-  const dots = document.getElementById('promoDots');
-  if (!slides) return;
-  const total = slides.children.length;
-  if (!total) return;
-  promoIdx = (promoIdx + dir + total) % total;
-  slides.style.transform = 'translateX(-'+(promoIdx*100)+'%)';
-  if (dots) dots.querySelectorAll('.promo-dot').forEach((d,i) => d.classList.toggle('active', i===promoIdx));
-}
-function promoGo(idx) { promoIdx = idx; promoMove(0); }
 async function loadTopSellers() {
   const podium = document.getElementById('topSellersPodium');
   const dropdown = document.getElementById('topSellersDropdown');
