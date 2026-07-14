@@ -2906,43 +2906,44 @@ function initThree() {
   const canvas = document.getElementById('threeCanvas');
   if (!canvas || typeof THREE === 'undefined') return;
   let running = true;
+  const isMobile = window.innerWidth < 768;
   const w = canvas.parentElement.offsetWidth, h = canvas.parentElement.offsetHeight;
   const scene = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(60, w / h, 0.1, 1000);
-  const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+  const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: !isMobile });
   renderer.setSize(w, h);
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, isMobile ? 1 : 1.5));
   const group = new THREE.Group();
   const geo1 = new THREE.IcosahedronGeometry(1.4, 0);
-  const mat1 = new THREE.MeshPhongMaterial({ color: 0x8b7cfc, emissive: 0x8b7cfc, emissiveIntensity: 0.15, wireframe: true, transparent: true, opacity: 0.3 });
+  const mat1 = new THREE.MeshPhongMaterial({ color: 0x8b7cfc, emissive: 0x8b7cfc, emissiveIntensity: 0.12, wireframe: true, transparent: true, opacity: 0.25 });
   const mesh1 = new THREE.Mesh(geo1, mat1);
   const geoInner = new THREE.IcosahedronGeometry(0.9, 0);
-  const matInner = new THREE.MeshPhongMaterial({ color: 0x67e8f9, emissive: 0x67e8f9, emissiveIntensity: 0.2, wireframe: false, transparent: true, opacity: 0.2 });
+  const matInner = new THREE.MeshPhongMaterial({ color: 0x67e8f9, emissive: 0x67e8f9, emissiveIntensity: 0.15, wireframe: false, transparent: true, opacity: 0.15 });
   const meshInner = new THREE.Mesh(geoInner, matInner);
-  const geo2 = new THREE.RingGeometry(1.8, 2.0, 64);
-  const mat2 = new THREE.MeshPhongMaterial({ color: 0x67e8f9, emissive: 0x67e8f9, emissiveIntensity: 0.1, side: THREE.DoubleSide, transparent: true, opacity: 0.15 });
+  const geo2 = new THREE.RingGeometry(1.8, 2.0, 48);
+  const mat2 = new THREE.MeshPhongMaterial({ color: 0x67e8f9, emissive: 0x67e8f9, emissiveIntensity: 0.08, side: THREE.DoubleSide, transparent: true, opacity: 0.1 });
   const mesh2 = new THREE.Mesh(geo2, mat2);
   mesh2.rotation.x = Math.PI / 2.5;
-  const pCount = 200;
+  const pCount = isMobile ? 60 : 120;
   const positions = new Float32Array(pCount * 3);
   for (let i = 0; i < pCount * 3; i++) positions[i] = (Math.random() - 0.5) * 20;
   const pGeo = new THREE.BufferGeometry();
   pGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-  const pMat = new THREE.PointsMaterial({ color: 0x8b7cfc, size: 0.03, transparent: true, opacity: 0.5 });
+  const pMat = new THREE.PointsMaterial({ color: 0x8b7cfc, size: 0.03, transparent: true, opacity: 0.4 });
   const particles = new THREE.Points(pGeo, pMat);
   group.add(mesh1, meshInner, mesh2, particles);
   scene.add(group);
   scene.add(new THREE.AmbientLight(0x404060));
-  const dl = new THREE.DirectionalLight(0x8b7cfc, 0.8);
+  const dl = new THREE.DirectionalLight(0x8b7cfc, 0.6);
   dl.position.set(2, 3, 4);
   scene.add(dl);
-  const dl2 = new THREE.DirectionalLight(0x67e8f9, 0.4);
-  dl2.position.set(-3, -1, 2);
-  scene.add(dl2);
   camera.position.z = 5;
+  let frameCount = 0;
   function anim() {
     if (!running) return;
     requestAnimationFrame(anim);
+    frameCount++;
+    if (isMobile && frameCount % 2 !== 0) return; // Skip every other frame on mobile
     group.rotation.x += 0.0008;
     group.rotation.y += 0.0015;
     const s = 1 + Math.sin(Date.now() * 0.0005) * 0.04;
@@ -4090,7 +4091,7 @@ function startRealtimePoll() {
         loadAnnouncements();
       }
     } catch {}
-  }, 10000);
+  }, 15000); // Announcements poll every 15s
 }
 
 // ============ INIT ============
@@ -4133,7 +4134,7 @@ document.addEventListener('DOMContentLoaded', async function() {
       loadTopSellers().catch(()=>{});
     }
   });
-  // Periodic data refresh every 30s (silent, no loader)
+  // Periodic data refresh every 60s
   setInterval(() => {
     if (!document.hidden) {
       renderAssets().catch(()=>{});
