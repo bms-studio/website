@@ -2002,6 +2002,25 @@ function esc(str) {
   return el.innerHTML;
 }
 
+// ============ LOADING UI ============
+function showLoading(containerId, type) {
+  const el = typeof containerId === 'string' ? document.getElementById(containerId) : containerId;
+  if (!el) return;
+  if (type === 'chat') {
+    const bubbles = [60,45,70,50,55].map(w => '<div style="display:flex;gap:8px;margin-bottom:12px"><div style="width:28px;height:28px;border-radius:50%;background:var(--bg-4);flex-shrink:0"></div><div style="flex:1"><div style="width:60px;height:10px;border-radius:4px;background:var(--bg-4);margin-bottom:6px"></div><div style="width:'+w+'%;height:36px;border-radius:12px;background:var(--bg-4)"></div></div></div>').join('');
+    el.innerHTML = '<div style="padding:12px">'+bubbles+'</div>';
+  } else if (type === 'card') {
+    el.innerHTML = '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px">'+[1,2,3].map(() => '<div class="skeleton" style="height:200px;border-radius:var(--radius-lg)"></div>').join('')+'</div>';
+  } else if (type === 'list') {
+    el.innerHTML = '<div style="display:flex;flex-direction:column;gap:8px">'+[1,2,3].map(() => '<div class="skeleton" style="height:60px;border-radius:var(--radius)"></div>').join('')+'</div>';
+  } else if (type === 'table') {
+    el.innerHTML = '<div style="display:flex;flex-direction:column;gap:6px">'+[1,2,3,4].map(() => '<div class="skeleton" style="height:36px;border-radius:6px"></div>').join('')+'</div>';
+  } else {
+    // default shimmer
+    el.innerHTML = '<div style="padding:40px;text-align:center"><div class="skeleton" style="width:60px;height:60px;border-radius:50%;margin:0 auto 16px"></div><div class="skeleton" style="width:140px;height:14px;border-radius:4px;margin:0 auto"></div></div>';
+  }
+}
+
 // ============ DEBOUNCE / THROTTLE HELPERS ============
 const _debounceTimers = {};
 function debounceSearch(inputId, fn) {
@@ -2504,13 +2523,19 @@ async function openChat(orderId) {
   APP.currentOrderId = orderId;
   navigateTo('chat');
   const container = document.getElementById('chatMessages');
-  container.innerHTML = '<div style="text-align:center;color:var(--text-dim);padding:20px"><i class="fas fa-spinner fa-spin" style="font-size:24px;display:block;margin-bottom:8px"></i>Loading...</div>';
+  if (!container) return showToast('Chat container not found', 'error');
+  showLoading(container, 'chat');
   const info = document.getElementById('chatOrderInfo');
   if (info) info.textContent = 'Order #' + orderId;
-  APP.currentOrderId = orderId;
   if (chatPollInterval) clearInterval(chatPollInterval);
-  await loadChatMessages();
-  chatPollInterval = setInterval(loadChatMessages, 3000);
+  try {
+    const d = await api('/chats/' + APP.currentOrderId);
+    renderChatMessages(d.chat?.messages || []);
+    chatPollInterval = setInterval(loadChatMessages, 3000);
+  } catch (e) {
+    showToast('Gagal load chat: ' + (e.message || 'unknown'), 'error');
+    container.innerHTML = '<div style="text-align:center;color:var(--text-dim);padding:40px 20px;font-size:13px"><i class="fas fa-exclamation-circle" style="font-size:32px;display:block;margin-bottom:12px;opacity:0.3"></i>Gagal memuat chat</div>';
+  }
 }
 async function loadChatMessages() {
   if (APP.currentOrderId === undefined) return;
@@ -2795,10 +2820,12 @@ async function adminDeletePromo(id) { if (!confirm('Delete this promotion?')) re
 async function loadAdminChats() {
   const tbody = document.getElementById('adminChatsTable');
   if (!tbody) return;
+  if (tbody) showLoading(tbody, 'table');
   try {
     const d = await api('/chats/admin/all'); const chats = d.chats||[];
+    if (!chats.length) { tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--text-dim);padding:30px">No chats</td></tr>'; return; }
     tbody.innerHTML = chats.map(c => { const msgs = JSON.parse(c.messages||'[]'); return '<tr><td>#'+c.id+'</td><td>#'+c.order_id+'</td><td style="font-size:11px">'+msgs.length+' msgs</td><td style="font-size:11px;color:var(--text-dim)">'+new Date(c.created_at).toLocaleDateString()+'</td><td><button class="table-btn table-btn-edit" onclick="openChat('+c.order_id+')">View</button></td></tr>'; }).join('');
-  } catch { tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--text-dim)">No chats</td></tr>'; }
+  } catch { tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--text-dim);padding:30px">No chats</td></tr>'; }
 }
 
 // ============ SETTINGS ============
@@ -2861,6 +2888,8 @@ function initRevealObserver() {
 
 // ============ FEATURED HOME ============
 async function loadFeaturedProducts() {
+  const grid = document.getElementById('featuredProducts');
+  if (grid) showLoading(grid, 'card');
   try {
     const data = await api('/assets?store_type=store');
     const products = (data.assets || []).slice(0, 4);
@@ -2967,6 +2996,7 @@ async function loadTopSellers() {
   const podium = document.getElementById('topSellersPodium');
   const dropdown = document.getElementById('topSellersDropdown');
   if (!podium || !dropdown) return;
+  showLoading(podium, 'card');
   try {
     const d = await api('/seller/products');
     const products = d.products || [];
