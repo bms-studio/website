@@ -2547,6 +2547,7 @@ async function loadChatMessages() {
 function renderChatMessages(msgs) {
   const container = document.getElementById('chatMessages');
   if (!container) return;
+  if (typeof msgs === 'string') { try { msgs = JSON.parse(msgs); } catch { msgs = []; } }
   if (!msgs || !msgs.length) { container.innerHTML = '<div style="text-align:center;color:var(--text-dim);padding:40px 20px"><i class="fas fa-comment-dots" style="font-size:32px;display:block;margin-bottom:12px;opacity:0.3"></i>Belum ada pesan. Mulai percakapan!</div>'; return; }
   container.innerHTML = msgs.map(m => {
     const isMe = m.role !== 'admin';
