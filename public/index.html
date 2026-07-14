@@ -78,7 +78,35 @@ ul{list-style:none}
 .reveal-line{display:inline-block;opacity:0;transform:translateY(20px);animation:revealUp 0.7s forwards cubic-bezier(0.16,1,0.3,1)}
 @keyframes revealUp{to{opacity:1;transform:translateY(0)}}
 
-/* PUBLIC CHAT */
+/* CHAT UI IMPROVED */
+.chat-page-container{max-width:700px;margin:0 auto;height:calc(100vh - 200px);min-height:400px;display:flex;flex-direction:column;background:var(--bg-2);border-radius:var(--radius-xl);border:1px solid var(--glass-border);overflow:hidden}
+.chat-header{display:flex;align-items:center;gap:10px;padding:14px 20px;background:var(--bg-3);border-bottom:1px solid var(--glass-border)}
+.chat-header .chat-h-icon{width:36px;height:36px;border-radius:50%;background:var(--gradient-1);display:flex;align-items:center;justify-content:center;color:#fff;font-size:14px}
+.chat-header h3{font-size:15px;font-weight:700}
+.chat-header span{font-size:11px;color:var(--text-muted)}
+.chat-msgs{flex:1;overflow-y:auto;padding:16px 20px;display:flex;flex-direction:column;gap:4px;scroll-behavior:smooth}
+.chat-msgs::-webkit-scrollbar{width:4px}
+.chat-msgs::-webkit-scrollbar-track{background:transparent}
+.chat-msgs::-webkit-scrollbar-thumb{background:var(--glass-border2);border-radius:4px}
+.chat-bubble{display:flex;align-items:flex-end;gap:8px;max-width:80%;animation:chatIn 0.25s ease-out}
+@keyframes chatIn{from{opacity:0;transform:translateY(8px) scale(0.97)}to{opacity:1;transform:translateY(0) scale(1)}}
+.chat-bubble.is-me{flex-direction:row-reverse;align-self:flex-end}
+.chat-bubble.is-other{align-self:flex-start}
+.chat-bubble .cb-avatar{width:28px;height:28px;border-radius:50%;flex-shrink:0;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:#fff}
+.chat-bubble .cb-body{display:flex;flex-direction:column}
+.chat-bubble .cb-name{font-size:10px;font-weight:600;color:var(--text-dim);margin-bottom:2px;padding:0 4px}
+.chat-bubble .cb-text{padding:10px 14px;border-radius:16px;font-size:13px;line-height:1.5;word-break:break-word;position:relative}
+.chat-bubble.is-me .cb-text{background:var(--primary);color:#fff;border-bottom-right-radius:4px}
+.chat-bubble.is-me .cb-text::after{content:'';position:absolute;bottom:0;right:-6px;border:6px solid transparent;border-right:0;border-bottom-color:var(--primary);border-left-width:0}
+.chat-bubble.is-other .cb-text{background:var(--glass2);border:1px solid var(--glass-border);color:var(--text);border-bottom-left-radius:4px}
+.chat-bubble.is-other .cb-text::after{content:'';position:absolute;bottom:0;left:-6px;border:6px solid transparent;border-left:0;border-bottom-color:var(--glass2);border-right-width:0}
+.chat-bubble .cb-time{font-size:9px;color:var(--text-dim);margin-top:2px;opacity:0.7;padding:0 4px}
+.chat-bubble.is-me .cb-time{text-align:right}
+.chat-input-area{display:flex;gap:8px;padding:12px 16px;border-top:1px solid var(--glass-border);background:var(--bg-3)}
+.chat-input-area input{flex:1;padding:10px 16px;border-radius:24px;border:1px solid var(--glass-border);background:var(--bg);color:var(--text);font-size:13px;outline:none;font-family:'Inter',sans-serif}
+.chat-input-area input:focus{border-color:var(--primary)}
+.chat-input-area button{width:40px;height:40px;border-radius:50%;border:none;background:var(--gradient-1);color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:transform 0.2s}
+.chat-input-area button:hover{transform:scale(1.05)}
 .public-chat-btn{position:fixed;bottom:80px;left:28px;width:52px;height:52px;border-radius:50%;background:var(--gradient-1);color:#fff;font-size:20px;cursor:pointer;z-index:998;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 24px rgba(139,124,252,0.25);transition:transform 0.3s}
 .public-chat-btn:hover{transform:scale(1.05)}
 .public-chat-btn .badge{position:absolute;top:-2px;right:-2px;width:18px;height:18px;background:var(--accent);border-radius:50%;font-size:9px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700}
@@ -1336,18 +1364,18 @@ textarea.form-input{resize:vertical;min-height:100px}
 
 <!-- CHAT -->
 <div class="page" id="page-chat">
-  <div class="banner-page" style="min-height:200px">
-    <div class="overlay"></div>
-    <div class="content">
-      <h1 class="hero-title" style="font-size:30px">Order <span class="text-gradient">Chat</span></h1>
-    </div>
-  </div>
   <section class="section" style="padding-top:24px">
-    <div style="max-width:700px;margin:0 auto">
-      <div id="chatMessages" style="display:flex;flex-direction:column;gap:8px;max-height:400px;overflow-y:auto;padding:16px;border-radius:var(--radius-lg);border:1px solid var(--glass-border);margin-bottom:12px;background:var(--bg-2)"></div>
-      <div style="display:flex;gap:8px">
-        <input class="form-input" id="chatInput" placeholder="Type a message..." style="flex:1" onkeydown="if(event.key==='Enter')sendChatMessage()">
-        <button class="btn btn-primary btn-sm" onclick="sendChatMessage()">Send</button>
+    <div class="chat-page-container">
+      <div class="chat-header">
+        <div class="chat-h-icon"><i class="fas fa-comments"></i></div>
+        <div><h3>Order Chat</h3><span id="chatOrderInfo">Pilih order untuk mulai chat</span></div>
+      </div>
+      <div class="chat-msgs" id="chatMessages">
+        <div style="text-align:center;color:var(--text-dim);padding:40px 20px"><i class="fas fa-comment-dots" style="font-size:32px;display:block;margin-bottom:12px;opacity:0.3"></i>Pilih order dari profil untuk mulai chat</div>
+      </div>
+      <div class="chat-input-area">
+        <input class="form-input" id="chatInput" placeholder="Type a message..." onkeydown="if(event.key==='Enter')sendChatMessage()">
+        <button onclick="sendChatMessage()"><i class="fas fa-paper-plane"></i></button>
       </div>
     </div>
   </section>
@@ -1733,15 +1761,16 @@ textarea.form-input{resize:vertical;min-height:100px}
 
 <!-- SELLER CHAT MODAL -->
 <div class="profile-viewer-overlay" id="sellerChatModal" onclick="if(event.target===this)closeSellerChat()">
-  <div class="profile-viewer-card" style="width:420px">
-    <div class="pv-banner" style="height:80px;background:var(--gradient-1);display:flex;align-items:center;padding:0 20px">
-      <div><div style="font-weight:700;font-size:15px" id="sellerChatProductName">Chat</div><div style="font-size:11px;opacity:0.7" id="sellerChatWith">Seller</div></div>
-      <button class="pv-close" onclick="closeSellerChat()">&times;</button>
+  <div class="profile-viewer-card" style="width:440px;padding:0;overflow:hidden">
+    <div style="background:var(--gradient-1);padding:16px 20px;display:flex;align-items:center;gap:12px;position:relative">
+      <div style="width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:center;color:#fff;font-size:16px"><i class="fas fa-store-alt"></i></div>
+      <div style="flex:1"><div style="font-weight:700;font-size:15px;color:#fff" id="sellerChatProductName">Chat</div><div style="font-size:11px;color:rgba(255,255,255,0.7)" id="sellerChatWith">Seller</div></div>
+      <button class="pv-close" onclick="closeSellerChat()" style="color:#fff;opacity:0.8;font-size:22px">&times;</button>
     </div>
-    <div style="padding:16px;height:320px;overflow-y:auto" id="sellerChatMessages"></div>
-    <div class="public-chat-input" style="border-top:1px solid var(--glass-border)">
-      <input type="text" id="sellerChatInput" placeholder="Type a message..." onkeydown="if(event.key==='Enter')sendSellerMsg()">
-      <button onclick="sendSellerMsg()">Send</button>
+    <div style="padding:16px;height:360px;overflow-y:auto;display:flex;flex-direction:column;gap:4px;background:var(--bg-2)" id="sellerChatMessages"></div>
+    <div style="display:flex;gap:8px;padding:12px 16px;border-top:1px solid var(--glass-border);background:var(--bg-3)">
+      <input type="text" id="sellerChatInput" placeholder="Type a message..." style="flex:1;padding:10px 16px;border-radius:24px;border:1px solid var(--glass-border);background:var(--bg);color:var(--text);font-size:13px;outline:none" onkeydown="if(event.key==='Enter')sendSellerMsg()">
+      <button onclick="sendSellerMsg()" style="width:40px;height:40px;border-radius:50%;border:none;background:var(--gradient-1);color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center"><i class="fas fa-paper-plane"></i></button>
     </div>
   </div>
 </div>
@@ -2474,7 +2503,9 @@ let chatPollInterval = null;
 async function openChat(orderId) {
   navigateTo('chat');
   const container = document.getElementById('chatMessages');
-  container.innerHTML = '<div style="text-align:center;color:var(--text-dim);padding:20px">Loading...</div>';
+  container.innerHTML = '<div style="text-align:center;color:var(--text-dim);padding:20px"><i class="fas fa-spinner fa-spin" style="font-size:24px;display:block;margin-bottom:8px"></i>Loading...</div>';
+  const info = document.getElementById('chatOrderInfo');
+  if (info) info.textContent = 'Order #' + orderId;
   APP.currentOrderId = orderId;
   if (chatPollInterval) clearInterval(chatPollInterval);
   await loadChatMessages();
@@ -2485,13 +2516,19 @@ async function loadChatMessages() {
   try {
     const d = await api('/chats/' + APP.currentOrderId);
     renderChatMessages(d.chat?.messages || []);
-  } catch { /* ignore poll errors */ }
+  } catch {}
 }
 function renderChatMessages(msgs) {
   const container = document.getElementById('chatMessages');
   if (!container) return;
-  if (!msgs || !msgs.length) { container.innerHTML = '<div style="text-align:center;color:var(--text-dim);padding:20px">No messages yet. Start the conversation!</div>'; return; }
-  container.innerHTML = msgs.map(m => '<div style="display:flex;flex-direction:column;align-items:'+(m.role==='admin'?'flex-start':'flex-end')+'"><div style="max-width:80%;padding:10px 14px;border-radius:var(--radius-lg);background:'+(m.role==='admin'?'var(--primary)':'var(--glass2)')+';color:'+(m.role==='admin'?'#fff':'var(--text)')+';font-size:13px"><div style="font-size:10px;font-weight:600;margin-bottom:2px;opacity:0.7">'+(m.name||m.role)+'</div>'+m.text+'</div><div style="font-size:10px;color:var(--text-dim);margin-top:2px">'+new Date(m.time).toLocaleTimeString()+'</div></div>').join('');
+  if (!msgs || !msgs.length) { container.innerHTML = '<div style="text-align:center;color:var(--text-dim);padding:40px 20px"><i class="fas fa-comment-dots" style="font-size:32px;display:block;margin-bottom:12px;opacity:0.3"></i>Belum ada pesan. Mulai percakapan!</div>'; return; }
+  container.innerHTML = msgs.map(m => {
+    const isMe = m.role !== 'admin';
+    const avatarBg = m.role === 'admin' ? 'var(--primary)' : 'var(--secondary)';
+    const initial = (m.role === 'admin' ? 'A' : (m.name||'U').charAt(0));
+    const time = m.time ? new Date(m.time).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}) : '';
+    return '<div class="chat-bubble '+(isMe?'is-me':'is-other')+'"><div class="cb-avatar" style="background:'+avatarBg+'">'+initial+'</div><div class="cb-body"><div class="cb-name">'+(m.name||m.role||'User')+'</div><div class="cb-text">'+m.text+'</div><div class="cb-time">'+time+'</div></div></div>';
+  }).join('');
   container.scrollTop = container.scrollHeight;
 }
 async function sendChatMessage() {
@@ -3703,16 +3740,18 @@ function renderSellerChatMessages(messages) {
   const container = document.getElementById('sellerChatMessages');
   if (!container) return;
   const otherUser = window._sellerChatOther || null;
+  if (!messages || !messages.length) { container.innerHTML = '<div style="text-align:center;color:var(--text-dim);padding:40px 20px;font-size:13px"><i class="fas fa-comment-dots" style="font-size:28px;display:block;margin-bottom:8px;opacity:0.3"></i>Belum ada pesan</div>'; return; }
   container.innerHTML = messages.map(m => {
     const isMe = m.sender_id == APP.user?.id;
     const otherAvatar = otherUser?.avatar || '';
-    const otherName = otherUser?.name || otherUser?.email || 'User';
+    const otherName = (otherUser?.name || otherUser?.email || 'User').charAt(0).toUpperCase();
     const myAvatar = APP.user?.avatar || '';
-    const avatarUrl = isMe ? myAvatar : otherAvatar;
-    const name = isMe ? (APP.user?.name || 'You') : otherName;
-    const avatarStyle = avatarUrl ? 'background-image:url('+avatarUrl+');background-size:cover;background-position:center' : '';
-    const initial = avatarUrl ? '' : (name.charAt(0).toUpperCase());
-    return '<div style="display:flex;'+(isMe?'flex-direction:row-reverse':'')+';align-items:flex-end;gap:6px;margin-bottom:10px"><div style="width:28px;height:28px;border-radius:50%;background:var(--bg-3);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:var(--text-muted);overflow:hidden" '+avatarStyle+'>'+initial+'</div><div><div style="font-size:9px;color:var(--text-dim);margin-bottom:2px;text-align:'+(isMe?'right':'left')+'">'+name+'</div><div style="max-width:75%;padding:8px 12px;border-radius:var(--radius);background:'+(isMe?'var(--primary)':'var(--glass)')+';color:'+(isMe?'#fff':'var(--text)')+';font-size:12px">'+m.text+'<div style="font-size:8px;opacity:0.6;margin-top:4px;text-align:'+(isMe?'right':'left')+'">'+(m.time ? new Date(m.time).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}) : '')+'</div></div></div></div>';
+    const myName = (APP.user?.name || 'You').charAt(0).toUpperCase();
+    const avUrl = isMe ? myAvatar : otherAvatar;
+    const avStyle = avUrl ? 'background-image:url('+avUrl+');background-size:cover;background-position:center' : '';
+    const initial = avUrl ? '' : (isMe ? myName : otherName);
+    const time = m.time ? new Date(m.time).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}) : '';
+    return '<div class="chat-bubble '+(isMe?'is-me':'is-other')+'"><div class="cb-avatar" style="'+avStyle+'background-color:var(--bg-4)">'+initial+'</div><div class="cb-body"><div class="cb-name">'+(isMe ? (APP.user?.name||'You') : (otherUser?.name||otherUser?.email||'User'))+'</div><div class="cb-text">'+m.text+'</div><div class="cb-time">'+time+'</div></div></div>';
   }).join('');
   container.scrollTop = container.scrollHeight;
 }
