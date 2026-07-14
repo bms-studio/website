@@ -2501,6 +2501,7 @@ document.getElementById('videoModal')?.addEventListener('click', function(e) { i
 // ============ CHAT ============
 let chatPollInterval = null;
 async function openChat(orderId) {
+  APP.currentOrderId = orderId;
   navigateTo('chat');
   const container = document.getElementById('chatMessages');
   container.innerHTML = '<div style="text-align:center;color:var(--text-dim);padding:20px"><i class="fas fa-spinner fa-spin" style="font-size:24px;display:block;margin-bottom:8px"></i>Loading...</div>';
