@@ -1,14 +1,7 @@
 const express = require('express');
 const { q } = require('../database/db');
-const { authenticateSession } = require('../middleware/auth');
+const { authenticateSession, isOwnerById } = require('../middleware/auth');
 const router = express.Router();
-
-const OWNER_EMAIL = 'Bamsj37@gmail.com';
-
-async function isOwner(userId) {
-  const result = await q('SELECT email FROM users WHERE id = ?', [userId]);
-  return result.rows.length && result.rows[0].email === OWNER_EMAIL;
-}
 
 router.get('/:userId', async (req, res) => {
   try {
@@ -19,7 +12,7 @@ router.get('/:userId', async (req, res) => {
 
 router.get('/', authenticateSession, async (req, res) => {
   try {
-    if (!await isOwner(req.user.id) && req.user.role !== 'admin')
+    if (!await isOwnerById(req.user.id) && req.user.role !== 'admin')
       return res.status(403).json({ error: 'Forbidden' });
     const result = await q(
       'SELECT t.id, t.user_id, t.tag, t.icon, t.color, t.created_at, u.email, u.name FROM tags t LEFT JOIN users u ON t.user_id = u.id ORDER BY t.user_id, t.id'
@@ -30,7 +23,7 @@ router.get('/', authenticateSession, async (req, res) => {
 
 router.post('/', authenticateSession, async (req, res) => {
   try {
-    if (!await isOwner(req.user.id))
+    if (!await isOwnerById(req.user.id))
       return res.status(403).json({ error: 'Only the owner can manage tags' });
     const { userId, tag, icon, color } = req.body;
     if (!userId || !tag || !tag.trim())
@@ -45,7 +38,7 @@ router.post('/', authenticateSession, async (req, res) => {
 
 router.delete('/:id', authenticateSession, async (req, res) => {
   try {
-    if (!await isOwner(req.user.id))
+    if (!await isOwnerById(req.user.id))
       return res.status(403).json({ error: 'Only the owner can manage tags' });
     await q('DELETE FROM tags WHERE id = ?', [req.params.id]);
     res.json({ success: true });

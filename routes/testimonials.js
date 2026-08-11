@@ -19,8 +19,10 @@ router.post('/', authenticateSession, async (req, res) => {
   try {
     const { text, rating, product_name, store_type, seller_name } = req.body;
     if (!text) return res.status(400).json({ error: 'Text required' });
+    const ratingInt = rating === undefined ? 5 : parseInt(rating, 10);
+    if (isNaN(ratingInt) || ratingInt < 1 || ratingInt > 5) return res.status(400).json({ error: 'Rating must be 1-5' });
     await q('INSERT INTO testimonials (user_id, user_name, text, rating, product_name, store_type, seller_name) VALUES (?, ?, ?, ?, ?, ?, ?)',
-      [req.user.id, req.user.name || req.user.email, text, rating || 5, product_name || '', store_type || '', seller_name || '']);
+      [req.user.id, req.user.name || req.user.email, text, ratingInt, product_name || '', store_type || '', seller_name || '']);
     res.json({ success: true });
   } catch { res.status(500).json({ error: 'Server error' }); }
 });

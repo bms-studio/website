@@ -3,15 +3,19 @@ const { q } = require('../database/db');
 const { authenticateSession, requireAdmin } = require('../middleware/auth');
 const router = express.Router();
 
-router.get('/:orderId', authenticateSession, async (req, res) => {
+async function canAccessChat(req, res, next) {
   try {
-    const result = await q('SELECT * FROM chats WHERE order_id = ?', [req.params.orderId]);
-    if (result.rows.length) return res.json({ chat: result.rows[0] });
-    const r = await q('INSERT INTO chats (order_id, user_id, messages) VALUES (?, ?, ?)', [req.params.orderId, req.user.id, '[]']);
-    const chat = await q('SELECT * FROM chats WHERE id = ?', [r.lastInsertRowid]);
-    res.json({ chat: chat.rows[0] });
-  } catch { res.status(500).json({ error: 'Server error' }); }
-});
+    if (req.user.role === 'admin') return next();
+    const order = await q('SELECT user_id FROM orders WHERE id = ?', [req.params.orderId]);
+    if (!order.rows.length) return res.status(404).json({ error: 'Order not found' });
+    if (String(order.rows[0].user_id) !== String(req.user.id)) {
+      return res.status(403).json({ error: 'Forbidden' });
+    }
+    next();
+  } catch {
+    res.status(500).json({ error: 'Server error' });
+  }
+}
 
 router.get('/admin/all', authenticateSession, requireAdmin, async (req, res) => {
   try {
@@ -23,18 +27,39 @@ router.get('/admin/all', authenticateSession, requireAdmin, async (req, res) => 
 router.post('/admin/product', authenticateSession, async (req, res) => {
   try {
     const { productId, productType } = req.body;
+    if (!productId) return res.status(400).json({ error: 'productId required' });
     const asset = await q('SELECT name FROM assets WHERE id = ?', [productId]);
     const itemName = asset.rows[0]?.name || 'Product #' + productId;
-    const items = JSON.stringify([{ id: productId, name: itemName, product_type: productType, store_type: 'store' }]);
+    const items = JSON.stringify([{ id: productId, name: itemName, product_type: productType || '', store_type: 'store' }]);
     const r = await q('INSERT INTO orders (user_id, items, total, status, customer_name, store_type) VALUES (?, ?, 0, ?, ?, ?)',
       [req.user.id, items, 'pending', req.user.name || req.user.email, 'store']);
     const orderId = Number(r.lastInsertRowid) || r.id;
     await q('INSERT INTO chats (order_id, user_id, messages) VALUES (?, ?, ?)', [orderId, req.user.id, '[]']);
     res.json({ success: true, orderId });
-  } catch (e) { console.error(e); res.status(500).json({ error: 'Server error' }); }
+  } catch { res.status(500).json({ error: 'Server error' }); }
 });
 
-router.post('/:orderId/message', authenticateSession, async (req, res) => {
+router.get('/mine', authenticateSession, async (req, res) => {
+  try {
+    const result = await q(
+      'SELECT c.id, c.order_id, c.user_id, c.messages, c.created_at AS chat_created_at, o.status AS order_status, o.total AS order_total, o.store_type AS order_store_type, o.items AS order_items FROM chats c LEFT JOIN orders o ON o.id = c.order_id WHERE c.user_id = ? ORDER BY c.created_at DESC',
+      [req.user.id]
+    );
+    res.json({ chats: result.rows });
+  } catch { res.status(500).json({ error: 'Server error' }); }
+});
+
+router.get('/:orderId', authenticateSession, canAccessChat, async (req, res) => {
+  try {
+    const result = await q('SELECT * FROM chats WHERE order_id = ?', [req.params.orderId]);
+    if (result.rows.length) return res.json({ chat: result.rows[0] });
+    const r = await q('INSERT INTO chats (order_id, user_id, messages) VALUES (?, ?, ?)', [req.params.orderId, req.user.id, '[]']);
+    const chat = await q('SELECT * FROM chats WHERE id = ?', [r.lastInsertRowid]);
+    res.json({ chat: chat.rows[0] });
+  } catch { res.status(500).json({ error: 'Server error' }); }
+});
+
+router.post('/:orderId/message', authenticateSession, canAccessChat, async (req, res) => {
   try {
     const { text } = req.body;
     if (!text) return res.status(400).json({ error: 'Text required' });

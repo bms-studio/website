@@ -1,14 +1,23 @@
 const express = require('express');
 const { q } = require('../database/db');
-const { authenticateSession, requireAdmin } = require('../middleware/auth');
+const { authenticateSession, requireAdmin, isOwnerById } = require('../middleware/auth');
+const traffic = require('../utils/traffic');
 const router = express.Router();
 
-const OWNER_EMAIL = 'Bamsj37@gmail.com';
+const USER_EDITABLE_FIELDS = {
+  name: 'name',
+  avatar: 'avatar',
+  banner: 'banner',
+  bio: 'bio'
+};
 
-async function isOwner(userId) {
-  const result = await q('SELECT email FROM users WHERE id = ?', [userId]);
-  return result.rows.length && result.rows[0].email === OWNER_EMAIL;
-}
+router.get('/traffic', authenticateSession, requireAdmin, (req, res) => {
+  res.json(traffic.snapshot());
+});
+
+router.get('/traffic/stream', authenticateSession, requireAdmin, (req, res) => {
+  traffic.stream(res);
+});
 
 router.get('/users', authenticateSession, requireAdmin, async (req, res) => {
   try {
@@ -22,6 +31,8 @@ router.post('/set-role', authenticateSession, requireAdmin, async (req, res) => 
     const { userId, role } = req.body;
     if (!userId || !role) return res.status(400).json({ error: 'Required' });
     if (!['admin', 'user'].includes(role)) return res.status(400).json({ error: 'Invalid role' });
+    const target = await q('SELECT id FROM users WHERE id = ?', [userId]);
+    if (!target.rows.length) return res.status(404).json({ error: 'User not found' });
     await q('UPDATE users SET role = ?, verified_tag = ? WHERE id = ?', [role, role === 'admin' ? 1 : 0, userId]);
     res.json({ success: true });
   } catch { res.status(500).json({ error: 'Server error' }); }
@@ -29,17 +40,14 @@ router.post('/set-role', authenticateSession, requireAdmin, async (req, res) => 
 
 router.put('/profile', authenticateSession, async (req, res) => {
   try {
-    const { name, avatar, banner, bio, xp: userXp, ref_code } = req.body;
     const updates = [];
     const params = [];
-    if (name !== undefined) { updates.push('name = ?'); params.push(name); }
-    if (avatar !== undefined) { updates.push('avatar = ?'); params.push(avatar); }
-    if (bio !== undefined) { updates.push('bio = ?'); params.push(bio); }
-    if (ref_code !== undefined) { updates.push('ref_code = ?'); params.push(ref_code); }
-    if (banner !== undefined) {
-      updates.push('banner = ?'); params.push(banner);
+    for (const [key, column] of Object.entries(USER_EDITABLE_FIELDS)) {
+      if (req.body[key] !== undefined) {
+        updates.push(`${column} = ?`);
+        params.push(String(req.body[key]).slice(0, key === 'avatar' || key === 'banner' ? 3000000 : 5000));
+      }
     }
-    if (userXp !== undefined) { updates.push('xp = ?'); params.push(parseInt(userXp) || 0); }
     if (!updates.length) return res.json({ success: true });
     params.push(req.user.id);
     await q('UPDATE users SET ' + updates.join(', ') + ' WHERE id = ?', params);
@@ -59,19 +67,25 @@ router.get('/public/:id', async (req, res) => {
   } catch { res.status(500).json({ error: 'Server error' }); }
 });
 
-router.put('/profile-user', authenticateSession, async (req, res) => {
+router.put('/profile-user', authenticateSession, requireAdmin, async (req, res) => {
   try {
-    if (!await isOwner(req.user.id)) return res.status(403).json({ error: 'Only owner can edit users' });
+    const owner = await isOwnerById(req.user.id);
     const { userId, name, bio, xp, ref_code, avatar, banner, role } = req.body;
     if (!userId) return res.status(400).json({ error: 'userId required' });
     const updates = []; const params = [];
-    if (name !== undefined) { updates.push('name = ?'); params.push(name); }
-    if (bio !== undefined) { updates.push('bio = ?'); params.push(bio); }
-    if (xp !== undefined) { updates.push('xp = ?'); params.push(parseInt(xp) || 0); }
-    if (ref_code !== undefined) { updates.push('ref_code = ?'); params.push(ref_code); }
-    if (avatar !== undefined) { updates.push('avatar = ?'); params.push(avatar); }
-    if (banner !== undefined) { updates.push('banner = ?'); params.push(banner); }
-    if (role !== undefined && ['admin','user'].includes(role)) {
+    if (name !== undefined) { updates.push('name = ?'); params.push(String(name).slice(0, 200)); }
+    if (bio !== undefined) { updates.push('bio = ?'); params.push(String(bio).slice(0, 2000)); }
+    if (xp !== undefined) {
+      const xpInt = parseInt(xp, 10);
+      if (isNaN(xpInt) || xpInt < 0) return res.status(400).json({ error: 'Invalid xp' });
+      updates.push('xp = ?'); params.push(xpInt);
+    }
+    if (ref_code !== undefined) { updates.push('ref_code = ?'); params.push(String(ref_code).slice(0, 50).toUpperCase()); }
+    if (avatar !== undefined) { updates.push('avatar = ?'); params.push(String(avatar).slice(0, 3000000)); }
+    if (banner !== undefined) { updates.push('banner = ?'); params.push(String(banner).slice(0, 3000000)); }
+    if (role !== undefined) {
+      if (!owner) return res.status(403).json({ error: 'Only owner can change role' });
+      if (!['admin', 'user'].includes(role)) return res.status(400).json({ error: 'Invalid role' });
       updates.push('role = ?'); params.push(role);
       updates.push('verified_tag = ?'); params.push(role === 'admin' ? 1 : 0);
     }

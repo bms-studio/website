@@ -1,8 +1,8 @@
 const express = require('express');
 const { q } = require('../database/db');
 const { authenticateSession, requireAdmin } = require('../middleware/auth');
+const { isOwnerEmail } = require('../utils/auth-utils');
 const router = express.Router();
-const OWNER_EMAIL = 'Bamsj37@gmail.com';
 
 router.get('/', async (req, res) => {
   try {
@@ -38,7 +38,7 @@ router.post('/', authenticateSession, async (req, res) => {
     const user = await q('SELECT id, name, email, role, avatar, banner, verified_tag FROM users WHERE id = ?', [req.user.id]);
     if (!user.rows.length) return res.status(401).json({ error: 'User not found' });
     const u = user.rows[0];
-    const role = u.email === OWNER_EMAIL ? 'official' : (u.role === 'admin' ? 'admin' : 'user');
+    const role = isOwnerEmail(u.email) ? 'official' : (u.role === 'admin' ? 'admin' : 'user');
     const ins = await q('INSERT INTO public_chats (user_id, user_name, user_role, user_avatar, text) VALUES (?, ?, ?, ?, ?)',
       [u.id, u.name || u.email, role, u.avatar || '', text.trim()]);
     res.json({ success: true, chat_id: Number(ins.lastInsertRowid) || null });

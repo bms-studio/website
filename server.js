@@ -19,7 +19,21 @@ app.use(helmet({
   crossOriginEmbedderPolicy: false,
   crossOriginResourcePolicy: false
 }));
-app.use(cors({ origin: true, credentials: true }));
+
+const ALLOWED_ORIGINS = [
+  'http://localhost:4000',
+  'http://127.0.0.1:4000',
+  'https://bms-platfrom.vercel.app'
+];
+
+app.use(cors({
+  origin(origin, callback) {
+    if (!origin || ALLOWED_ORIGINS.includes(origin)) return callback(null, true);
+    callback(null, false);
+  },
+  credentials: true
+}));
+
 app.use((req, res, next) => {
   res.setHeader('X-Frame-Options', 'SAMEORIGIN');
   next();
@@ -35,6 +49,34 @@ const limiter = rateLimit({
 });
 app.use('/api/', limiter);
 
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 30,
+  message: { error: 'Too many attempts. Coba lagi nanti.' }
+});
+app.use('/api/auth/', authLimiter);
+
+const chatLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 120,
+  message: { error: 'Too many chat requests' }
+});
+app.use('/api/chats/', chatLimiter);
+
+const contactLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 10,
+  message: { error: 'Too many messages. Coba lagi nanti.' }
+});
+app.use('/api/messages/', contactLimiter);
+
+const orderLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000,
+  max: 30,
+  message: { error: 'Too many orders. Coba lagi nanti.' }
+});
+app.use('/api/orders/', orderLimiter);
+
 app.use(express.static(path.join(__dirname, 'public'), {
   maxAge: IS_VERCEL ? '1h' : 0,
   setHeaders: (res, filePath) => {
@@ -44,37 +86,37 @@ app.use(express.static(path.join(__dirname, 'public'), {
   }
 }));
 
-const authRoutes = require('./routes/auth');
-const assetRoutes = require('./routes/assets');
-const messageRoutes = require('./routes/messages');
-const orderRoutes = require('./routes/orders');
-const promoRoutes = require('./routes/promos');
-const chatRoutes = require('./routes/chats');
-const testimonialRoutes = require('./routes/testimonials');
-const publicChatRoutes = require('./routes/public_chats');
-const adminMgmtRoutes = require('./routes/admin_mgmt');
-const tagRoutes = require('./routes/tags');
-const sellerRoutes = require('./routes/seller');
-const sellerPromoRoutes = require('./routes/seller_promos');
-const adminStoreRoutes = require('./routes/admin_store');
-const promoImageRoutes = require('./routes/promotions');
-const announcementRoutes = require('./routes/announcements');
+const traffic = require('./utils/traffic');
+app.use('/api', (req, res, next) => {
+  const p = req.path;
+  if (p.startsWith('/admin/traffic')) return next();
+  traffic.track(p, req.headers['x-forwarded-for'] || req.socket.remoteAddress);
+  if (req.method === 'POST') {
+    if (p === '/auth/register') traffic.event('signup', 'User baru terdaftar');
+    else if (p === '/orders') traffic.event('order', 'Pesanan baru dibuat');
+    else if (p === '/messages') traffic.event('message', 'Pesan baru masuk');
+    else if (p === '/public-chats') traffic.event('chat', 'Chat publik baru');
+  }
+  next();
+});
 
-app.use('/api/auth', authRoutes);
-app.use('/api/assets', assetRoutes);
-app.use('/api/messages', messageRoutes);
-app.use('/api/orders', orderRoutes);
-app.use('/api/promos', promoRoutes);
-app.use('/api/chats', chatRoutes);
-app.use('/api/testimonials', testimonialRoutes);
-app.use('/api/public-chats', publicChatRoutes);
-app.use('/api/admin', adminMgmtRoutes);
-app.use('/api/tags', tagRoutes);
-app.use('/api/seller', sellerRoutes);
-app.use('/api/seller-promos', sellerPromoRoutes);
-app.use('/api/admin-store', adminStoreRoutes);
-app.use('/api/promotions', promoImageRoutes);
-app.use('/api/announcements', announcementRoutes);
+app.use('/api/auth', require('./routes/auth'));
+app.use('/api/assets', require('./routes/assets'));
+app.use('/api/messages', require('./routes/messages'));
+app.use('/api/orders', require('./routes/orders'));
+app.use('/api/promos', require('./routes/promos'));
+app.use('/api/chats', require('./routes/chats'));
+app.use('/api/testimonials', require('./routes/testimonials'));
+app.use('/api/public-chats', require('./routes/public_chats'));
+app.use('/api/admin', require('./routes/admin_mgmt'));
+app.use('/api/tags', require('./routes/tags'));
+app.use('/api/seller', require('./routes/seller'));
+app.use('/api/seller-promos', require('./routes/seller_promos'));
+app.use('/api/admin-store', require('./routes/admin_store'));
+app.use('/api/promotions', require('./routes/promotions'));
+app.use('/api/announcements', require('./routes/announcements'));
+app.use('/api/config', require('./routes/config'));
+app.use('/api/portfolio', require('./routes/portfolio'));
 
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));

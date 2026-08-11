@@ -1,51 +1,97 @@
 const express = require('express');
 const bcrypt = require('bcryptjs');
+const rateLimit = require('express-rate-limit');
 const { q } = require('../database/db');
-const { generateSessionToken } = require('../middleware/auth');
+const {
+  generateSessionToken,
+  generateOTP,
+  sessionExpiresISO,
+  normalizeEmail,
+  isValidEmail,
+  COOKIE_OPTIONS
+} = require('../utils/auth-utils');
 const { sendOTPEmail } = require('./email');
 
 const router = express.Router();
 
-const COOKIE_OPTIONS = {
-  httpOnly: true,
-  secure: process.env.NODE_ENV === 'production',
-  sameSite: 'lax',
-  maxAge: 7 * 24 * 60 * 60 * 1000
-};
+const loginLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 10,
+  message: { error: 'Terlalu banyak percobaan login. Coba lagi nanti.' }
+});
+const otpLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 10,
+  message: { error: 'Terlalu banyak percobaan OTP. Coba lagi nanti.' }
+});
+const resendLimiter = rateLimit({
+  windowMs: 30 * 60 * 1000,
+  max: 5,
+  message: { error: 'Terlalu sering kirim ulang OTP. Coba lagi nanti.' }
+});
 
-router.post('/login', async (req, res) => {
-  const { email, password } = req.body;
+async function issueSession(userId, res) {
+  const sessionToken = generateSessionToken();
+  await q('UPDATE users SET session_token = ?, session_expires = ? WHERE id = ?',
+    [sessionToken, sessionExpiresISO(), userId]);
+  res.cookie('session', sessionToken, COOKIE_OPTIONS);
+  return sessionToken;
+}
+
+function publicUser(u) {
+  return {
+    id: u.id, email: u.email, name: u.name, role: u.role,
+    avatar: u.avatar || '', banner: u.banner || '',
+    verified_tag: u.verified_tag || 0, xp: u.xp || 0, bio: u.bio || '', ref_code: u.ref_code || ''
+  };
+}
+
+router.post('/login', loginLimiter, async (req, res) => {
+  const email = normalizeEmail(req.body.email);
+  const { password } = req.body;
   if (!email || !password) return res.status(400).json({ error: 'Email dan password diperlukan' });
   try {
-    const result = await q('SELECT * FROM users WHERE email = ?', [email]);
+    const result = await q('SELECT * FROM users WHERE LOWER(email) = ?', [email]);
     const user = result.rows[0];
     if (!user || !bcrypt.compareSync(password, user.password)) {
       return res.status(401).json({ error: 'Email atau password salah' });
     }
-    const sessionToken = generateSessionToken();
-    await q('UPDATE users SET session_token = ? WHERE id = ?', [sessionToken, user.id]);
-    res.cookie('session', sessionToken, COOKIE_OPTIONS);
-    res.json({
-      user: { id: user.id, email: user.email, name: user.name, role: user.role, avatar: user.avatar || '', banner: user.banner || '', verified_tag: user.verified_tag || 0, xp: user.xp || 0, bio: user.bio || '', ref_code: user.ref_code || '' }
-    });
+    if (!user.verified) {
+      return res.status(403).json({ error: 'Akun belum diverifikasi. Cek email Anda untuk kode OTP.' });
+    }
+    await issueSession(user.id, res);
+    res.json({ user: publicUser(user) });
   } catch (err) {
     res.status(500).json({ error: 'Server error' });
   }
 });
 
+router.get('/check-email', async (req, res) => {
+  const email = normalizeEmail(req.query.email);
+  if (!isValidEmail(email)) return res.status(400).json({ error: 'Email tidak valid' });
+  try {
+    const result = await q('SELECT id FROM users WHERE LOWER(email) = ?', [email]);
+    res.json({ exists: result.rows.length > 0 });
+  } catch {
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
 router.post('/register', async (req, res) => {
-  const { email, password, name, ref_code } = req.body;
+  const email = normalizeEmail(req.body.email);
+  const { password, name, ref_code } = req.body;
   if (!email || !password) return res.status(400).json({ error: 'Email dan password diperlukan' });
+  if (!isValidEmail(email)) return res.status(400).json({ error: 'Email tidak valid' });
   if (password.length < 6) return res.status(400).json({ error: 'Password minimal 6 karakter' });
   try {
-    const existing = await q('SELECT id FROM users WHERE email = ?', [email]);
+    const existing = await q('SELECT id FROM users WHERE LOWER(email) = ?', [email]);
     if (existing.rows.length) return res.status(400).json({ error: 'Email sudah terdaftar' });
 
-    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    const otp = generateOTP();
     const otpExpires = new Date(Date.now() + 10 * 60 * 1000).toISOString();
     const hashed = bcrypt.hashSync(password, 10);
+    const otpHash = bcrypt.hashSync(otp, 10);
 
-    // Look up referrer if ref_code provided
     let referredBy = null;
     if (ref_code) {
       const refUser = await q('SELECT id FROM users WHERE ref_code = ?', [ref_code.toUpperCase()]);
@@ -53,11 +99,11 @@ router.post('/register', async (req, res) => {
     }
 
     await q('INSERT INTO users (email, name, password, role, otp, otp_expires, verified, ref_code, referred_by) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
-      [email, name || email.split('@')[0], hashed, 'user', otp, otpExpires, 0, ref_code ? ref_code.toUpperCase() : '', referredBy]);
+      [email, name || email.split('@')[0], hashed, 'user', otpHash, otpExpires, 0, ref_code ? ref_code.toUpperCase() : '', referredBy]);
 
     const sent = await sendOTPEmail(email, otp);
     if (!sent) {
-      await q('DELETE FROM users WHERE email = ?', [email]);
+      await q('DELETE FROM users WHERE LOWER(email) = ?', [email]);
       return res.status(500).json({ error: 'Gagal mengirim email OTP. Coba lagi nanti.' });
     }
 
@@ -67,52 +113,48 @@ router.post('/register', async (req, res) => {
   }
 });
 
-router.post('/verify-otp', async (req, res) => {
-  const { email, otp } = req.body;
+router.post('/verify-otp', otpLimiter, async (req, res) => {
+  const email = normalizeEmail(req.body.email);
+  const { otp } = req.body;
   if (!email || !otp) return res.status(400).json({ error: 'Email dan OTP diperlukan' });
   try {
-    const result = await q('SELECT * FROM users WHERE email = ?', [email]);
+    const result = await q('SELECT * FROM users WHERE LOWER(email) = ?', [email]);
     const user = result.rows[0];
     if (!user) return res.status(400).json({ error: 'User tidak ditemukan' });
     if (user.verified) return res.status(400).json({ error: 'Akun sudah diverifikasi' });
-    if (user.otp !== otp) return res.status(400).json({ error: 'Kode OTP salah' });
+    if (!user.otp) return res.status(400).json({ error: 'Kode OTP salah' });
     if (new Date(user.otp_expires) < new Date()) return res.status(400).json({ error: 'Kode OTP sudah kedaluwarsa' });
+    if (!bcrypt.compareSync(String(otp).trim(), user.otp)) return res.status(400).json({ error: 'Kode OTP salah' });
 
-    await q('UPDATE users SET verified = 1, otp = \'\', otp_expires = \'\' WHERE email = ?', [email]);
+    await q("UPDATE users SET verified = 1, otp = '', otp_expires = '' WHERE LOWER(email) = ?", [email]);
 
-    // Process referral bonus
     if (user.referred_by) {
       await q('UPDATE users SET xp = COALESCE(xp, 0) + 10 WHERE id = ?', [user.referred_by]);
       await q('UPDATE users SET xp = COALESCE(xp, 0) + 5 WHERE id = ?', [user.id]);
     }
 
-    const updatedUser = await q('SELECT id, email, name, role, avatar, banner, verified_tag, xp, bio, ref_code FROM users WHERE id = ?', [user.id]);
+    const updatedUser = await q('SELECT * FROM users WHERE id = ?', [user.id]);
     const u = updatedUser.rows[0];
-
-    const sessionToken = generateSessionToken();
-    await q('UPDATE users SET session_token = ? WHERE id = ?', [sessionToken, user.id]);
-    res.cookie('session', sessionToken, COOKIE_OPTIONS);
-    res.json({
-      message: 'Registrasi berhasil!',
-      user: { id: u.id, email: u.email, name: u.name, role: u.role, avatar: u.avatar || '', banner: u.banner || '', xp: u.xp || 0, bio: u.bio || '', ref_code: u.ref_code || '' }
-    });
+    await issueSession(u.id, res);
+    res.json({ message: 'Registrasi berhasil!', user: publicUser(u) });
   } catch (err) {
     res.status(500).json({ error: 'Server error' });
   }
 });
 
-router.post('/resend-otp', async (req, res) => {
-  const { email } = req.body;
+router.post('/resend-otp', resendLimiter, async (req, res) => {
+  const email = normalizeEmail(req.body.email);
   if (!email) return res.status(400).json({ error: 'Email diperlukan' });
   try {
-    const result = await q('SELECT * FROM users WHERE email = ?', [email]);
+    const result = await q('SELECT * FROM users WHERE LOWER(email) = ?', [email]);
     const user = result.rows[0];
     if (!user) return res.status(400).json({ error: 'User tidak ditemukan' });
     if (user.verified) return res.status(400).json({ error: 'Akun sudah diverifikasi' });
 
-    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    const otp = generateOTP();
     const otpExpires = new Date(Date.now() + 10 * 60 * 1000).toISOString();
-    await q('UPDATE users SET otp = ?, otp_expires = ? WHERE email = ?', [otp, otpExpires, email]);
+    const otpHash = bcrypt.hashSync(otp, 10);
+    await q('UPDATE users SET otp = ?, otp_expires = ? WHERE LOWER(email) = ?', [otpHash, otpExpires, email]);
 
     const sent = await sendOTPEmail(email, otp);
     if (!sent) return res.status(500).json({ error: 'Gagal mengirim email OTP' });
@@ -127,10 +169,10 @@ router.post('/logout', async (req, res) => {
   const sessionToken = req.cookies?.session;
   if (sessionToken) {
     try {
-      await q('UPDATE users SET session_token = \'\' WHERE session_token = ?', [sessionToken]);
+      await q("UPDATE users SET session_token = '', session_expires = '' WHERE session_token = ?", [sessionToken]);
     } catch {}
   }
-  res.clearCookie('session');
+  res.clearCookie('session', COOKIE_OPTIONS);
   res.json({ success: true });
 });
 
@@ -138,10 +180,14 @@ router.get('/me', async (req, res) => {
   const sessionToken = req.cookies?.session;
   if (!sessionToken) return res.json({ user: null });
   try {
-    const result = await q('SELECT id, email, name, role, avatar, banner, verified_tag, xp, bio, ref_code FROM users WHERE session_token = ?', [sessionToken]);
+    const result = await q(
+      'SELECT id, email, name, role, avatar, banner, verified_tag, xp, bio, ref_code, session_expires FROM users WHERE session_token = ?',
+      [sessionToken]
+    );
     const user = result.rows[0];
     if (!user) return res.json({ user: null });
-    res.json({ user });
+    if (user.session_expires && new Date(user.session_expires).getTime() < Date.now()) return res.json({ user: null });
+    res.json({ user: publicUser(user) });
   } catch {
     res.json({ user: null });
   }

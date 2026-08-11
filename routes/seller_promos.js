@@ -15,7 +15,8 @@ router.post('/', authenticateSession, async (req, res) => {
     if (!req.user.verified_tag && req.user.role !== 'admin') return res.status(403).json({ error: 'Only verified sellers can create promos' });
     const { code, discount, product_id, max_uses } = req.body;
     if (!code || !discount) return res.status(400).json({ error: 'Code and discount required' });
-    if (discount < 1 || discount > 100) return res.status(400).json({ error: 'Discount must be 1-100' });
+    const discountInt = parseInt(discount, 10);
+    if (isNaN(discountInt) || discountInt < 1 || discountInt > 100) return res.status(400).json({ error: 'Discount must be 1-100' });
     const existing = await q('SELECT id FROM seller_promos WHERE code = ? AND seller_id = ?', [code.toUpperCase(), req.user.id]);
     if (existing.rows.length) return res.status(400).json({ error: 'You already have a promo with this code' });
     await q('INSERT INTO seller_promos (seller_id, code, discount, product_id, max_uses) VALUES (?, ?, ?, ?, ?)',
@@ -30,9 +31,17 @@ router.put('/:id', authenticateSession, async (req, res) => {
     if (!promo.rows.length) return res.status(404).json({ error: 'Not found' });
     const { discount, max_uses, active } = req.body;
     const updates = []; const params = [];
-    if (discount !== undefined) { updates.push('discount = ?'); params.push(discount); }
-    if (max_uses !== undefined) { updates.push('max_uses = ?'); params.push(max_uses); }
-    if (active !== undefined) { updates.push('active = ?'); params.push(active); }
+    if (discount !== undefined) {
+      const discountInt = parseInt(discount, 10);
+      if (isNaN(discountInt) || discountInt < 1 || discountInt > 100) return res.status(400).json({ error: 'Discount must be 1-100' });
+      updates.push('discount = ?'); params.push(discountInt);
+    }
+    if (max_uses !== undefined) {
+      const maxUsesInt = parseInt(max_uses, 10);
+      if (isNaN(maxUsesInt) || maxUsesInt < 0) return res.status(400).json({ error: 'Invalid max_uses' });
+      updates.push('max_uses = ?'); params.push(maxUsesInt);
+    }
+    if (active !== undefined) { updates.push('active = ?'); params.push(active ? 1 : 0); }
     if (!updates.length) return res.json({ success: true });
     params.push(req.params.id);
     await q('UPDATE seller_promos SET ' + updates.join(', ') + ' WHERE id = ?', params);

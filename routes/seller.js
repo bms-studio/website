@@ -57,7 +57,7 @@ router.post('/products', authenticateSession, async (req, res) => {
     // Add 5 XP for product upload
     const currentXp = parseInt(req.user.xp) || 0;
     const newXp = currentXp + 5;
-    await q('UPDATE users SET xp = ? WHERE id = ?', [newXp, req.user.id]);
+    await q('UPDATE users SET xp = COALESCE(xp, 0) + 5 WHERE id = ?', [req.user.id]);
     req.user.xp = newXp;
     res.json({ success: true, message: 'Product submitted for review! +5 XP gained!' });
   } catch { res.status(500).json({ error: 'Server error' }); }
@@ -170,12 +170,19 @@ router.get('/my-chats', authenticateSession, async (req, res) => {
 // Get seller's orders (orders containing items with this seller_id)
 router.get('/orders', authenticateSession, async (req, res) => {
   try {
-    const allOrders = await q('SELECT * FROM orders ORDER BY created_at DESC');
-    const sellerOrders = allOrders.rows.filter(o => {
-      const items = JSON.parse(o.items || '[]');
-      return items.some(item => String(item.sellerId) === String(req.user.id));
-    });
-    res.json({ orders: sellerOrders });
+    const idRows = await q('SELECT id, items FROM orders ORDER BY created_at DESC');
+    const sellerOrderIds = idRows.rows
+      .filter(o => {
+        try {
+          const items = JSON.parse(o.items || '[]');
+          return items.some(item => String(item.sellerId) === String(req.user.id));
+        } catch { return false; }
+      })
+      .map(o => o.id);
+    if (!sellerOrderIds.length) return res.json({ orders: [] });
+    const placeholders = sellerOrderIds.map(() => '?').join(',');
+    const result = await q(`SELECT * FROM orders WHERE id IN (${placeholders}) ORDER BY created_at DESC`, sellerOrderIds);
+    res.json({ orders: result.rows });
   } catch { res.status(500).json({ error: 'Server error' }); }
 });
 
