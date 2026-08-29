@@ -1,5 +1,6 @@
-const express = require('express');
+﻿const express = require('express');
 const { q } = require('../database/db');
+const { isValidMedia } = require('../utils/validate');
 const { authenticateSession, requireAdmin, isOwnerById } = require('../middleware/auth');
 const traffic = require('../utils/traffic');
 const router = express.Router();
@@ -61,6 +62,18 @@ router.get('/public/:id', async (req, res) => {
     const result = await q('SELECT id, email, name, role, avatar, banner, verified_tag, xp, bio, ref_code FROM users WHERE id = ?', [req.params.id]);
     if (!result.rows.length) return res.status(404).json({ error: 'User not found' });
     const profile = result.rows[0];
+    // PRIVASI: email & ref_code hanya untuk pemilik akun / admin — publik tidak boleh melihat
+    try {
+      const token = req.cookies && req.cookies.session;
+      let viewer = null;
+      if (token) {
+        const u = await q('SELECT id, role, email FROM users WHERE session_token = ?', [token]);
+        if (u.rows.length) viewer = u.rows[0];
+      }
+      const isSelf = viewer && Number(viewer.id) === Number(profile.id);
+      const isAdmin = viewer && viewer.role === 'admin';
+      if (!isSelf && !isAdmin) { profile.email = ''; profile.ref_code = ''; }
+    } catch {}
     const tagsResult = await q('SELECT id, tag FROM tags WHERE user_id = ?', [req.params.id]);
     profile.tags = tagsResult.rows;
     res.json({ profile });
@@ -81,8 +94,9 @@ router.put('/profile-user', authenticateSession, requireAdmin, async (req, res) 
       updates.push('xp = ?'); params.push(xpInt);
     }
     if (ref_code !== undefined) { updates.push('ref_code = ?'); params.push(String(ref_code).slice(0, 50).toUpperCase()); }
-    if (avatar !== undefined) { updates.push('avatar = ?'); params.push(String(avatar).slice(0, 3000000)); }
-    if (banner !== undefined) { updates.push('banner = ?'); params.push(String(banner).slice(0, 3000000)); }
+    if (avatar !== undefined) { if (!isValidMedia(avatar)) return res.status(400).json({ error: 'Invalid avatar (gunakan URL https atau gambar < 900KB)' }); updates.push('avatar = ?'); params.push(String(avatar).trim()); }
+    if (banner !== undefined) { if (!isValidMedia(banner)) return res.status(400).json({ error: 'Invalid banner (gunakan URL https atau gambar < 900KB)' }); updates.push('banner = ?'); params.push(String(banner).trim()); }
+    
     if (role !== undefined) {
       if (!owner) return res.status(403).json({ error: 'Only owner can change role' });
       if (!['admin', 'user'].includes(role)) return res.status(400).json({ error: 'Invalid role' });

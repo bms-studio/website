@@ -7,12 +7,20 @@ const router = express.Router();
 router.get('/', async (req, res) => {
   try {
     const after = parseInt(req.query.after) || 0;
+    // Kolom eksplisit: JANGAN ikutkan user_avatar (blob base64 tersimpan di baris chat)
+    const COLS = 'pc.id, pc.user_id, pc.user_name, pc.user_role, pc.text, pc.created_at';
     let rows;
     if (after > 0) {
-      const result = await q('SELECT pc.*, u.verified_tag as user_verified FROM public_chats pc LEFT JOIN users u ON pc.user_id = u.id WHERE pc.id > ? ORDER BY pc.id ASC', [after]);
+      const result = await q(`SELECT ${COLS},
+        (CASE WHEN EXISTS(SELECT 1 FROM users ua WHERE ua.id = pc.user_id AND ua.avatar IS NOT NULL AND ua.avatar != '') THEN 1 ELSE 0 END) AS _has_av,
+        (CASE WHEN EXISTS(SELECT 1 FROM users uv WHERE uv.id = pc.user_id AND uv.verified_tag = 1) THEN 1 ELSE 0 END) AS user_verified
+        FROM public_chats pc WHERE pc.id > ? ORDER BY pc.id ASC`, [after]);
       rows = result.rows;
     } else {
-      const result = await q('SELECT pc.*, u.verified_tag as user_verified FROM public_chats pc LEFT JOIN users u ON pc.user_id = u.id ORDER BY pc.id DESC LIMIT 30');
+      const result = await q(`SELECT ${COLS},
+        (CASE WHEN EXISTS(SELECT 1 FROM users ua WHERE ua.id = pc.user_id AND ua.avatar IS NOT NULL AND ua.avatar != '') THEN 1 ELSE 0 END) AS _has_av,
+        (CASE WHEN EXISTS(SELECT 1 FROM users uv WHERE uv.id = pc.user_id AND uv.verified_tag = 1) THEN 1 ELSE 0 END) AS user_verified
+        FROM public_chats pc ORDER BY pc.id DESC LIMIT 30`);
       rows = result.rows.reverse();
     }
     // Attach tags for each unique user
@@ -27,7 +35,13 @@ router.get('/', async (req, res) => {
       });
       rows.forEach(r => { r.tags = tagMap[r.user_id] || []; });
     }
-    res.json({ chats: rows });
+    // Avatar via URL endpoint terpisah (cache browser 24 jam) -> payload JSON kecil
+    const avatarMap = {};
+    rows.forEach(r => {
+      if (r._has_av) avatarMap[r.user_id] = '/api/avatars/' + r.user_id;
+      delete r._has_av;
+    });
+    res.json({ chats: rows, avatar_map: avatarMap });
   } catch { res.status(500).json({ error: 'Server error' }); }
 });
 
@@ -40,7 +54,7 @@ router.post('/', authenticateSession, async (req, res) => {
     const u = user.rows[0];
     const role = isOwnerEmail(u.email) ? 'official' : (u.role === 'admin' ? 'admin' : 'user');
     const ins = await q('INSERT INTO public_chats (user_id, user_name, user_role, user_avatar, text) VALUES (?, ?, ?, ?, ?)',
-      [u.id, u.name || u.email, role, u.avatar || '', text.trim()]);
+      [u.id, u.name || u.email, role, '', text.trim()]); // avatar tidak disimpan di chat (baca via /api/avatars)
     res.json({ success: true, chat_id: Number(ins.lastInsertRowid) || null });
   } catch { res.status(500).json({ error: 'Server error' }); }
 });

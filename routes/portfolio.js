@@ -1,4 +1,4 @@
-const express = require('express');
+﻿const express = require('express');
 const { q } = require('../database/db');
 const { authenticateSession, requireAdmin } = require('../middleware/auth');
 
@@ -18,7 +18,7 @@ router.post('/', authenticateSession, requireAdmin, async (req, res) => {
     const result = await q(
       'INSERT INTO portfolio (title, desc, category, color, image, tags, sort) VALUES (?, ?, ?, ?, ?, ?, ?)',
       [String(title).trim().slice(0, 200), String(desc ?? '').slice(0, 2000), String(category ?? 'Web').slice(0, 50),
-       String(color ?? '#8b7cfc').slice(0, 20), String(image ?? '').slice(0, 3000000),
+       String(color ?? '#e9e9eb').slice(0, 20), String(image ?? '').slice(0, 3000000),
        String(tags ?? '').slice(0, 500), parseInt(sort, 10) || 0]
     );
     res.json({ success: true, id: Number(result.lastInsertRowid) });

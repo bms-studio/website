@@ -10,7 +10,7 @@ const {
   isValidEmail,
   COOKIE_OPTIONS
 } = require('../utils/auth-utils');
-const { sendOTPEmail } = require('./email');
+const { sendOTPEmail, sendResetPasswordEmail } = require('./email');
 
 const router = express.Router();
 
@@ -28,6 +28,11 @@ const resendLimiter = rateLimit({
   windowMs: 30 * 60 * 1000,
   max: 5,
   message: { error: 'Terlalu sering kirim ulang OTP. Coba lagi nanti.' }
+});
+const resetLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 5,
+  message: { error: 'Terlalu banyak percobaan reset. Coba lagi nanti.' }
 });
 
 async function issueSession(userId, res) {
@@ -77,7 +82,7 @@ router.get('/check-email', async (req, res) => {
   }
 });
 
-router.post('/register', async (req, res) => {
+router.post('/register', resetLimiter, async (req, res) => {
   const email = normalizeEmail(req.body.email);
   const { password, name, ref_code } = req.body;
   if (!email || !password) return res.status(400).json({ error: 'Email dan password diperlukan' });
@@ -190,6 +195,50 @@ router.get('/me', async (req, res) => {
     res.json({ user: publicUser(user) });
   } catch {
     res.json({ user: null });
+  }
+});
+
+router.post('/forgot-password', resetLimiter, async (req, res) => {
+  const email = normalizeEmail(req.body.email);
+  if (!email) return res.status(400).json({ error: 'Email diperlukan' });
+  try {
+    const result = await q('SELECT id, verified FROM users WHERE LOWER(email) = ?', [email]);
+    if (!result.rows.length) {
+      return res.json({ success: true, message: 'Jika email terdaftar, kode reset telah dikirim.' });
+    }
+    const user = result.rows[0];
+    if (!user.verified) {
+      return res.status(400).json({ error: 'Akun belum diverifikasi. Selesaikan verifikasi OTP terlebih dahulu.' });
+    }
+    const otp = generateOTP();
+    const otpExpires = new Date(Date.now() + 10 * 60 * 1000).toISOString();
+    const otpHash = bcrypt.hashSync(otp, 10);
+    await q('UPDATE users SET otp = ?, otp_expires = ? WHERE id = ?', [otpHash, otpExpires, user.id]);
+    const sent = await sendResetPasswordEmail(email, otp);
+    if (!sent) return res.status(500).json({ error: 'Gagal mengirim email. Coba lagi nanti.' });
+    res.json({ success: true, message: 'Kode reset telah dikirim ke email Anda.' });
+  } catch {
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+router.post('/reset-password', resetLimiter, async (req, res) => {
+  const email = normalizeEmail(req.body.email);
+  const { otp, newPassword } = req.body;
+  if (!email || !otp || !newPassword) return res.status(400).json({ error: 'Email, OTP, dan password baru diperlukan' });
+  if (newPassword.length < 6) return res.status(400).json({ error: 'Password minimal 6 karakter' });
+  try {
+    const result = await q('SELECT * FROM users WHERE LOWER(email) = ?', [email]);
+    const user = result.rows[0];
+    if (!user) return res.status(400).json({ error: 'User tidak ditemukan' });
+    if (!user.otp) return res.status(400).json({ error: 'Tidak ada kode reset aktif. Silakan minta ulang.' });
+    if (new Date(user.otp_expires) < new Date()) return res.status(400).json({ error: 'Kode sudah kedaluwarsa. Silakan minta ulang.' });
+    if (!bcrypt.compareSync(String(otp).trim(), user.otp)) return res.status(400).json({ error: 'Kode OTP salah' });
+    const newHash = bcrypt.hashSync(newPassword, 10);
+    await q("UPDATE users SET password = ?, otp = '', otp_expires = '' WHERE id = ?", [newHash, user.id]);
+    res.json({ success: true, message: 'Password berhasil direset. Silakan login.' });
+  } catch {
+    res.status(500).json({ error: 'Server error' });
   }
 });
 

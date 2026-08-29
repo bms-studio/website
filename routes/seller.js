@@ -1,5 +1,6 @@
-const express = require('express');
+﻿const express = require('express');
 const { q } = require('../database/db');
+const { isValidMedia, isValidVideoUrl } = require('../utils/validate');
 const { authenticateSession } = require('../middleware/auth');
 const router = express.Router();
 
@@ -7,10 +8,21 @@ const router = express.Router();
 router.get('/products', async (req, res) => {
   try {
     const result = await q(
-      'SELECT p.*, u.name as seller_name, u.email as seller_email, u.avatar as seller_avatar, ROUND(AVG(r.rating),1) as avg_rating, COUNT(r.id) as rating_count FROM public_products p LEFT JOIN users u ON p.user_id = u.id LEFT JOIN product_ratings r ON r.product_id = p.id AND r.product_type = ? WHERE p.status = ? GROUP BY p.id ORDER BY p.created_at DESC',
+      `SELECT p.*,
+       (CASE WHEN EXISTS(SELECT 1 FROM users ua WHERE ua.id = p.user_id AND ua.avatar IS NOT NULL AND ua.avatar != '') THEN 1 ELSE 0 END) AS _has_av,
+       u.name as seller_name, u.email as seller_email,
+       ROUND(AVG(r.rating),1) as avg_rating, COUNT(r.id) as rating_count
+       FROM public_products p LEFT JOIN users u ON p.user_id = u.id LEFT JOIN product_ratings r ON r.product_id = p.id AND r.product_type = ? WHERE p.status = ? GROUP BY p.id ORDER BY p.created_at DESC`,
       ['public', 'approved']
     );
-    res.json({ products: result.rows });
+    // Avatar via URL endpoint terpisah (cache browser 24 jam) -> payload JSON kecil
+    const avatarMap = {};
+    const rows = result.rows.map(r => {
+      const { _has_av, ...rest } = r;
+      if (_has_av) avatarMap[rest.user_id] = '/api/avatars/' + rest.user_id;
+      return rest;
+    });
+    res.json({ products: rows, avatar_map: avatarMap });
   } catch { res.status(500).json({ error: 'Server error' }); }
 });
 
@@ -50,8 +62,10 @@ router.get('/my-products', authenticateSession, async (req, res) => {
 router.post('/products', authenticateSession, async (req, res) => {
   try {
     if (req.user.role !== 'admin' && !req.user.verified_tag) return res.status(403).json({ error: 'Only verified users can sell' });
-    const { name, price, description, image, link, category } = req.body;
+    const { name, price, description, image, link, category, video_url } = req.body;
     if (!name) return res.status(400).json({ error: 'Name required' });
+    if (image !== undefined && !isValidMedia(image)) return res.status(400).json({ error: 'Invalid image URL' });
+    if (video_url !== undefined && !isValidVideoUrl(video_url)) return res.status(400).json({ error: 'Invalid video URL' });
     await q('INSERT INTO public_products (user_id, name, price, description, image, link, category) VALUES (?, ?, ?, ?, ?, ?, ?)',
       [req.user.id, name, price || 'Gratis', description || '', image || '', link || '', category || 'other']);
     // Add 5 XP for product upload
@@ -68,7 +82,7 @@ router.put('/products/:id', authenticateSession, async (req, res) => {
   try {
     const prod = await q('SELECT * FROM public_products WHERE id = ? AND user_id = ?', [req.params.id, req.user.id]);
     if (!prod.rows.length) return res.status(404).json({ error: 'Not found or not yours' });
-    const { name, price, description, image, link, category } = req.body;
+    const { name, price, description, image, link, category, video_url } = req.body;
     const updates = []; const params = [];
     if (name !== undefined) { updates.push('name = ?'); params.push(name); }
     if (price !== undefined) { updates.push('price = ?'); params.push(price); }

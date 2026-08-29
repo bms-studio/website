@@ -1,6 +1,7 @@
-const express = require('express');
+﻿const express = require('express');
 const { q } = require('../database/db');
 const { authenticateSession, requireAdmin } = require('../middleware/auth');
+const { isValidMedia, isValidVideoUrl } = require('../utils/validate');
 
 const router = express.Router();
 
@@ -44,6 +45,8 @@ router.post('/', authenticateSession, requireAdmin, async (req, res) => {
   try {
     const { name, price, original_price, description, tags, category, store_type, image, video_enabled, video_url, stock_status, link } = req.body;
     if (!name) return res.status(400).json({ error: 'Nama asset diperlukan' });
+    if (!isValidMedia(image)) return res.status(400).json({ error: 'Invalid image URL' });
+    if (!isValidVideoUrl(video_url)) return res.status(400).json({ error: 'Invalid video URL' });
     const r = await q(
       'INSERT INTO assets (name, price, original_price, description, tags, category, store_type, image, video_enabled, video_url, stock_status, link) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
       [name, price || 'Gratis', original_price || '', description || '', tags || '', category || 'other', store_type || 'store', image || '', video_enabled ? 1 : 0, video_url || '', stock_status || 'ready', link || '']

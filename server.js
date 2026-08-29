@@ -1,6 +1,8 @@
 process.on('unhandledRejection', (err) => { console.error('Unhandled Rejection:', err?.message); });
 process.on('uncaughtException', (err) => { console.error('Uncaught Exception:', err?.message); });
 
+require('dotenv').config();
+
 const express = require('express');
 const path = require('path');
 const cors = require('cors');
@@ -15,15 +17,46 @@ const IS_VERCEL = !!process.env.VERCEL;
 
 app.use(compression());
 app.use(helmet({
-  contentSecurityPolicy: false,
+  contentSecurityPolicy: {
+    useDefaults: true,
+    directives: {
+      "default-src": ["'self'"],
+      // unsafe-inline dibutuhkan app SPA satu-file (inline script + handler onclick);
+      // sumber skrip tetap dibatasi ke self + 2 CDN resmi
+      "script-src": ["'self'", "'unsafe-inline'", "'unsafe-eval'", "cdnjs.cloudflare.com", "cdn.jsdelivr.net"],
+      // KRITIS: jangan biarkan default helmet ('none') memblokir atribut onclick= di HTML
+      "script-src-attr": ["'unsafe-inline'"],
+      "style-src": ["'self'", "'unsafe-inline'", "fonts.googleapis.com", "cdnjs.cloudflare.com"],
+      "font-src": ["'self'", "data:", "fonts.gstatic.com", "cdnjs.cloudflare.com"],
+      "img-src": ["'self'", "data:", "blob:", "https:"],
+      "media-src": ["'self'", "https:", "data:", "blob:"],
+      "connect-src": ["'self'", "https:"],
+      "frame-src": ["https://www.youtube.com", "https://www.youtube-nocookie.com", "https://player.vimeo.com"],
+      "object-src": ["'none'"],
+      "base-uri": ["'self'"],
+      "form-action": ["'self'"],
+      "frame-ancestors": ["'self'"]
+    }
+  },
   crossOriginEmbedderPolicy: false,
-  crossOriginResourcePolicy: false
+  crossOriginResourcePolicy: false,
+  hsts: { maxAge: 15552000, includeSubDomains: true },
+  referrerPolicy: { policy: "strict-origin-when-cross-origin" },
+  noSniff: true,
+  frameguard: { action: "sameorigin" }
 }));
+
+// Batasi API browser yang tidak dipakai situs
+app.use((req, res, next) => {
+  res.setHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=(), payment=()');
+  next();
+});
 
 const ALLOWED_ORIGINS = [
   'http://localhost:4000',
   'http://127.0.0.1:4000',
-  'https://bms-platfrom.vercel.app'
+  'https://bms-platfrom.vercel.app',
+  'https://bms-platform.vercel.app'
 ];
 
 app.use(cors({
@@ -90,6 +123,7 @@ const traffic = require('./utils/traffic');
 app.use('/api', (req, res, next) => {
   const p = req.path;
   if (p.startsWith('/admin/traffic')) return next();
+  if (p.startsWith('/avatars/')) return next(); // asset gambar, bukan view
   traffic.track(p, req.headers['x-forwarded-for'] || req.socket.remoteAddress);
   if (req.method === 'POST') {
     if (p === '/auth/register') traffic.event('signup', 'User baru terdaftar');
@@ -117,6 +151,8 @@ app.use('/api/promotions', require('./routes/promotions'));
 app.use('/api/announcements', require('./routes/announcements'));
 app.use('/api/config', require('./routes/config'));
 app.use('/api/portfolio', require('./routes/portfolio'));
+app.use('/api/avatars', require('./routes/avatars'));
+app.use('/api/payment', require('./routes/payment'));
 
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));

@@ -3,5 +3,11 @@ database/data.db
 .env
 .DS_Store
 *.log
-
 .vercel
+.playwright-mcp/
+.vscode/
+backup/
+assets-src/
+database/data.db-journal
+database/data.db-wal
+database/data.db-shm

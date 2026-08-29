@@ -6,12 +6,18 @@ const router = express.Router();
 router.get('/', async (req, res) => {
   try {
     const result = await q(
-      `SELECT t.*, u.avatar as user_avatar
-       FROM testimonials t
-       LEFT JOIN users u ON t.user_id = u.id
-       ORDER BY t.created_at DESC`
+      `SELECT t.*,
+       (CASE WHEN EXISTS(SELECT 1 FROM users ua WHERE ua.id = t.user_id AND ua.avatar IS NOT NULL AND ua.avatar != '') THEN 1 ELSE 0 END) AS _has_av
+       FROM testimonials t ORDER BY t.created_at DESC`
     );
-    res.json({ testimonials: result.rows });
+    // Avatar via URL endpoint terpisah (cache browser 24 jam) -> payload JSON kecil
+    const avatarMap = {};
+    const rows = result.rows.map(r => {
+      const { _has_av, ...rest } = r;
+      if (_has_av) avatarMap[rest.user_id] = '/api/avatars/' + rest.user_id;
+      return rest;
+    });
+    res.json({ testimonials: rows, avatar_map: avatarMap });
   } catch { res.status(500).json({ error: 'Server error' }); }
 });
 

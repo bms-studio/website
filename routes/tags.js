@@ -1,4 +1,4 @@
-const express = require('express');
+﻿const express = require('express');
 const { q } = require('../database/db');
 const { authenticateSession, isOwnerById } = require('../middleware/auth');
 const router = express.Router();
@@ -31,7 +31,7 @@ router.post('/', authenticateSession, async (req, res) => {
     const userExists = await q('SELECT id FROM users WHERE id = ?', [userId]);
     if (!userExists.rows.length)
       return res.status(404).json({ error: 'User not found' });
-    await q('INSERT INTO tags (user_id, tag, icon, color, created_by) VALUES (?, ?, ?, ?, ?)', [userId, tag.trim(), icon || '', color || '#8b7cfc', req.user.id]);
+    await q('INSERT INTO tags (user_id, tag, icon, color, created_by) VALUES (?, ?, ?, ?, ?)', [userId, tag.trim(), icon || '', color || '#e9e9eb', req.user.id]);
     res.json({ success: true });
   } catch { res.status(500).json({ error: 'Server error' }); }
 });
