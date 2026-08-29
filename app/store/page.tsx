@@ -4,6 +4,7 @@ import { api } from "@/lib/api"
 import { useStore } from "@/lib/store"
 import { ProductCard } from "@/components/product/ProductCard"
 import { ProductModal } from "@/components/modals/ProductModal"
+import { Mascot } from "@/components/mascot/Mascot"
 
 export default function StorePage() {
   const {wishlist,toggleWishlist,addToCart}=useStore()
@@ -26,8 +27,14 @@ export default function StorePage() {
   return (
     <div>
       <div style={{position:'relative',padding:'60px 20px',textAlign:'center',borderBottom:'1px solid var(--glass-border)',overflow:'hidden',background:'var(--bg-2)'}}>
-        <h1 style={{fontSize:30,fontWeight:800,fontFamily:'Syne'}}>BMS <span style={{background:'var(--gradient-1)',WebkitBackgroundClip:'text',WebkitTextFillColor:'transparent'}}>STORE</span></h1>
-        <p style={{color:'var(--text-muted)',maxWidth:460,margin:'0 auto'}}>Produk digital dan tools pengembangan Roblox.</p>
+        <div style={{position:'absolute',right:'5%',bottom:10,opacity:0.95}} className="mascot-hide-mobile">
+          <Mascot src="/mascot/maskot-happy-belanja-bawa-tas.png" size={150} alt="Happy Belanja" />
+        </div>
+        <div style={{position:'absolute',left:'4%',top:20,opacity:0.8}} className="mascot-hide-mobile">
+          <Mascot src="/mascot/maskot-fokus-kerja-laptop.png" size={110} alt="Fokus" />
+        </div>
+        <h1 style={{fontSize:30,fontWeight:800,fontFamily:'Syne',position:'relative',zIndex:2}}>BMS <span style={{background:'var(--gradient-1)',WebkitBackgroundClip:'text',WebkitTextFillColor:'transparent'}}>STORE</span></h1>
+        <p style={{color:'var(--text-muted)',maxWidth:460,margin:'0 auto',position:'relative',zIndex:2}}>Produk digital dan tools pengembangan Roblox.</p>
         <div style={{display:'flex',gap:4,justifyContent:'center',marginTop:24,background:'var(--bg-3)',padding:4,borderRadius:10,maxWidth:320,marginLeft:'auto',marginRight:'auto'}}>
           <button onClick={()=>setStoreType('store')} style={{flex:1,padding:'8px 20px',borderRadius:8,border:'none',background:storeType==='store'?'var(--bg)':'transparent',color:storeType==='store'?'var(--text)':'var(--text-muted)',cursor:'pointer',fontWeight:600}}>BMS STORE</button>
           <button onClick={()=>setStoreType('studio')} style={{flex:1,padding:'8px 20px',borderRadius:8,border:'none',background:storeType==='studio'?'var(--bg)':'transparent',color:storeType==='studio'?'var(--text)':'var(--text-muted)',cursor:'pointer',fontWeight:600}}>BMS STUDIO</button>

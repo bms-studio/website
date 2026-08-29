@@ -1,6 +1,10 @@
-﻿export default function AboutPage() {
+﻿import { Mascot } from "@/components/mascot/Mascot"
+export default function AboutPage() {
   return (
-    <div style={{maxWidth:900,margin:'0 auto',padding:'80px 20px'}}>
+    <div style={{maxWidth:900,margin:'0 auto',padding:'80px 20px',position:'relative'}}>
+      <div style={{position:'absolute',right:0,top:20,opacity:0.9}} className="mascot-hide-mobile">
+        <Mascot src="/mascot/maskot-fokus-kerja-laptop.png" size={160} alt="Fokus Kerja" />
+      </div>
       <h1 style={{fontSize:36,fontWeight:800,fontFamily:'Syne'}}>Tentang <span style={{background:'var(--gradient-1)',WebkitBackgroundClip:'text',WebkitTextFillColor:'transparent'}}>Kami</span></h1>
       <p style={{color:'var(--text-muted)',lineHeight:1.7,marginTop:16}}>
         BMS STUDIO adalah tim profesional yang berfokus pada pengembangan game Roblox, website, dan produk digital. Berdiri sejak 2020, kami telah menyelesaikan 150+ project dengan kepuasan 98%.

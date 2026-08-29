@@ -2,6 +2,7 @@
 import { useState } from "react"
 import { api } from "@/lib/api"
 import Link from "next/link"
+import { Mascot } from "@/components/mascot/Mascot"
 
 export default function LoginPage() {
   const [form,setForm]=useState({email:'',password:''})
@@ -17,7 +18,10 @@ export default function LoginPage() {
     }catch(err:any){ setMsg(err.message)}
   }
   return (
-    <div style={{maxWidth:380,margin:'80px auto',padding:'32px 24px',background:'var(--bg-2)',borderRadius:16,border:'1px solid var(--glass-border)'}}>
+    <div style={{maxWidth:380,margin:'80px auto',padding:'32px 24px',background:'var(--bg-2)',borderRadius:16,border:'1px solid var(--glass-border)',position:'relative',overflow:'hidden'}}>
+      <div style={{position:'absolute',right:-10,top:-10,opacity:0.9}}>
+        <Mascot src="/mascot/maskot-hi-menyapa-waving.png" size={90} alt="Hi" />
+      </div>
       <h1 style={{fontSize:24,fontWeight:800,fontFamily:'Syne',textAlign:'center'}}>Welcome Back</h1>
       <p style={{textAlign:'center',color:'var(--text-muted)',fontSize:13,marginTop:6}}>Login ke BMS Platform</p>
       <form onSubmit={submit} style={{marginTop:24,display:'flex',flexDirection:'column',gap:12}}>

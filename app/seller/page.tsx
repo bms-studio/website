@@ -1,4 +1,5 @@
-﻿"use client"
+"use client"
+import { Mascot } from "@/components/mascot/Mascot"
 import { useEffect, useState } from "react"
 import { api } from "@/lib/api"
 import { useStore } from "@/lib/store"
@@ -34,7 +35,10 @@ export default function SellerPage(){
   if(!isLoggedIn) return <div style={{maxWidth:700,margin:'80px auto',padding:20,textAlign:'center'}}><h2>Login sebagai seller</h2><p style={{color:'var(--text-muted)'}}>Hanya user terverifikasi bisa jual. <a href="/login" style={{color:'var(--primary)'}}>Login</a></p></div>
 
   return (
-    <div style={{maxWidth:1000,margin:'0 auto',padding:'80px 20px'}}>
+    <div style={{maxWidth:1000,margin:'0 auto',padding:'80px 20px',position:'relative'}}>
+      <div style={{position:'absolute',right:10,top:10,opacity:0.9}} className="mascot-hide-mobile">
+        <Mascot src="/mascot/maskot-fokus-kerja-laptop.png" size={130} alt="Fokus" />
+      </div>
       <h1 style={{fontSize:28,fontWeight:800,fontFamily:'Syne'}}>Seller <span style={{background:'var(--gradient-1)',WebkitBackgroundClip:'text',WebkitTextFillColor:'transparent'}}>Dashboard</span></h1>
       <p style={{color:'var(--text-muted)'}}>Kelola produk Public Store — {products.length} produk</p>
 

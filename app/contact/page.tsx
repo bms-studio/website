@@ -1,6 +1,7 @@
 ﻿"use client"
 import { useState } from "react"
 import { api } from "@/lib/api"
+import { Mascot } from "@/components/mascot/Mascot"
 
 export default function ContactPage() {
   const [form,setForm]=useState({name:'',email:'',message:''})
@@ -10,7 +11,10 @@ export default function ContactPage() {
     try{ await api("/messages",{method:"POST",body:form}); setSent(true); setForm({name:'',email:'',message:''}) }catch(err:any){ alert(err.message)}
   }
   return (
-    <div style={{maxWidth:700,margin:'0 auto',padding:'80px 20px'}}>
+    <div style={{maxWidth:700,margin:'0 auto',padding:'80px 20px',position:'relative'}}>
+      <div style={{position:'absolute',right:10,top:10,opacity:0.9}} className="mascot-hide-mobile">
+        <Mascot src="/mascot/maskot-bingung-bertanya.png" size={140} alt="Bingung" />
+      </div>
       <h1 style={{fontSize:36,fontWeight:800,fontFamily:'Syne'}}>Contact <span style={{background:'var(--gradient-1)',WebkitBackgroundClip:'text',WebkitTextFillColor:'transparent'}}>Us</span></h1>
       <p style={{color:'var(--text-muted)',marginTop:8}}>Konsultasi gratis — tim kami siap membantu.</p>
       <form onSubmit={submit} style={{marginTop:24,display:'flex',flexDirection:'column',gap:12}}>

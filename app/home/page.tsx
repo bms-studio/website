@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react"
 import Link from "next/link"
 import { api } from "@/lib/api"
+import { Mascot } from "@/components/mascot/Mascot"
 
 export default function HomePage() {
   const [services, setServices] = useState<any[]>([])
@@ -16,13 +17,17 @@ export default function HomePage() {
 
   return (
     <div>
-      <section className="hero">
+      <section className="hero" style={{position:'relative',overflow:'hidden'}}>
         <div className="hero-grid" />
         <div className="orb orb-1" /><div className="orb orb-2" />
         <div className="floating-shape s1" /><div className="floating-shape s2" /><div className="floating-shape s3" />
         <div className="particles"><div className="particle" /><div className="particle" /><div className="particle" /><div className="particle" /><div className="particle" /><div className="particle" /><div className="particle" /><div className="particle" /></div>
         <canvas id="threeCanvas" />
-        <div className="hero-content">
+        <div style={{position:'absolute',right:'6%',bottom:'8%',zIndex:2,display:'flex',gap:12,alignItems:'flex-end'}} className="mascot-hide-mobile">
+          <Mascot src="/mascot/maskot-hi-menyapa-waving.png" size={190} alt="Hi" />
+          <Mascot src="/mascot/maskot-hore-semangat-lompat.png" size={150} alt="Hore" style={{marginBottom:20}} />
+        </div>
+        <div className="hero-content" style={{position:'relative',zIndex:3}}>
           <div className="hero-badge"><i className="fas fa-bolt" /> BMS Platform</div>
           <div className="hero-line" />
           <h1 className="hero-title">
@@ -84,8 +89,11 @@ export default function HomePage() {
         <div style={{textAlign:'center',marginTop:28}}><Link href="/store" className="btn btn-outline">Lihat Semua Produk</Link></div>
       </section>
 
-      <section className="section" style={{background:'var(--bg-2)',padding:'80px 20px',maxWidth:'none'}}>
-        <div style={{maxWidth:1200,margin:'0 auto'}}>
+      <section className="section" style={{background:'var(--bg-2)',padding:'80px 20px',maxWidth:'none',position:'relative',overflow:'hidden'}}>
+        <div style={{position:'absolute',right:'4%',top:'10%',opacity:0.9}} className="mascot-hide-mobile">
+          <Mascot src="/mascot/maskot-love-peluk-hati.png" size={140} alt="Love" />
+        </div>
+        <div style={{maxWidth:1200,margin:'0 auto',position:'relative',zIndex:2}}>
           <h2 className="section-title" data-eyebrow="Testimonials">What Our <span className="text-gradient">Clients Say</span></h2>
           <div className="testi-grid" style={{display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(280px,1fr))',gap:16}}>
             {(testimonials.length?testimonials:[{user_name:'Client',text:'Great service!',rating:5}]).map((t,i)=>(
@@ -93,6 +101,16 @@ export default function HomePage() {
             ))}
           </div>
         </div>
+      </section>
+
+      <section style={{padding:'60px 20px',maxWidth:1000,margin:'40px auto',background:'linear-gradient(135deg,rgba(230,227,220,.08),rgba(150,172,159,.06))',border:'1px solid rgba(255,255,255,.08)',borderRadius:24,display:'flex',alignItems:'center',gap:20,flexWrap:'wrap',justifyContent:'center',position:'relative',overflow:'hidden'}}>
+        <Mascot src="/mascot/maskot-lets-go-semangat.png" size={160} alt="Lets Go" />
+        <div style={{flex:1,minWidth:240,textAlign:'center'}}>
+          <h2 style={{fontSize:26,fontWeight:800,fontFamily:'Syne'}}>Siap mulai project?</h2>
+          <p style={{color:'var(--text-muted)',marginTop:6}}>Konsultasi gratis — tim BMS siap bantu wujudkan ide kamu.</p>
+          <Link href="/contact" className="btn btn-primary" style={{marginTop:16,display:'inline-flex'}}>Hubungi Kami →</Link>
+        </div>
+        <Mascot src="/mascot/maskot-cool-santai-minum.png" size={140} alt="Cool" hideOnMobile />
       </section>
     </div>
   )

@@ -1886,3 +1886,11 @@ input,textarea,select{cursor:text}
   font-size:26px;font-weight:700;color:#fff;border:3px solid rgba(147,171,158,.4)}
 .pcm-name{font-family:'Syne',sans-serif;font-size:17px;font-weight:700;margin-bottom:4px;color:var(--text)}
 .pcm-sub{font-size:12px;color:var(--text-muted);line-height:1.6}
+
+ /* ===== MASCOT — BMS Transparan ===== */
+.mascot-float{ animation: mascotFloat 4.5s ease-in-out infinite; will-change: transform; }
+@keyframes mascotFloat{ 0%,100%{ transform: translateY(0)} 50%{ transform: translateY(-10px)} }
+.mascot-hide-mobile{ display:block }
+@media(max-width:768px){ .mascot-hide-mobile{ display:none } }
+.low-end .mascot-float{ animation:none !important; }
+.low-end .mascot-float img{ filter: none !important; }

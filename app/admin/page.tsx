@@ -1,4 +1,5 @@
 "use client"
+import { Mascot } from "@/components/mascot/Mascot"
 import { useEffect, useState } from "react"
 import { api } from "@/lib/api"
 

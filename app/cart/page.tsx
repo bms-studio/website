@@ -1,10 +1,11 @@
-﻿"use client"
+"use client"
+import { Mascot } from "@/components/mascot/Mascot"
 import { useStore } from "@/lib/store"
 import { api } from "@/lib/api"
 import { useState } from "react"
 
 export default function CartPage(){
-  const {cart,removeFromCart,isLoggedIn,user}=useStore()
+  const {cart,removeFromCart,isLoggedIn}=useStore()
   const [loading,setLoading]=useState(false)
   const [msg,setMsg]=useState("")
   const total = cart.reduce((s,i)=> s + (parseFloat(String(i.price).replace(/[^0-9.]/g,""))||0)*(i.qty||1),0)
@@ -25,7 +26,16 @@ export default function CartPage(){
   return (
     <div style={{maxWidth:800,margin:'0 auto',padding:'80px 20px'}}>
       <h1 style={{fontSize:28,fontWeight:800,fontFamily:'Syne'}}>Keranjang</h1>
-      {!cart.length ? <p style={{color:'var(--text-muted)',marginTop:16}}>Keranjang kosong. <a href="/store" style={{color:'var(--primary)',textDecoration:'underline'}}>Ke Store</a></p> : (
+      {!cart.length ? (
+        <div style={{textAlign:'center',padding:'40px 20px'}}>
+          <Mascot src="/mascot/maskot-happy-belanja-bawa-tas.png" size={180} alt="Happy" style={{margin:'0 auto 16px'}}/>
+          <h2 style={{fontWeight:800}}>Keranjang kosong</h2>
+          <p style={{color:'var(--text-muted)'}}>Belum ada produk. <a href="/store" style={{color:'var(--primary)',textDecoration:'underline'}}>Ke Store</a> bersama maskot!</p>
+          <div style={{marginTop:16,display:'flex',justifyContent:'center',gap:12}}>
+            <Mascot src="/mascot/maskot-ngantuk-tidur-di-laptop.png" size={90} alt="Ngantuk" hideOnMobile/>
+          </div>
+        </div>
+      ) : (
         <>
           <div style={{display:'flex',flexDirection:'column',gap:12,marginTop:20}}>
             {cart.map((item:any)=>(

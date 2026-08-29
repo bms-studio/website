@@ -1,4 +1,4 @@
-﻿const services = [
+const services = [
   {icon:'fa-code',title:'Web Development',desc:'Website modern, cepat, dan SEO-friendly dengan Next.js & Tailwind.'},
   {icon:'fa-gamepad',title:'Roblox Game Dev',desc:'Game Roblox performa tinggi dengan sistem module lengkap.'},
   {icon:'fa-mobile-alt',title:'Mobile App',desc:'Aplikasi Android & iOS dengan Flutter/React Native.'},
@@ -7,6 +7,7 @@
   {icon:'fa-server',title:'Backend & API',desc:'API scalable dengan Node.js & database Turso.'},
 ]
 
+import { Mascot } from "@/components/mascot/Mascot"
 export default function ServicesPage() {
   return (
     <div style={{maxWidth:1200,margin:'0 auto',padding:'80px 20px'}}>
