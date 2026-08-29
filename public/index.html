@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="id" data-theme="dark">
 <head>
 <meta charset="UTF-8">
@@ -19,7 +19,8 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@800&family=Outfit:wght@800&family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Syne:wght@700;800&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<script>!function(){var l=!1;try{var m=navigator.deviceMemory,c=navigator.hardwareConcurrency,cn=navigator.connection&&navigator.connection.effectiveType;if(m&&m<=4)l=!0;if(c&&c<=4)l=!0;if(cn&&/2g|slow-2g/.test(cn))l=!0;if(window.matchMedia('(max-width:768px)').matches&&(m<=4||c<=4))l=!0;if(window.matchMedia('(prefers-reduced-motion: reduce)').matches)l=!0}catch(e){}if(l)document.documentElement.classList.add('low-end');window.IS_LOW_END=l}();</script>
 <style>@font-face{font-family:'Ease Bold';src:url('/font/ease_bold/Ease%20Bold%20Demo.otf') format('opentype');font-weight:700;font-style:normal;font-display:swap}</style>
 <link rel="preload" as="font" type="font/otf" href="/font/ease_bold/Ease%20Bold%20Demo.otf" crossorigin>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" media="print" onload="this.media='all'">
@@ -89,6 +90,19 @@ ul{list-style:none}
 .particle:nth-child(7){left:85%;animation-delay:1s;animation-duration:7s}
 .particle:nth-child(8){left:92%;animation-delay:5s;animation-duration:10s;width:3px;height:3px}
 
+/* LOW-END: matikan efek berat */
+.low-end .bg-glow,.low-end .particles,.low-end #threeCanvas,.low-end .floating-shape,.low-end .orb,.low-end .v2-orb,.low-end .v5-blob,.low-end .v7-blob{display:none!important}
+.low-end .bg-glow .glow,.low-end .particle{animation:none!important}
+.low-end .glass,.low-end .stat-card,.low-end .service-card,.low-end .portfolio-card,.low-end .asset-card,.low-end .v6-shell,.low-end .modal-content{backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
+.low-end .shimmer::after,.low-end .floating-shape{display:none!important}
+.low-end .bg-img[src*="giphy"]{display:none!important}
+.low-end *{scroll-behavior:auto!important}
+.low-end .hero-grid,.low-end .v5-grid,.low-end .v7-grid{background:none!important}
+.low-end .service-card::after,.low-end .portfolio-card::before,.low-end .portfolio-card::after{display:none!important}
+@media (max-width:768px){
+  .bg-glow .glow{filter:blur(60px)!important;opacity:0.08!important}
+  .particle{display:none!important}
+}
 /* REVEAL LINES */
 .reveal-line{display:inline-block;opacity:0;transform:translateY(20px);animation:revealUp 0.7s forwards cubic-bezier(0.16,1,0.3,1)}
 @keyframes revealUp{to{opacity:1;transform:translateY(0)}}
@@ -4832,7 +4846,7 @@ async function openChat(orderId) {
   try {
     const d = await api('/chats/' + APP.currentOrderId);
     renderChatMessages(d.chat?.messages || []);
-    chatPollInterval = setInterval(loadChatMessages, 3000);
+    chatPollInterval = setInterval(loadChatMessages, window.IS_LOW_END ? 5000 : 3000);
   } catch (e) {
     showToast('Gagal load chat: ' + (e.message || 'unknown'), 'error');
     container.innerHTML = '<div style="text-align:center;color:var(--text-dim);padding:40px 20px;font-size:13px"><i class="fas fa-exclamation-circle" style="font-size:32px;display:block;margin-bottom:12px;opacity:0.3"></i>Gagal memuat chat</div>';
@@ -5312,6 +5326,7 @@ function loadThree(cb) {
   document.head.appendChild(s);
 }
 function initThree() {
+  if (window.IS_LOW_END) return;
   const canvas = document.getElementById('threeCanvas');
   if (!canvas) return;
   if (typeof THREE === 'undefined') { loadThree(initThree); return; }
@@ -5544,12 +5559,13 @@ function togglePublicChat() {
 }
 function startPCPoll() {
   if (pcInterval) clearInterval(pcInterval);
+  var iv = window.IS_LOW_END ? 3000 : 1000;
   pcInterval = setInterval(() => {
     if (document.visibilityState === 'visible') {
       const box = document.getElementById('publicChatBox');
-      if (box.classList.contains('open')) loadPC();
+      if (box && box.classList.contains('open')) loadPC();
     }
-  }, 1000); // Public chat poll every 1s for real-time
+  }, iv);
 }
 function buildPCMsg(c) {
   const isOfficial = c.user_role === 'official';
@@ -6370,7 +6386,7 @@ async function openSellerChatByChatId(chatId) {
     document.getElementById('sellerChatModal').classList.add('open');
     renderSellerChatMessages(detail.chat.messages || []);
     if (sellerChatPoll) clearInterval(sellerChatPoll);
-    sellerChatPoll = setInterval(() => loadSellerChatMessages(), 3000);
+    sellerChatPoll = setInterval(() => loadSellerChatMessages(), window.IS_LOW_END ? 5000 : 3000);
   } catch {}
 }
 async function loadSellerProducts() {
@@ -6502,7 +6518,7 @@ async function openSellerChat(productId) {
     renderSellerChatMessages(detail.chat.messages || []);
     // Poll
     if (sellerChatPoll) clearInterval(sellerChatPoll);
-    sellerChatPoll = setInterval(() => loadSellerChatMessages(), 3000);
+    sellerChatPoll = setInterval(() => loadSellerChatMessages(), window.IS_LOW_END ? 5000 : 3000);
   } catch (e) { showToast(e.message || 'Failed', 'error'); }
 }
 function closeSellerChat() {
@@ -7037,7 +7053,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     });
   }
 
-  if (GS) {
+  if (GS && !window.IS_LOW_END) {
     gsap.utils.toArray('.stat-number[data-count]').forEach(function(el){
       var target = parseInt(el.getAttribute('data-count') || '0', 10);
       var suffix = (el.textContent || '').replace(/[\d\s]/g, '');
@@ -7135,6 +7151,13 @@ document.addEventListener('DOMContentLoaded', async function() {
         hy((e.clientY - r.top) / r.height * -12 + 6);
       });
       hero.addEventListener('mouseleave', function(){ hx(0); hy(0); });
+    }
+
+    if (window.IS_LOW_END) {
+      document.querySelectorAll('.reveal').forEach(function(el){ el.classList.add('in'); });
+      document.querySelectorAll('.section-title[data-eyebrow]').forEach(function(t){ t.classList.add('in'); });
+      document.querySelectorAll('.section .section-desc').forEach(function(d){ d.style.opacity='1'; });
+      document.querySelectorAll('img[src*="giphy"]').forEach(function(img){ img.removeAttribute('src'); img.style.display='none'; });
     }
 
     var mega = document.querySelector('.v2-mega-marquee .track');
