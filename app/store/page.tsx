@@ -27,11 +27,8 @@ export default function StorePage() {
   return (
     <div>
       <div style={{position:'relative',padding:'60px 20px',textAlign:'center',borderBottom:'1px solid var(--glass-border)',overflow:'hidden',background:'var(--bg-2)'}}>
-        <div style={{position:'absolute',right:'5%',bottom:10,opacity:0.95}} className="mascot-hide-mobile">
-          <Mascot src="/mascot/maskot-happy-belanja-bawa-tas.png" size={150} alt="Happy Belanja" />
-        </div>
-        <div style={{position:'absolute',left:'4%',top:20,opacity:0.8}} className="mascot-hide-mobile">
-          <Mascot src="/mascot/maskot-fokus-kerja-laptop.png" size={110} alt="Fokus" />
+        <div style={{position:'absolute',right:'4%',bottom:10,opacity:0.95}} className="mascot-hide-mobile">
+          <Mascot src="/mascot/maskot-happy-belanja-bawa-tas.png" size={200} alt="Happy Belanja" />
         </div>
         <h1 style={{fontSize:30,fontWeight:800,fontFamily:'Syne',position:'relative',zIndex:2}}>BMS <span style={{background:'var(--gradient-1)',WebkitBackgroundClip:'text',WebkitTextFillColor:'transparent'}}>STORE</span></h1>
         <p style={{color:'var(--text-muted)',maxWidth:460,margin:'0 auto',position:'relative',zIndex:2}}>Produk digital dan tools pengembangan Roblox.</p>

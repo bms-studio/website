@@ -8,7 +8,7 @@ export default function PublicStorePage(){
   return (
     <div style={{maxWidth:1200,margin:'0 auto',padding:'80px 20px',position:'relative'}}>
       <div style={{position:'absolute',right:20,top:20,opacity:0.9}} className="mascot-hide-mobile">
-        <Mascot src="/mascot/maskot-happy-belanja-bawa-tas.png" size={120} alt="Happy" />
+        <Mascot src="/mascot/maskot-happy-belanja-bawa-tas.png" size={180} alt="Happy" />
       </div>
       <h1 style={{fontSize:28,fontWeight:800,fontFamily:'Syne'}}>Public <span style={{background:'var(--gradient-1)',WebkitBackgroundClip:'text',WebkitTextFillColor:'transparent'}}>Store</span></h1>
       <p style={{color:'var(--text-muted)'}}>Produk dari seller community — {items.length} items.</p>

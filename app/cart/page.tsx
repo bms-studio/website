@@ -28,12 +28,10 @@ export default function CartPage(){
       <h1 style={{fontSize:28,fontWeight:800,fontFamily:'Syne'}}>Keranjang</h1>
       {!cart.length ? (
         <div style={{textAlign:'center',padding:'40px 20px'}}>
-          <Mascot src="/mascot/maskot-happy-belanja-bawa-tas.png" size={180} alt="Happy" style={{margin:'0 auto 16px'}}/>
-          <h2 style={{fontWeight:800}}>Keranjang kosong</h2>
-          <p style={{color:'var(--text-muted)'}}>Belum ada produk. <a href="/store" style={{color:'var(--primary)',textDecoration:'underline'}}>Ke Store</a> bersama maskot!</p>
-          <div style={{marginTop:16,display:'flex',justifyContent:'center',gap:12}}>
-            <Mascot src="/mascot/maskot-ngantuk-tidur-di-laptop.png" size={90} alt="Ngantuk" hideOnMobile/>
-          </div>
+          <Mascot src="/mascot/maskot-happy-belanja-bawa-tas.png" size={240} alt="Happy" style={{margin:'0 auto 16px'}}/>
+          <h2 style={{fontWeight:800,fontSize:22}}>Keranjang kosong</h2>
+          <p style={{color:'var(--text-muted)',marginTop:8}}>Belum ada produk. Yuk belanja di Store!</p>
+          <a href="/store" className="btn btn-primary" style={{marginTop:16,display:'inline-flex'}}>Ke Store →</a>
         </div>
       ) : (
         <>

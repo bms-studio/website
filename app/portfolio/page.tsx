@@ -1,6 +1,7 @@
-﻿"use client"
+"use client"
 import { useEffect, useState } from "react"
 import { api } from "@/lib/api"
+import { Mascot } from "@/components/mascot/Mascot"
 import { useStore } from "@/lib/store"
 
 export default function PortfolioPage() {
@@ -16,7 +17,10 @@ export default function PortfolioPage() {
     try{ await api("/portfolio",{method:"POST",body:form}); setForm({title:'',desc:'',category:'Web',color:'#e6e3dc',image:'',tags:''}); setMsg("Ditambah!"); load() }catch(err:any){ setMsg(err.message)}
   }
   return (
-    <div style={{maxWidth:1200,margin:'0 auto',padding:'80px 20px'}}>
+    <div style={{maxWidth:1200,margin:'0 auto',padding:'80px 20px',position:'relative'}}>
+      <div style={{position:'absolute',right:10,top:20,opacity:0.9}}>
+        <Mascot src="/mascot/maskot-hore-semangat-lompat.png" size={200} alt="Hore" />
+      </div>
       <h1 style={{fontSize:36,fontWeight:800,fontFamily:'Syne'}}>Our <span style={{background:'var(--gradient-1)',WebkitBackgroundClip:'text',WebkitTextFillColor:'transparent'}}>Portfolio</span></h1>
       <p style={{color:'var(--text-muted)',marginTop:8}}>Beberapa project yang telah kami kerjakan.</p>
       {isAdmin && (

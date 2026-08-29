@@ -1,4 +1,4 @@
-﻿"use client"
+"use client"
 import { useState } from "react"
 import { api } from "@/lib/api"
 import Link from "next/link"
@@ -20,7 +20,7 @@ export default function LoginPage() {
   return (
     <div style={{maxWidth:380,margin:'80px auto',padding:'32px 24px',background:'var(--bg-2)',borderRadius:16,border:'1px solid var(--glass-border)',position:'relative',overflow:'hidden'}}>
       <div style={{position:'absolute',right:-10,top:-10,opacity:0.9}}>
-        <Mascot src="/mascot/maskot-hi-menyapa-waving.png" size={90} alt="Hi" />
+        <Mascot src="/mascot/maskot-hi-menyapa-waving.png" size={200} alt="Hi" />
       </div>
       <h1 style={{fontSize:24,fontWeight:800,fontFamily:'Syne',textAlign:'center'}}>Welcome Back</h1>
       <p style={{textAlign:'center',color:'var(--text-muted)',fontSize:13,marginTop:6}}>Login ke BMS Platform</p>
