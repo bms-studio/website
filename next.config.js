@@ -1,5 +1,13 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  images: {
+    remotePatterns: [
+      { protocol: 'https', hostname: 'i.8upload.com' },
+      { protocol: 'https', hostname: 'filegoat.s3.de.io.cloud.ovh.net' },
+      { protocol: 'https', hostname: 'media.giphy.com' },
+      { protocol: 'https', hostname: '**' },
+    ],
+  },
   async rewrites() {
     return [
       {

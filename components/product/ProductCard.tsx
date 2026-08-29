@@ -1,4 +1,5 @@
 "use client"
+import Image from "next/image"
 import { useStore } from "@/lib/store"
 
 export function ProductCard({ product, onDetail }: { product: any, onDetail?: (p:any)=>void }) {
@@ -10,7 +11,7 @@ export function ProductCard({ product, onDetail }: { product: any, onDetail?: (p
   return (
     <div className="asset-card" style={{borderRadius:16,overflow:'hidden',background:'linear-gradient(135deg,rgba(230,227,220,.05),rgba(150,172,159,.02))',border:'1px solid rgba(255,255,255,.06)'}}>
       <div style={{height:160,background:'var(--bg-4)',display:'flex',alignItems:'center',justifyContent:'center',overflow:'hidden',cursor:'pointer'}} onClick={()=>onDetail?.(product)}>
-        {product.image ? <img src={product.image} alt={product.name} loading="lazy" style={{width:'100%',height:'100%',objectFit:'cover'}} /> : <i className="fas fa-cube" style={{fontSize:32,color:'var(--text-dim)'}}/>}
+        {product.image ? <Image src={product.image} alt={product.name} width={300} height={160} style={{width:'100%',height:'100%',objectFit:'cover'}} unoptimized /> : <i className="fas fa-cube" style={{fontSize:32,color:'var(--text-dim)'}}/>}
       </div>
       <div style={{padding:14}}>
         <h3 style={{fontSize:14,fontWeight:700,whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis'}}>{product.name}</h3>
