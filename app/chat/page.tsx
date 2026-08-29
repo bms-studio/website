@@ -1,0 +1,1 @@
+﻿export default function ChatPage(){ return <div style={{padding:'80px 20px',maxWidth:700,margin:'0 auto'}}><h1 style={{fontSize:28,fontWeight:800,fontFamily:'Syne'}}>Chat</h1><p style={{color:'var(--text-muted)',marginTop:8}}>Chat order — integrasi via /api/chats. Login required.</p></div> }

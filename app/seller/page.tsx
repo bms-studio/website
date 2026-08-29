@@ -1,0 +1,1 @@
+﻿export default function SellerPage(){ return <div style={{padding:'80px 20px',maxWidth:900,margin:'0 auto'}}><h1 style={{fontSize:28,fontWeight:800,fontFamily:'Syne'}}>Seller Dashboard</h1><p style={{color:'var(--text-muted)',marginTop:8}}>Kelola produk & pesanan — login sebagai seller.</p></div> }

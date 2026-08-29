@@ -11,3 +11,7 @@ assets-src/
 database/data.db-journal
 database/data.db-wal
 database/data.db-shm
+.next/
+out/
+.next
+*.tsbuildinfo

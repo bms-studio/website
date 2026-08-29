@@ -1,0 +1,1 @@
+﻿export default function ProfilePage(){ return <div style={{padding:'80px 20px',maxWidth:800,margin:'0 auto'}}><h1 style={{fontSize:28,fontWeight:800,fontFamily:'Syne'}}>Profile</h1><p style={{color:'var(--text-muted)',marginTop:8}}>Halaman profil — data dari /api/auth/session. Login dulu untuk melihat profil.</p></div> }
