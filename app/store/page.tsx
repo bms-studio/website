@@ -1,9 +1,11 @@
 ﻿"use client"
 import { useEffect, useState } from "react"
 import { api } from "@/lib/api"
+import { useStore } from "@/lib/store"
 import Link from "next/link"
 
 export default function StorePage() {
+  const {wishlist,toggleWishlist,addToCart}=useStore()
   const [assets, setAssets] = useState<any[]>([])
   const [filter, setFilter] = useState("all")
   const [search, setSearch] = useState("")
@@ -47,9 +49,11 @@ export default function StorePage() {
               <div style={{padding:16}}>
                 <h3 style={{fontSize:14,fontWeight:700}}>{a.name}</h3>
                 <p style={{fontSize:12,color:'var(--text-muted)',display:'-webkit-box',WebkitLineClamp:2,WebkitBoxOrient:'vertical',overflow:'hidden'}}>{a.description}</p>
-                <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginTop:10}}>
-                  <span style={{fontWeight:700,background:'var(--gradient-1)',WebkitBackgroundClip:'text',WebkitTextFillColor:'transparent'}}>{a.price}</span>
-                  <Link href={`/store`} className="btn btn-primary" style={{padding:'6px 12px',fontSize:12}}>Detail</Link>
+                <div style={{display:'flex',gap:6,alignItems:'center',marginTop:10}}>
+                  <span style={{fontWeight:700,background:'var(--gradient-1)',WebkitBackgroundClip:'text',WebkitTextFillColor:'transparent',flex:1}}>{a.price}</span>
+                  <button onClick={()=>toggleWishlist(a.id)} style={{width:32,height:32,borderRadius:'50%',border:'1px solid var(--glass-border)',background:wishlist.includes(a.id)?'rgba(200,168,174,.15)':'var(--glass)',color:wishlist.includes(a.id)?'#c8a8ae':'var(--text)',cursor:'pointer'}}><i className={wishlist.includes(a.id)?"fas fa-heart":"far fa-heart"} style={{fontSize:12}} /></button>
+                  <button onClick={()=>{navigator.clipboard.writeText(`${location.origin}/store?product=${a.id}`); alert('Link disalin!')}} style={{width:32,height:32,borderRadius:'50%',border:'1px solid var(--glass-border)',background:'var(--glass)',cursor:'pointer'}}><i className="fas fa-link" style={{fontSize:11}} /></button>
+                  <button onClick={()=>addToCart(a)} style={{padding:'6px 14px',borderRadius:100,border:'none',background:'var(--gradient-1)',color:'#fff',cursor:'pointer',fontSize:12,fontWeight:600}}>Cart</button>
                 </div>
               </div>
             </div>
