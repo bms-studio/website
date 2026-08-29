@@ -1347,17 +1347,11 @@ html,body{scrollbar-width:thin;scrollbar-color:var(--primary-dark) transparent}
 ::-webkit-scrollbar-thumb{background:linear-gradient(180deg,var(--primary-dark),var(--secondary));border-radius:100px;border:2px solid var(--bg)}
 ::selection{background:rgba(230,227,220,0.35);color:#fff}
 body{letter-spacing:-0.01em}
-#cursorGlow,#cursorCore,.cursor-trail{position:fixed;top:0;left:0;z-index:10001;pointer-events:none;border-radius:50%;will-change:transform}
-#cursorGlow{width:52px;height:52px;margin:-26px 0 0 -26px;background:radial-gradient(circle,rgba(230,227,220,.4),rgba(150,172,159,.14) 55%,transparent 72%);filter:blur(2px);transition:transform .4s cubic-bezier(.16,1,.3,1),opacity .4s}
-#cursorCore{width:12px;height:12px;margin:-6px 0 0 -6px;background:linear-gradient(135deg,#e6e3dc,#a3b3a7);box-shadow:0 0 14px rgba(230,227,220,.9),0 0 34px rgba(230,227,220,.45);transition:width .25s cubic-bezier(.16,1,.3,1),height .25s cubic-bezier(.16,1,.3,1),margin .25s,background .3s,box-shadow .3s}
-.cursor-trail{width:8px;height:8px;margin:-4px 0 0 -4px;background:rgba(150,172,159,.6);box-shadow:0 0 10px rgba(150,172,159,.5);opacity:0;transition:opacity .4s}
-body.cursor-on .cursor-trail{opacity:.8}
-body.cursor-on #cursorGlow.cursor-hover{transform:scale(1.55)}
-body.cursor-on #cursorCore.cursor-hover{width:34px;height:34px;margin:-17px 0 0 -17px;background:rgba(230,227,220,.1);border:1.5px solid rgba(230,227,220,.85);box-shadow:0 0 26px rgba(230,227,220,.55)}
-body.cursor-on #cursorCore.cursor-hover i{opacity:1}
-body.cursor-on #cursorCore.cursor-press{width:7px;height:7px;margin:-3.5px 0 0 -3.5px;background:#a3b3a7;box-shadow:0 0 18px rgba(150,172,159,.9)}
-body.cursor-on *{cursor:none!important}
-@media(hover:none),(pointer:coarse){#cursorGlow,#cursorCore,.cursor-trail{display:none}}
+/* Mac-like custom cursor — clean arrow, bukan bulat */
+html{cursor:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='20' height='24' viewBox='0 0 20 24'><path d='M2 2 L2 20 L7 12.5 L10.5 18 L12 16.5 L8 11 L15 11 Z' fill='white' stroke='black' stroke-width='1' stroke-linejoin='round' stroke-opacity='0.9'/></svg>") 2 2, auto}
+a,button,.btn,[onclick],.nav-tab,.nav-brand,.asset-card,.service-card,.portfolio-card,.v6-card,.ps-card{cursor:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='22' height='22' viewBox='0 0 22 22'><path d='M11 3 C13 5 16 6 16 10 C16 13.5 13 16 11 18 C9 16 6 13.5 6 10 C6 6 9 5 11 3 Z' fill='white' stroke='black' stroke-width='1' stroke-linejoin='round'/><circle cx='11' cy='9' r='1.2' fill='black'/></svg>") 11 6, pointer}
+input,textarea,select{cursor:text}
+@media(hover:none),(pointer:coarse){html,a,button{cursor:auto}}
 #navbar{background:rgba(6,6,8,0.55);border-bottom:1px solid transparent;transition:background 0.4s var(--ease-out),border-color 0.4s,box-shadow 0.4s}
 #navbar.scrolled{background:rgba(6,6,8,0.82);backdrop-filter:blur(24px) saturate(1.4);border-bottom-color:rgba(230,227,220,0.15);box-shadow:0 10px 40px rgba(0,0,0,0.35)}
 .nav-brand{font-family:'Syne',sans-serif;font-weight:800;font-size:22px;background:linear-gradient(90deg,#fff,var(--primary-light));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;letter-spacing:-0.02em}
@@ -1465,7 +1459,6 @@ body.cursor-on *{cursor:none!important}
 @media(max-width:768px){.v2-mega-marquee{padding:20px 0}.v2-mega-item{padding:0 16px}}
 @media(prefers-reduced-motion:reduce){
   *,*::before,*::after{animation-duration:0.01ms!important;animation-iteration-count:1!important;transition-duration:0.01ms!important}
-  #cursorGlow,#cursorCore,.cursor-trail{display:none}
 }
 
 /* ============================================================
@@ -1893,12 +1886,6 @@ body.cursor-on *{cursor:none!important}
 </head>
 <body>
 
-<div id="cursorGlow"></div>
-<div id="cursorCore"></div>
-<div class="cursor-trail t1"></div>
-<div class="cursor-trail t2"></div>
-<div class="cursor-trail t3"></div>
-
 <div class="bg-glow">
   <div class="glow"></div>
   <div class="glow"></div>
@@ -2316,11 +2303,11 @@ body.cursor-on *{cursor:none!important}
         <div class="v6-block">
           <h4 class="v6-block-title"><i class="fas fa-chart-bar"></i> Languages</h4>
           <div class="v6-langs" id="v6Langs">
-            <div class="v6-lang" data-v="42"><span class="v6-lang-name">Lua</span><div class="v6-lang-bar"><div class="v6-lang-fill"></div></div><span class="v6-lang-pct">42%</span></div>
-            <div class="v6-lang" data-v="28"><span class="v6-lang-name">JavaScript</span><div class="v6-lang-bar"><div class="v6-lang-fill"></div></div><span class="v6-lang-pct">28%</span></div>
-            <div class="v6-lang" data-v="14"><span class="v6-lang-name">Luau</span><div class="v6-lang-bar"><div class="v6-lang-fill"></div></div><span class="v6-lang-pct">14%</span></div>
-            <div class="v6-lang" data-v="10"><span class="v6-lang-name">Python</span><div class="v6-lang-bar"><div class="v6-lang-fill"></div></div><span class="v6-lang-pct">10%</span></div>
-            <div class="v6-lang" data-v="6"><span class="v6-lang-name">SQL</span><div class="v6-lang-bar"><div class="v6-lang-fill"></div></div><span class="v6-lang-pct">6%</span></div>
+            <div class="v6-lang" data-v="95"><span class="v6-lang-name">Lua</span><div class="v6-lang-bar"><div class="v6-lang-fill"></div></div><span class="v6-lang-pct">95%</span></div>
+            <div class="v6-lang" data-v="90"><span class="v6-lang-name">JavaScript</span><div class="v6-lang-bar"><div class="v6-lang-fill"></div></div><span class="v6-lang-pct">90%</span></div>
+            <div class="v6-lang" data-v="85"><span class="v6-lang-name">Luau</span><div class="v6-lang-bar"><div class="v6-lang-fill"></div></div><span class="v6-lang-pct">85%</span></div>
+            <div class="v6-lang" data-v="70"><span class="v6-lang-name">Python</span><div class="v6-lang-bar"><div class="v6-lang-fill"></div></div><span class="v6-lang-pct">70%</span></div>
+            <div class="v6-lang" data-v="72"><span class="v6-lang-name">SQL</span><div class="v6-lang-bar"><div class="v6-lang-fill"></div></div><span class="v6-lang-pct">72%</span></div>
           </div>
         </div>
 
@@ -6972,52 +6959,7 @@ document.addEventListener('DOMContentLoaded', async function() {
   var FINE = window.matchMedia && window.matchMedia('(hover: hover) and (pointer: fine)').matches;
   var GS = window.gsap && window.ScrollTrigger;
 
-  if (FINE && !RM) {
-    document.body.classList.add('cursor-on');
-    var core = document.getElementById('cursorCore');
-    var glow = document.getElementById('cursorGlow');
-    var trails = [].slice.call(document.querySelectorAll('.cursor-trail'));
-    if (core && glow) {
-      var mx = innerWidth / 2, my = innerHeight / 2;
-      var cx = mx, cy = my, gx = mx, gy = my;
-      var tp = trails.map(function(){ return { x: mx, y: my }; });
-      var speeds = [0.4, 0.25, 0.14];
-      var moved = true;
-      document.addEventListener('mousemove', function(e){
-        mx = e.clientX; my = e.clientY; moved = true;
-      }, { passive: true });
-      var hot = 'a,button,.btn,[onclick],input,select,textarea,.nav-tab,.nav-brand,.theme-toggle,.hamburger,.tech-pill,.cart-item-remove,.asset-add,.table-btn,.public-chat-btn,.back-to-top,.v6-card,.v7-card';
-      document.addEventListener('mouseover', function(e){
-        if (e.target.closest && e.target.closest(hot)) { core.classList.add('cursor-hover'); glow.classList.add('cursor-hover'); }
-      });
-      document.addEventListener('mouseout', function(e){
-        if (e.target.closest && e.target.closest(hot)) { core.classList.remove('cursor-hover'); glow.classList.remove('cursor-hover'); }
-      });
-      document.addEventListener('mousedown', function(){ core.classList.add('cursor-press'); });
-      document.addEventListener('mouseup', function(){ core.classList.remove('cursor-press'); });
-      (function raf(){
-        var settled = Math.abs(mx - cx) < 0.1 && Math.abs(my - cy) < 0.1 &&
-                      Math.abs(mx - gx) < 0.1 && Math.abs(my - gy) < 0.1;
-        for (var s = 0; s < trails.length; s++) {
-          if (Math.abs(mx - tp[s].x) >= 0.1 || Math.abs(my - tp[s].y) >= 0.1) { settled = false; break; }
-        }
-        if (moved || !settled) {
-          moved = false;
-          cx += (mx - cx) * 0.5; cy += (my - cy) * 0.5;
-          gx += (mx - gx) * 0.28; gy += (my - gy) * 0.28;
-          core.style.transform = 'translate3d(' + cx + 'px,' + cy + 'px,0)';
-          glow.style.transform = 'translate3d(' + gx + 'px,' + gy + 'px,0)';
-          for (var i = 0; i < trails.length; i++) {
-            var p = tp[i];
-            p.x += (mx - p.x) * speeds[i];
-            p.y += (my - p.y) * speeds[i];
-            trails[i].style.transform = 'translate3d(' + p.x + 'px,' + p.y + 'px,0)';
-          }
-        }
-        requestAnimationFrame(raf);
-      })();
-    }
-  }
+  // Custom Mac cursor via CSS only — no JS needed
 
   var nav = document.getElementById('navbar');
   if (nav) {
