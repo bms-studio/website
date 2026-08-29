@@ -1775,23 +1775,53 @@ input,textarea,select{cursor:text}
 @keyframes navIn{from{opacity:0;transform:translateY(-70px)}to{opacity:1;transform:translateY(0)}}
 @media(prefers-reduced-motion:reduce){#navbar{animation:none}.asset-thumb img,.ci-thumb img{animation:none}}
 
-/* ===== PUBLIC CHAT: kanan-bawah + auto-lift di atas back-to-top ===== */
-.public-chat-btn{left:auto;right:24px;bottom:24px;transition:bottom .35s var(--ease-out),transform .3s var(--spring)}
-.public-chat-btn.lift{bottom:82px}
-.public-chat-box{left:auto;right:24px;bottom:90px}
-.pc-login-note{display:none;flex-direction:column;align-items:center;gap:10px;padding:26px 18px;
-  color:var(--text-muted);font-size:12.5px;text-align:center}
-.pc-login-note i{font-size:20px;color:var(--secondary)}
-.pc-login-note a{color:var(--primary-light);text-decoration:underline;cursor:pointer}
-.pc-guest-note{text-align:center;padding:30px 16px;color:var(--text-muted);font-size:12.5px}
-.pc-guest-note i{font-size:22px;color:var(--secondary);margin-bottom:8px;display:block}
-.pc-guest-note .btn{margin-top:12px}
+/* ===== PUBLIC CHAT — REDESIGN BARU (2026) ===== */
+.public-chat-btn{left:auto;right:22px;bottom:88px;width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,#e6e3dc 0%,#a3b3a7 100%);color:#1a1a1e;font-size:22px;z-index:1000;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 28px rgba(0,0,0,.28),0 2px 8px rgba(0,0,0,.18);border:1px solid rgba(255,255,255,.18);transition:transform .3s var(--spring),bottom .35s var(--ease-out),box-shadow .3s}
+.public-chat-btn:hover{transform:scale(1.06) translateY(-2px);box-shadow:0 14px 40px rgba(0,0,0,.35)}
+.public-chat-btn:active{transform:scale(.96)}
+.public-chat-btn.lift{bottom:88px}
+.public-chat-btn .badge{position:absolute;top:-4px;right:-4px;min-width:20px;height:20px;padding:0 5px;border-radius:20px;background:#c96f6f;color:#fff;font-size:10px;font-weight:800;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(201,111,111,.5);border:2px solid var(--bg)}
+.public-chat-box{left:auto;right:22px;bottom:154px;width:372px;max-height:520px;border-radius:24px;background:rgba(16,16,20,.97);border:1px solid rgba(255,255,255,.08);box-shadow:0 24px 64px rgba(0,0,0,.45),0 4px 16px rgba(0,0,0,.25);z-index:999;display:none;flex-direction:column;overflow:hidden;backdrop-filter:blur(24px) saturate(1.4);-webkit-backdrop-filter:blur(24px) saturate(1.4)}
+.public-chat-box.open{display:flex;animation:pcIn .35s var(--ease-out)}
+@keyframes pcIn{from{opacity:0;transform:translateY(12px) scale(.97)}to{opacity:1;transform:translateY(0) scale(1)}}
+.public-chat-header{padding:16px 18px;background:linear-gradient(135deg,rgba(230,227,220,.09),rgba(150,172,159,.06));border-bottom:1px solid rgba(255,255,255,.06);display:flex;align-items:center;gap:12px;flex-shrink:0}
+.public-chat-header .pc-h-icon{width:32px;height:32px;border-radius:50%;background:var(--gradient-1);display:flex;align-items:center;justify-content:center;color:#fff;font-size:14px;flex-shrink:0}
+.public-chat-header h4{font-family:'Syne',sans-serif;font-size:14px;font-weight:700;flex:1}
+.public-chat-header .pc-online{width:8px;height:8px;border-radius:50%;background:#7aa87f;box-shadow:0 0 10px rgba(122,168,127,.8);animation:pcPulse 2s ease-in-out infinite}
+@keyframes pcPulse{0%,100%{opacity:1}50%{opacity:.5}}
+.public-chat-header .modal-close{width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);color:var(--text-muted);display:flex;align-items:center;justify-content:center;font-size:16px;cursor:pointer;transition:.2s}
+.public-chat-header .modal-close:hover{background:rgba(255,255,255,.1);color:var(--text)}
+.public-chat-msgs{flex:1;overflow-y:auto;padding:16px 14px;display:flex;flex-direction:column;gap:10px;min-height:220px;max-height:360px;scroll-behavior:smooth}
+.public-chat-msgs::-webkit-scrollbar{width:4px}
+.public-chat-msgs::-webkit-scrollbar-thumb{background:rgba(255,255,255,.12);border-radius:4px}
+.public-chat-msg{display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border-radius:16px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.05);transition:.2s}
+.public-chat-msg:hover{background:rgba(255,255,255,.07);border-color:rgba(255,255,255,.09)}
+.public-chat-msg.mine{background:rgba(150,172,159,.10);border-color:rgba(150,172,159,.18)}
+.public-chat-msg .pc-avatar{width:32px;height:32px;border-radius:50%;flex-shrink:0;background:var(--gradient-1);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;background-size:cover;background-position:center;position:relative}
+.public-chat-input{padding:12px 14px;background:rgba(255,255,255,.02);border-top:1px solid rgba(255,255,255,.06);display:flex;gap:8px;align-items:center;flex-shrink:0}
+.public-chat-input input{flex:1;padding:10px 16px;border-radius:100px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.06);color:var(--text);font-size:13px;outline:none;transition:.2s}
+.public-chat-input input:focus{border-color:rgba(230,227,220,.25);background:rgba(255,255,255,.09)}
+.public-chat-input input::placeholder{color:var(--text-dim)}
+.public-chat-input button{width:38px;height:38px;border-radius:50%;border:none;background:var(--gradient-1);color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;transition:transform .2s,box-shadow .2s}
+.public-chat-input button:hover{transform:scale(1.06);box-shadow:0 4px 16px rgba(230,227,220,.25)}
+.public-chat-input button:active{transform:scale(.94)}
+.pc-login-note{display:none;flex-direction:column;align-items:center;gap:12px;padding:32px 20px;color:var(--text-muted);font-size:13px;text-align:center}
+.pc-login-note i{font-size:26px;color:var(--secondary);opacity:.9}
+.pc-login-note a{color:var(--primary-light);text-decoration:underline;cursor:pointer;font-weight:600}
+.pc-guest-note{text-align:center;padding:32px 18px;color:var(--text-muted);font-size:13px}
+.pc-guest-note i{font-size:24px;color:var(--secondary);margin-bottom:10px;display:block}
+.pc-guest-note .btn{margin-top:14px}
 @media(max-width:768px){
-  .public-chat-btn{right:16px;bottom:16px}
-  .public-chat-btn.lift{bottom:72px}
-  .public-chat-box{left:12px;right:12px;bottom:76px;width:auto;max-height:60vh}
+  .public-chat-btn{right:16px;bottom:88px;width:52px;height:52px;font-size:20px}
+  .public-chat-btn.lift{bottom:88px}
+  .public-chat-box{left:12px;right:12px;bottom:148px;width:auto;max-height:62vh;border-radius:20px}
   .back-to-top{right:16px;bottom:16px}
 }
+@media(max-width:480px){
+  .public-chat-box{bottom:148px;max-height:58vh}
+}
+/* back-to-top tetap di bawah, z-index di bawah chat btn */
+.back-to-top{z-index:998}
 
 /* ===== ADMIN PANEL POLISH ===== */
 .admin-sidebar{position:sticky;top:calc(var(--nav-height) + 14px);align-self:flex-start;
@@ -3693,19 +3723,21 @@ function togglePwd(el){
   </div>
 </div>
 
-<button class="public-chat-btn" id="publicChatBtn" onclick="togglePublicChat()" title="Public Chat">
+<button class="public-chat-btn" id="publicChatBtn" onclick="togglePublicChat()" title="Community Chat">
   <i class="fas fa-comments"></i>
   <span class="badge" id="pcBadge" style="display:none">0</span>
 </button>
 <div class="public-chat-box" id="publicChatBox">
   <div class="public-chat-header">
-    <h4><i class="fas fa-globe" style="font-size:12px;color:var(--secondary)"></i> Public Chat</h4>
-    <button class="modal-close" onclick="togglePublicChat()">&times;</button>
+    <div class="pc-h-icon"><i class="fas fa-users"></i></div>
+    <h4>Community Chat</h4>
+    <span class="pc-online" title="Online"></span>
+    <button class="modal-close" onclick="togglePublicChat()"><i class="fas fa-times" style="font-size:11px"></i></button>
   </div>
   <div class="public-chat-msgs" id="publicChatMsgs"></div>
   <div class="public-chat-input" id="pcInputArea">
-    <input type="text" id="pcInput" placeholder="Type a message..." onkeydown="if(event.key==='Enter')sendPC()">
-    <button onclick="sendPC()">Send</button>
+    <input type="text" id="pcInput" placeholder="Tulis pesan..." onkeydown="if(event.key==='Enter')sendPC()">
+    <button onclick="sendPC()" title="Kirim"><i class="fas fa-paper-plane" style="font-size:13px"></i></button>
   </div>
   <div class="pc-login-note" id="pcLoginNote" style="display:none">
     <i class="fas fa-lock"></i>
@@ -4441,7 +4473,7 @@ async function renderAssets() {
       const hasDiscount = a.original_price && a.original_price !== a.price && a.original_price !== '';
       const avgRating = a.avg_rating ? Math.round(Number(a.avg_rating)) : 0;
       const rStars = '<div class="rating-stars">'+Array.from({length:5}, (_,i) => '<i class="fas fa-star'+(i<avgRating?'':' empty')+'"></i>').join('')+'</div>';
-      return '<div class="asset-card reveal"><div class="asset-thumb" style="cursor:pointer" onclick="openStoreProductModal('+a.id+')">'+(a.image ? '<img src="'+esc(a.image)+'" alt="" loading="lazy" decoding="async">' : '<i class="fas fa-cube"></i>')+(a.video_enabled ? '<div class="play-btn" onclick="event.stopPropagation();openVideoModal(\''+(a.video_url||'')+'\')"><i class="fas fa-play"></i></div>' : '')+'</div><div class="asset-body"><h3 style="cursor:pointer" onclick="openStoreProductModal('+a.id+')">'+esc(a.name)+'</h3>'+rStars+'<div class="tags">'+tags.slice(0,3).map(t => '<span>'+esc(t.trim())+'</span>').join('')+'</div><div class="desc">'+esc(a.description||'')+'</div></div><div class="asset-footer"><div><span class="asset-price">'+(isFree ? 'Gratis' : esc(a.price))+'</span>'+(hasDiscount ? '<span class="asset-price-original">'+esc(a.original_price)+'</span>' : '')+'<div><span class="asset-stock '+(a.stock_status === 'limited' ? 'limited' : '')+'">'+(a.stock_status === 'limited' ? 'Limited' : a.stock_status === 'preorder' ? 'Pre-order' : 'Ready')+'</span></div></div><div style="display:flex;gap:4px">'+(a.link ? '<a href="'+a.link+'" target="_blank" rel="noopener" class="asset-add" onclick="event.stopPropagation()" title="Open link"><i class="fas fa-external-link-alt"></i></a>' : '')+(APP.wishlist.includes(a.id) ? '<button class="asset-add wl-on" onclick="event.stopPropagation();toggleWish('+a.id+',this)" title="Favorit"><i class="fas fa-heart"></i></button>' : '<button class="asset-add" onclick="event.stopPropagation();toggleWish('+a.id+',this)" title="Favorit"><i class="far fa-heart"></i></button>')+'<button class="asset-add" onclick="event.stopPropagation();shareProduct('+a.id+')" title="Salin link produk"><i class="fas fa-link"></i></button><button class="asset-add" onclick="addToCart('+a.id+')"><i class="fas fa-plus"></i></button>'+(APP.isLoggedIn ? '<button class="asset-add" onclick="event.stopPropagation();openAdminChat('+a.id+',\'asset\')" title="Chat"><i class="fas fa-comment"></i></button>' : '')+'</div></div></div>';
+      return '<div class="asset-card reveal"><div class="asset-thumb" style="cursor:pointer" onclick="openStoreProductModal('+a.id+')">'+(a.image ? '<img src="'+esc(a.image)+'" alt="'+esc(a.name)+'" loading="lazy" decoding="async" style="opacity:0;transition:opacity .35s" onload="this.style.opacity=1" onerror="this.style.display=\'none\';this.parentElement.insertAdjacentHTML(\'beforeend\',\'<i class=\\\'fas fa-image\\\' style=\\\'font-size:28px;color:var(--text-dim)\\\'></i>\')">' : '<i class="fas fa-cube"></i>')+(a.video_enabled ? '<div class="play-btn" onclick="event.stopPropagation();openVideoModal(\''+(a.video_url||'')+'\')"><i class="fas fa-play"></i></div>' : '')+'</div><div class="asset-body"><h3 style="cursor:pointer" onclick="openStoreProductModal('+a.id+')">'+esc(a.name)+'</h3>'+rStars+'<div class="tags">'+tags.slice(0,3).map(t => '<span>'+esc(t.trim())+'</span>').join('')+'</div><div class="desc">'+esc(a.description||'')+'</div></div><div class="asset-footer"><div><span class="asset-price">'+(isFree ? 'Gratis' : esc(a.price))+'</span>'+(hasDiscount ? '<span class="asset-price-original">'+esc(a.original_price)+'</span>' : '')+'<div><span class="asset-stock '+(a.stock_status === 'limited' ? 'limited' : '')+'">'+(a.stock_status === 'limited' ? 'Limited' : a.stock_status === 'preorder' ? 'Pre-order' : 'Ready')+'</span></div></div><div style="display:flex;gap:4px">'+(a.link ? '<a href="'+a.link+'" target="_blank" rel="noopener" class="asset-add" onclick="event.stopPropagation()" title="Open link"><i class="fas fa-external-link-alt"></i></a>' : '')+(APP.wishlist.includes(a.id) ? '<button class="asset-add wl-on" onclick="event.stopPropagation();toggleWish('+a.id+',this)" title="Favorit"><i class="fas fa-heart"></i></button>' : '<button class="asset-add" onclick="event.stopPropagation();toggleWish('+a.id+',this)" title="Favorit"><i class="far fa-heart"></i></button>')+'<button class="asset-add" onclick="event.stopPropagation();shareProduct('+a.id+')" title="Salin link produk"><i class="fas fa-link"></i></button><button class="asset-add" onclick="addToCart('+a.id+')"><i class="fas fa-plus"></i></button>'+(APP.isLoggedIn ? '<button class="asset-add" onclick="event.stopPropagation();openAdminChat('+a.id+',\'asset\')" title="Chat"><i class="fas fa-comment"></i></button>' : '')+'</div></div></div>';
     }).join('');
     setTimeout(initRevealObserver, 100);
   } catch { grid.innerHTML = '<div class="empty-state"><i class="fas fa-exclamation-triangle"></i><h3>Gagal memuat</h3></div>'; empty.style.display = 'none'; _renderedAssetsSig = null; }
@@ -5296,7 +5328,7 @@ async function loadFeaturedProducts() {
     const sigData = JSON.stringify(products);
     if (SIGS['featprod'] === sigData) return;
     SIGS['featprod'] = sigData;
-    grid.innerHTML = products.map(a => '<div class="asset-card reveal"><div class="asset-thumb" style="height:120px">'+(a.image?'<img src="'+esc(a.image)+'" loading="lazy" decoding="async">':'<i class="fas fa-cube"></i>')+(a.video_enabled && a.video_url ? '<div class="play-btn" onclick="event.stopPropagation();openVideoModal(\''+a.video_url+'\')"><i class="fas fa-play"></i></div>' : '')+'</div><div class="asset-body"><h3 style="font-size:13px">'+esc(a.name)+'</h3><div style="display:flex;justify-content:space-between;align-items:center;margin-top:6px"><span class="asset-price" style="font-size:13px">'+(a.price==='Gratis'?'Gratis':a.price)+'</span><button class="asset-add" onclick="addToCart('+a.id+')"><i class="fas fa-plus"></i></button></div></div></div>').join('');
+    grid.innerHTML = products.map(a => '<div class="asset-card reveal"><div class="asset-thumb" style="height:120px">'+(a.image?'<img src="'+esc(a.image)+'" alt="'+esc(a.name)+'" loading="lazy" decoding="async" style="opacity:0;transition:opacity .35s" onload="this.style.opacity=1" onerror="this.style.display=\'none\';this.parentElement.insertAdjacentHTML(\'beforeend\',\'<i class=\\\'fas fa-image\\\' style=\\\'font-size:24px;color:var(--text-dim)\\\'></i>\')\">':'<i class="fas fa-cube"></i>')+(a.video_enabled && a.video_url ? '<div class="play-btn" onclick="event.stopPropagation();openVideoModal(\''+a.video_url+'\')"><i class="fas fa-play"></i></div>' : '')+'</div><div class="asset-body"><h3 style="font-size:13px">'+esc(a.name)+'</h3><div style="display:flex;justify-content:space-between;align-items:center;margin-top:6px"><span class="asset-price" style="font-size:13px">'+(a.price==='Gratis'?'Gratis':a.price)+'</span><button class="asset-add" onclick="addToCart('+a.id+')"><i class="fas fa-plus"></i></button></div></div></div>').join('');
     setTimeout(initRevealObserver, 100);
   } catch {}
 }
