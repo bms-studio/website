@@ -1868,12 +1868,159 @@ input,textarea,select{cursor:text}
 .asset-add.wl-on{color:#c8a8ae!important;border-color:rgba(200,168,174,.45)!important;background:rgba(200,168,174,.12)!important}
 .asset-add.wl-on:hover{background:rgba(200,168,174,.2)!important}
 
-/* ===== SELLER DASHBOARD POLISH ===== */
-#page-seller h2{font-family:'Syne',sans-serif;letter-spacing:-.01em}
-#page-seller .glass{transition:border-color .3s,box-shadow .3s,transform .3s var(--ease-out)}
-#page-seller .glass:hover{border-color:rgba(147,171,158,.38);box-shadow:0 14px 38px rgba(0,0,0,.25);transform:translateY(-2px)}
+/* ===== SELLER DASHBOARD PRO ===== */
+#page-seller{--sd-grad:linear-gradient(135deg,#e6e3dc,#93ab9e)}
 #page-seller .form-input{border-radius:12px}
 #page-seller .btn{border-radius:100px}
+#page-seller .btn-xs{border-radius:100px}
+
+/* Gate (apply / pending) */
+.sd-gate-wrap{min-height:72vh;padding:40px 16px}
+.sd-gate{width:100%;max-width:540px;margin:0 auto}
+.sd-gate-card{background:var(--glass);border:1px solid var(--glass-border2);border-radius:22px;padding:28px;backdrop-filter:blur(24px);box-shadow:0 18px 54px rgba(0,0,0,.28)}
+.sd-gate-head{display:flex;align-items:center;gap:14px;margin-bottom:14px}
+.sd-gate-ico{width:48px;height:48px;border-radius:14px;background:var(--sd-grad);display:flex;align-items:center;justify-content:center;color:#1c1c20;font-size:19px;flex-shrink:0;box-shadow:0 8px 22px rgba(147,171,158,.3)}
+.sd-gate-head h3{margin:0;font-size:17px;font-family:'Syne',sans-serif}
+.sd-gate-head p{margin:3px 0 0;font-size:11.5px;color:var(--text-muted)}
+.sd-gate-alert{display:flex;gap:8px;align-items:flex-start;font-size:11px;line-height:1.55;color:#c8a8ae;background:rgba(200,168,174,.08);border:1px solid rgba(200,168,174,.18);border-radius:12px;padding:10px 12px}
+.sd-gate-alert i{margin-top:2px}
+.sd-gate-card h3.sd-gate-ttl{text-align:center;margin:0 0 6px;font-size:17px;font-family:'Syne',sans-serif}
+
+/* Shell */
+.sd-shell{display:flex;gap:20px;padding:20px;max-width:1240px;margin:0 auto;align-items:flex-start}
+.sd-sidebar{width:236px;flex-shrink:0;position:sticky;top:calc(var(--nav-height) + 16px);align-self:flex-start;background:linear-gradient(180deg,rgba(16,16,20,.55),rgba(230,227,220,.03));backdrop-filter:blur(26px);border:1px solid rgba(255,255,255,.07);border-radius:20px;padding:14px;display:flex;flex-direction:column;gap:4px;box-shadow:0 14px 44px rgba(0,0,0,.22)}
+.sd-brand{display:flex;align-items:center;gap:10px;padding:8px 10px 14px;border-bottom:1px solid rgba(255,255,255,.07);margin-bottom:10px}
+.sd-brand-icon{width:40px;height:40px;border-radius:12px;background:var(--sd-grad);display:flex;align-items:center;justify-content:center;color:#1c1c20;font-size:16px;flex-shrink:0;box-shadow:0 6px 18px rgba(147,171,158,.35)}
+.sd-brand b{display:block;font-family:'Syne',sans-serif;font-size:14px;line-height:1.1}
+.sd-brand span{font-size:10px;color:var(--text-dim)}
+.sd-nav{display:flex;flex-direction:column;gap:2px}
+.sd-nav-item{display:flex;align-items:center;gap:10px;width:100%;padding:10px 12px;border:none;background:transparent;color:var(--text-muted);font-family:inherit;font-size:12.5px;font-weight:500;border-radius:12px;cursor:pointer;transition:all .25s var(--ease-out);text-align:left}
+.sd-nav-item i{width:18px;text-align:center;font-size:13px;flex-shrink:0}
+.sd-nav-item:hover{background:rgba(230,227,220,.07);color:var(--text);transform:translateX(3px)}
+.sd-nav-item.active{background:linear-gradient(90deg,rgba(230,227,220,.14),rgba(230,227,220,.03));color:var(--primary);box-shadow:inset 0 0 0 1px rgba(230,227,220,.16)}
+.sd-nav-count{margin-left:auto;background:rgba(147,171,158,.16);color:#93ab9e;border-radius:99px;padding:1px 8px;font-size:10px;font-weight:700;min-width:20px;text-align:center}
+.sd-side-foot{margin-top:auto;padding-top:12px;border-top:1px solid rgba(255,255,255,.07);display:flex;flex-direction:column;gap:2px}
+.sd-user{display:flex;align-items:center;gap:10px;padding:10px 12px;margin-bottom:4px}
+.sd-user-av{width:36px;height:36px;border-radius:50%;background:var(--sd-grad);display:flex;align-items:center;justify-content:center;font-weight:800;color:#1c1c20;flex-shrink:0;font-size:14px;background-size:cover;background-position:center}
+.sd-user-meta{min-width:0}
+.sd-user-meta b{display:block;font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sd-user-meta span{display:block;font-size:10px;color:var(--text-dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+/* Main */
+.sd-main{flex:1;min-width:0}
+.sd-section{display:none;animation:sdFadeIn .35s var(--ease-out)}
+.sd-section.active{display:block}
+@keyframes sdFadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.sd-head{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;margin-bottom:18px;flex-wrap:wrap}
+.sd-head h1{font-family:'Syne',sans-serif;font-size:22px;letter-spacing:-.01em;margin:0}
+.sd-sub{font-size:12px;color:var(--text-muted);margin-top:2px}
+
+/* Stats */
+.sd-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:18px}
+.sd-stat{position:relative;overflow:hidden;background:linear-gradient(135deg,rgba(230,227,220,.05),rgba(150,172,159,.02));border:1px solid rgba(255,255,255,.07);border-top-color:rgba(255,255,255,.11);border-bottom-color:rgba(0,0,0,.16);border-radius:18px;padding:16px;display:flex;align-items:center;gap:12px;box-shadow:0 6px 24px rgba(0,0,0,.18);transition:transform .3s var(--ease-out),box-shadow .3s}
+.sd-stat:hover{transform:translateY(-3px);box-shadow:0 14px 32px rgba(0,0,0,.24)}
+.sd-stat::after{content:'';position:absolute;top:0;right:0;width:76px;height:76px;background:radial-gradient(circle,rgba(230,227,220,.08),transparent 70%);pointer-events:none}
+.sd-stat-ico{width:44px;height:44px;border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.sd-stat-ico.s1{background:rgba(143,184,159,.16);color:#8fb89f}
+.sd-stat-ico.s2{background:rgba(192,168,120,.16);color:#c0a878}
+.sd-stat-ico.s3{background:rgba(200,168,174,.16);color:#c8a8ae}
+.sd-stat-ico.s4{background:rgba(143,166,188,.16);color:#8fa6bc}
+.sd-stat-num{font-size:22px;font-weight:800;background:var(--gradient-1);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;line-height:1.15}
+.sd-stat-label{font-size:11px;color:var(--text-muted);margin-top:1px}
+.sd-stat-sub{font-size:10px;color:var(--text-dim);margin-top:5px}
+
+/* Cards */
+.sd-grid-2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:18px}
+.sd-card{background:linear-gradient(135deg,rgba(230,227,220,.04),rgba(150,172,159,.015));border:1px solid rgba(255,255,255,.07);border-radius:18px;padding:18px;box-shadow:0 6px 24px rgba(0,0,0,.16)}
+.sd-card.sd-collapse{display:none}
+.sd-card-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;gap:8px}
+.sd-card-head h3{font-size:13px;font-weight:700;margin:0;display:flex;align-items:center;gap:7px}
+.sd-card-head h3 i{color:var(--secondary)}
+
+/* Rows */
+.sd-row{display:flex;align-items:center;gap:12px;padding:10px;border-radius:12px;border:1px solid rgba(255,255,255,.05);background:rgba(230,227,220,.025);margin-bottom:8px;transition:border-color .25s,background .25s}
+.sd-row:hover{border-color:rgba(147,171,158,.32);background:rgba(230,227,220,.045)}
+.sd-row-img{width:44px;height:44px;border-radius:10px;object-fit:cover;flex-shrink:0;background:var(--bg-4);display:flex;align-items:center;justify-content:center;color:var(--text-dim);font-size:15px}
+.sd-row-main{flex:1;min-width:0}
+.sd-row-title{font-size:12.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sd-row-sub{font-size:10.5px;color:var(--text-dim);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sd-row-r{text-align:right;flex-shrink:0}
+.sd-row-price{font-size:12px;font-weight:700;color:var(--primary)}
+.sd-row-act{display:flex;gap:4px}
+.sd-badge{display:inline-flex;align-items:center;gap:5px;font-size:9.5px;font-weight:700;padding:2.5px 9px;border-radius:99px;letter-spacing:.02em;text-transform:capitalize}
+
+/* Product form */
+.sd-form-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.sd-form-grid .full{grid-column:1/-1}
+.sd-add-form h3{font-size:14px;font-weight:700;margin:0 0 12px;display:flex;align-items:center;gap:8px}
+.sd-hint{font-size:11px;color:var(--text-muted);display:flex;align-items:center;gap:6px}
+.sd-hint i{color:var(--secondary)}
+
+/* Empty state */
+.sd-empty{text-align:center;padding:36px 16px;color:var(--text-dim);font-size:12px}
+.sd-empty i{font-size:30px;display:block;margin-bottom:10px;opacity:.35}
+
+/* Filters */
+.sd-filters{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
+.sd-chip{padding:5px 13px;border-radius:99px;border:1px solid rgba(255,255,255,.09);background:transparent;color:var(--text-muted);font-size:11px;font-weight:600;cursor:pointer;transition:all .22s var(--ease-out);font-family:inherit}
+.sd-chip:hover{color:var(--text);border-color:rgba(147,171,158,.4)}
+.sd-chip.active{background:linear-gradient(90deg,rgba(230,227,220,.14),rgba(230,227,220,.04));color:var(--primary);border-color:rgba(230,227,220,.24)}
+.sd-subtabs{display:flex;gap:6px;margin-bottom:12px}
+
+/* Orders */
+.sd-order{display:flex;gap:12px;justify-content:space-between;align-items:flex-start;flex-wrap:wrap}
+.sd-order select{padding:4px 8px;font-size:11px;width:auto;border-radius:10px}
+
+/* Product grid */
+.sd-prod-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(235px,1fr));gap:12px}
+.sd-prod-card{overflow:hidden;background:linear-gradient(135deg,rgba(230,227,220,.04),rgba(150,172,159,.015));border:1px solid rgba(255,255,255,.07);border-radius:16px;box-shadow:0 6px 22px rgba(0,0,0,.15);transition:transform .3s var(--ease-out),box-shadow .3s,border-color .3s}
+.sd-prod-card:hover{transform:translateY(-4px);border-color:rgba(147,171,158,.4);box-shadow:0 14px 30px rgba(0,0,0,.22)}
+.sd-prod-img{height:120px;object-fit:cover;width:100%;display:block;background:var(--bg-4)}
+.sd-prod-img.blank{display:flex;align-items:center;justify-content:center;color:var(--text-dim);font-size:26px;margin:0}
+.sd-prod-body{padding:12px 14px 14px}
+.sd-prod-name{font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sd-prod-meta{font-size:10.5px;color:var(--text-dim);margin:2px 0 8px}
+.sd-prod-desc{font-size:11px;color:var(--text-muted);line-height:1.5;margin-bottom:10px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.sd-prod-foot{display:flex;align-items:center;justify-content:space-between;gap:6px}
+
+/* Edit modal */
+.sd-edit-modal{max-width:460px;width:100%}
+.sd-modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.sd-modal-head h3{font-size:15px;margin:0;font-weight:700;display:flex;align-items:center;gap:8px}
+
+/* Settings */
+.sd-set-card{display:flex;gap:16px;align-items:center}
+.sd-guide{margin:0;padding:0;list-style:none;display:grid;gap:9px}
+.sd-guide li{font-size:12px;color:var(--text-muted);line-height:1.55;padding-left:20px;position:relative}
+.sd-guide li::before{content:'\2713';position:absolute;left:0;top:0;color:#8fb89f;font-weight:700}
+
+/* Light theme harmony */
+[data-theme="light"] .sd-sidebar{background:rgba(255,255,255,.9);border-color:rgba(22,22,26,.08)}
+[data-theme="light"] .sd-nav-item.active{background:linear-gradient(90deg,rgba(206,209,199,.12),rgba(206,209,199,.03));color:var(--primary-dark);box-shadow:inset 0 0 0 1px rgba(206,209,199,.3)}
+[data-theme="light"] .sd-stat,[data-theme="light"] .sd-card,[data-theme="light"] .sd-prod-card,[data-theme="light"] .sd-gate-card{background:linear-gradient(135deg,#ffffff,#f6f6f8);border-color:rgba(24,24,28,.08);box-shadow:0 2px 12px rgba(30,30,34,.05)}
+[data-theme="light"] .sd-row{background:rgba(24,24,28,.03);border-color:rgba(24,24,28,.07)}
+
+/* Responsive */
+@media(max-width:920px){
+  .sd-stats{grid-template-columns:repeat(2,1fr)}
+  .sd-grid-2{grid-template-columns:1fr}
+}
+@media(max-width:720px){
+  .sd-shell{flex-direction:column;padding:12px;gap:14px}
+  .sd-sidebar{position:static;width:100%;flex-direction:row;flex-wrap:wrap;align-items:center;gap:8px;border-radius:16px;padding:12px}
+  .sd-brand{width:100%;border-bottom:none;padding-bottom:6px;margin-bottom:4px}
+  .sd-nav{flex-direction:row;overflow-x:auto;gap:4px;width:100%;padding-bottom:2px}
+  .sd-nav-item{white-space:nowrap;flex-shrink:0;font-size:11.5px;padding:8px 11px}
+  .sd-nav-item i{display:none}
+  .sd-side-foot{flex-direction:row;align-items:center;width:100%;flex-wrap:wrap;border-top:none;padding-top:4px}
+  .sd-user{flex:1;min-width:140px;padding:6px 4px}
+  .sd-side-foot .sd-nav-item{flex-shrink:1}
+  .sd-stats{grid-template-columns:1fr 1fr;gap:10px}
+  .sd-stat{padding:13px}
+  .sd-form-grid{grid-template-columns:1fr}
+  .sd-prod-grid{grid-template-columns:1fr}
+  .sd-head h1{font-size:19px}
+}
 
 /* ===== ADMIN EXTRA ===== */
 .admin-main h2{font-family:'Syne',sans-serif;letter-spacing:-.01em}
@@ -2761,11 +2908,11 @@ function v7ToggleFaq(el){
         </div>
         <div class="contact-card reveal">
           <div class="contact-card-icon"><i class="fab fa-discord"></i></div>
-          <div><h4>Discord</h4><p>bms_studio</p></div>
+          <div><h4>Discord</h4><p>Bambangnihdeck</p></div>
         </div>
         <div class="contact-card reveal">
           <div class="contact-card-icon"><i class="fas fa-map-marker-alt"></i></div>
-          <div><h4>Location</h4><p>Jakarta, Indonesia</p></div>
+          <div><h4>Location</h4><p>pasuruan, Indonesia</p></div>
         </div>
       </div>
       <div>
@@ -3545,102 +3692,217 @@ function togglePwd(el){
 
 <!-- SELLER DASHBOARD -->
 <div class="page" id="page-seller">
-  <div style="max-width:800px;margin:0 auto;padding:24px;position:relative">
-    <div style="position:absolute;right:16px;top:16px;z-index:1;pointer-events:none" class="mascot-hide-mobile"><img src="/mascot/maskot-fokus-kerja-laptop.png" alt="Fokus" style="width:190px;height:190px;object-fit:contain;opacity:0.92" loading="lazy"/></div>
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px">
-      <h2 style="font-size:22px;font-weight:700"><i class="fas fa-store-alt" style="color:var(--primary)"></i> Seller Dashboard</h2>
-      <button class="btn btn-outline btn-sm" onclick="navigateTo('profile')">Back to Profile</button>
-    </div>
-    <!-- Application Form (if not yet applied/approved) -->
-    <div id="sellerApplySection" style="display:none">
-      <div class="glass" style="padding:24px;border-radius:var(--radius-lg);border:1px solid var(--glass-border2);margin-bottom:24px">
-        <h3 style="font-size:16px;margin-bottom:8px">Apply to Become a Seller</h3>
-        <p style="font-size:12px;color:var(--accent);margin-bottom:12px;line-height:1.5">
-          <i class="fas fa-exclamation-triangle"></i> PERINGATAN: Dilarang menjual file ilegal, akun curian, atau barang terlarang. Pelanggaran akan menyebabkan ban permanen.
-        </p>
-        <div style="display:grid;gap:12px">
-          <input class="form-input" id="sellerApplyName" placeholder="Your name / brand">
-          <textarea class="form-input" id="sellerApplyReason" placeholder="Why do you want to sell? (required)" rows="3"></textarea>
-          <input class="form-input" id="sellerApplyPortfolio" placeholder="Portfolio link (optional)">
-          <button class="btn btn-primary" onclick="submitSellerApplication()">Submit Application</button>
+
+  <!-- Gate: belum verified / pending -->
+  <div class="sd-gate-wrap" id="sellerGate" style="display:none">
+    <div class="sd-gate">
+      <div id="sellerPendingSection" style="display:none">
+        <div class="sd-gate-card" style="text-align:center">
+          <div class="sd-gate-ico" style="margin:0 auto 16px"><i class="fas fa-hourglass-half"></i></div>
+          <h3 class="sd-gate-ttl">Application Pending</h3>
+          <p style="font-size:13px;color:var(--text-muted);line-height:1.6;margin:8px 0 18px">Pengajuan menjadi seller kamu sedang ditinjau admin. Kamu akan bisa menjual setelah pengajuan disetujui.</p>
+          <button class="btn btn-outline btn-sm" onclick="navigateTo('profile')"><i class="fas fa-arrow-left"></i> Kembali ke Profil</button>
         </div>
       </div>
-    </div>
-    <!-- Seller Status -->
-    <div id="sellerStatusSection" style="display:none">
-      <div class="glass" style="padding:20px;border-radius:var(--radius-lg);border:1px solid var(--glass-border2);margin-bottom:20px;display:flex;align-items:center;gap:12px">
-        <i class="fas fa-check-circle" style="font-size:24px;color:#8fb89f"></i>
-        <div><div style="font-weight:600">You are a Verified Seller!</div><div style="font-size:12px;color:var(--text-muted)">Your products will appear in Public Store after admin approval.</div></div>
-      </div>
-      <!-- Add Product -->
-      <div class="glass" style="padding:20px;border-radius:var(--radius-lg);border:1px solid var(--glass-border2);margin-bottom:20px">
-        <h3 style="font-size:15px;margin-bottom:12px">Add New Product</h3>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
-          <input class="form-input" id="spName" placeholder="Product name" required>
-          <input class="form-input" id="spPrice" placeholder="Price (e.g. Rp 50.000)" value="Gratis">
-          <textarea class="form-input" id="spDesc" placeholder="Description" rows="2" style="grid-column:1/-1"></textarea>
-          <input class="form-input" id="spImage" placeholder="Image URL (optional)">
-          <input class="form-input" id="spVideo" placeholder="Video URL (YouTube/Vimeo - optional)">
-          <input class="form-input" id="spLink" placeholder="Link (optional)">
-          <select class="form-input" id="spCategory">
-            <option value="other">Other</option><option value="digital">Digital</option><option value="asset">Asset</option><option value="service">Service</option>
-          </select>
-        </div>
-        <button class="btn btn-primary" style="margin-top:12px" onclick="addSellerProduct()">Add Product</button>
-      </div>
-      <!-- My Chats -->
-      <div style="margin-bottom:20px">
-        <h3 style="font-size:15px;font-weight:700;margin-bottom:10px"><i class="fas fa-comments" style="color:var(--secondary)"></i> My Chats</h3>
-        <div id="sellerMyChatsList"></div>
-        <button class="btn btn-outline btn-sm" onclick="loadSellerMyChats()" style="font-size:11px"><i class="fas fa-sync"></i> Refresh</button>
-      </div>
-      <!-- Promo Codes -->
-      <div style="margin-bottom:20px">
-        <h3 style="font-size:15px;font-weight:700;margin-bottom:10px"><i class="fas fa-tags" style="color:var(--secondary)"></i> Promo Codes</h3>
-        <div class="glass" style="padding:14px;border-radius:var(--radius);border:1px solid var(--glass-border);margin-bottom:10px">
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
-            <input class="form-input" id="sellerPromoCode" placeholder="Code (e.g. SALE10)" style="text-transform:uppercase;font-size:13px">
-            <input class="form-input" id="sellerPromoDiscount" type="number" placeholder="Discount %" min="1" max="100" style="font-size:13px">
-            <input class="form-input" id="sellerPromoProduct" type="number" placeholder="Product ID (0 = all)" style="font-size:13px">
-            <input class="form-input" id="sellerPromoMax" type="number" placeholder="Max uses (0 = unlimited)" style="font-size:13px">
+      <div id="sellerApplySection" style="display:none">
+        <div class="sd-gate-card">
+          <div class="sd-gate-head">
+            <div class="sd-gate-ico"><i class="fas fa-store-alt"></i></div>
+            <div><h3>Gabung Jadi Seller</h3><p>Jual produk dan dapatkan +5 XP setiap produk</p></div>
           </div>
-          <button class="btn btn-primary btn-sm" onclick="createSellerPromo()"><i class="fas fa-plus"></i> Create Promo</button>
+          <div class="sd-gate-alert"><i class="fas fa-exclamation-triangle"></i> Dilarang menjual file ilegal, akun curian, atau barang terlarang. Pelanggaran menyebabkan ban permanen.</div>
+          <div style="display:grid;gap:10px;margin-top:14px">
+            <input class="form-input" id="sellerApplyName" placeholder="Nama / brand kamu">
+            <textarea class="form-input" id="sellerApplyReason" placeholder="Kenapa kamu ingin menjual? (wajib)" rows="3"></textarea>
+            <input class="form-input" id="sellerApplyPortfolio" placeholder="Link portfolio (opsional)">
+            <button class="btn btn-primary" onclick="submitSellerApplication()"><i class="fas fa-paper-plane"></i> Submit Application</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Dashboard shell (seller verified) -->
+  <div class="sd-shell" id="sellerShell" style="display:none">
+    <aside class="sd-sidebar">
+      <div class="sd-brand">
+        <div class="sd-brand-icon"><i class="fas fa-store-alt"></i></div>
+        <div><b>Seller Panel</b><span>BMS Platform</span></div>
+      </div>
+      <div class="sd-nav">
+        <button class="sd-nav-item active" data-sd="overview" onclick="switchSellerTab('overview')"><i class="fas fa-chart-pie"></i>Overview</button>
+        <button class="sd-nav-item" data-sd="products" onclick="switchSellerTab('products')"><i class="fas fa-boxes"></i>Produk<span class="sd-nav-count" id="sdNavCountProducts">0</span></button>
+        <button class="sd-nav-item" data-sd="orders" onclick="switchSellerTab('orders')"><i class="fas fa-shopping-bag"></i>Pesanan<span class="sd-nav-count" id="sdNavCountOrders">0</span></button>
+        <button class="sd-nav-item" data-sd="chats" onclick="switchSellerTab('chats')"><i class="fas fa-comments"></i>Chat<span class="sd-nav-count" id="sdNavCountChats">0</span></button>
+        <button class="sd-nav-item" data-sd="promos" onclick="switchSellerTab('promos')"><i class="fas fa-tags"></i>Promo<span class="sd-nav-count" id="sdNavCountPromos">0</span></button>
+        <button class="sd-nav-item" data-sd="settings" onclick="switchSellerTab('settings')"><i class="fas fa-user-cog"></i>Pengaturan</button>
+      </div>
+      <div class="sd-side-foot">
+        <div class="sd-user">
+          <div class="sd-user-av" id="sdUserAvatar">?</div>
+          <div class="sd-user-meta"><b id="sdUserName">-</b><span id="sdUserEmail">-</span></div>
+        </div>
+        <button class="sd-nav-item" onclick="navigateTo('publicstore')"><i class="fas fa-store"></i>Lihat Toko</button>
+        <button class="sd-nav-item" onclick="navigateTo('profile')"><i class="fas fa-arrow-left"></i>Kembali Profil</button>
+        <button class="sd-nav-item" onclick="handleLogout()" style="color:var(--accent)"><i class="fas fa-sign-out-alt"></i>Logout</button>
+      </div>
+    </aside>
+
+    <main class="sd-main">
+      <!-- ============ OVERVIEW ============ -->
+      <section class="sd-section active" id="sd-overview">
+        <div class="sd-head">
+          <div><h1>Overview</h1><p class="sd-sub">Ringkasan performa toko kamu</p></div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <button class="btn btn-outline btn-sm" onclick="navigateTo('publicstore')"><i class="fas fa-eye"></i> Lihat Store</button>
+            <button class="btn btn-primary btn-sm" onclick="switchSellerTab('products');toggleSellerAddForm(true)"><i class="fas fa-plus"></i> Tambah Produk</button>
+          </div>
+        </div>
+        <div class="sd-stats">
+          <div class="sd-stat"><div class="sd-stat-ico s1"><i class="fas fa-box-open"></i></div><div><div class="sd-stat-num" id="sdStatProducts">0</div><div class="sd-stat-label">Total Produk</div><div class="sd-stat-sub" id="sdStatProductsSub">0 disetujui</div></div></div>
+          <div class="sd-stat"><div class="sd-stat-ico s2"><i class="fas fa-shopping-bag"></i></div><div><div class="sd-stat-num" id="sdStatOrders">0</div><div class="sd-stat-label">Total Pesanan</div><div class="sd-stat-sub" id="sdStatOrdersSub">0 pending</div></div></div>
+          <div class="sd-stat"><div class="sd-stat-ico s3"><i class="fas fa-wallet"></i></div><div><div class="sd-stat-num" id="sdStatRevenue">Rp 0</div><div class="sd-stat-label">Estimasi Penjualan</div><div class="sd-stat-sub" id="sdStatRevenueSub">dari produk kamu</div></div></div>
+          <div class="sd-stat"><div class="sd-stat-ico s4"><i class="fas fa-comments"></i></div><div><div class="sd-stat-num" id="sdStatChats">0</div><div class="sd-stat-label">Percakapan</div><div class="sd-stat-sub" id="sdStatChatsSub">0 promo aktif</div></div></div>
+        </div>
+        <div class="sd-grid-2">
+          <div class="sd-card">
+            <div class="sd-card-head"><h3><i class="fas fa-clock"></i>Pesanan Terbaru</h3><button class="btn btn-outline btn-xs" onclick="switchSellerTab('orders')">Semua</button></div>
+            <div id="sdRecentOrders"></div>
+          </div>
+          <div class="sd-card">
+            <div class="sd-card-head"><h3><i class="fas fa-cube"></i>Produk Terbaru</h3><button class="btn btn-outline btn-xs" onclick="switchSellerTab('products')">Semua</button></div>
+            <div id="sdRecentProducts"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ PRODUCTS ============ -->
+      <section class="sd-section" id="sd-products">
+        <div class="sd-head">
+          <div><h1>Produk Saya</h1><p class="sd-sub">Produk tampil di Public Store setelah disetujui admin</p></div>
+          <button class="btn btn-primary btn-sm" onclick="toggleSellerAddForm()"><i class="fas fa-plus"></i> <span id="sdAddBtnLabel">Tambah Produk</span></button>
+        </div>
+        <div class="sd-card sd-collapse" id="sdAddForm">
+          <h3><i class="fas fa-plus-circle" style="color:var(--secondary)"></i> Tambah Produk Baru</h3>
+          <div class="sd-form-grid">
+            <input class="form-input" id="spName" placeholder="Nama produk" required>
+            <input class="form-input" id="spPrice" placeholder="Harga (mis. Rp 50.000)" value="Gratis">
+            <textarea class="form-input full" id="spDesc" placeholder="Deskripsi" rows="2"></textarea>
+            <input class="form-input" id="spImage" placeholder="URL gambar (opsional)">
+            <input class="form-input" id="spVideo" placeholder="URL video YouTube/Vimeo (opsional)">
+            <input class="form-input" id="spLink" placeholder="Link download (opsional)">
+            <select class="form-input" id="spCategory">
+              <option value="other">Other</option><option value="digital">Digital</option><option value="asset">Asset</option><option value="service">Service</option>
+            </select>
+            <div class="full sd-hint"><i class="fas fa-info-circle"></i> +5 XP untuk setiap produk yang dikirim untuk review.</div>
+          </div>
+          <div style="display:flex;gap:8px;margin-top:12px">
+            <button class="btn btn-primary btn-sm" onclick="addSellerProduct()"><i class="fas fa-paper-plane"></i> Submit Produk</button>
+            <button class="btn btn-outline btn-sm" onclick="toggleSellerAddForm()">Batal</button>
+          </div>
+        </div>
+        <div class="sd-filters" id="sdProductFilters">
+          <button class="sd-chip active" data-sd-pf="all" onclick="setSellerProductFilter('all')">Semua</button>
+          <button class="sd-chip" data-sd-pf="approved" onclick="setSellerProductFilter('approved')">Disetujui</button>
+          <button class="sd-chip" data-sd-pf="pending" onclick="setSellerProductFilter('pending')">Menunggu</button>
+          <button class="sd-chip" data-sd-pf="rejected" onclick="setSellerProductFilter('rejected')">Ditolak</button>
+        </div>
+        <div id="sellerProductsList"></div>
+      </section>
+
+      <!-- ============ ORDERS ============ -->
+      <section class="sd-section" id="sd-orders">
+        <div class="sd-head"><div><h1>Pesanan</h1><p class="sd-sub">Pesanan yang berisi produk kamu</p></div><button class="btn btn-outline btn-sm" onclick="loadSellerOrders()"><i class="fas fa-sync"></i> Refresh</button></div>
+        <div class="sd-filters" id="sdOrderFilters">
+          <button class="sd-chip active" data-sd-of="all" onclick="setSellerOrderFilter('all')">Semua</button>
+          <button class="sd-chip" data-sd-of="pending" onclick="setSellerOrderFilter('pending')">Pending</button>
+          <button class="sd-chip" data-sd-of="processing" onclick="setSellerOrderFilter('processing')">Diproses</button>
+          <button class="sd-chip" data-sd-of="completed" onclick="setSellerOrderFilter('completed')">Selesai</button>
+          <button class="sd-chip" data-sd-of="cancelled" onclick="setSellerOrderFilter('cancelled')">Batal</button>
+        </div>
+        <div id="sellerOrdersList"></div>
+      </section>
+
+      <!-- ============ CHATS ============ -->
+      <section class="sd-section" id="sd-chats">
+        <div class="sd-head"><div><h1>Chat</h1><p class="sd-sub">Percakapan dengan pembeli</p></div><button class="btn btn-outline btn-sm" onclick="loadSellerMyChats()"><i class="fas fa-sync"></i> Refresh</button></div>
+        <div class="sd-subtabs">
+          <button class="sd-chip active" data-sd-cf="all" onclick="setSellerChatFilter('all')">Semua</button>
+          <button class="sd-chip" data-sd-cf="as_seller" onclick="setSellerChatFilter('as_seller')">Sebagai Penjual</button>
+          <button class="sd-chip" data-sd-cf="as_customer" onclick="setSellerChatFilter('as_customer')">Sebagai Pembeli</button>
+        </div>
+        <div id="sellerMyChatsList"></div>
+      </section>
+
+      <!-- ============ PROMOS ============ -->
+      <section class="sd-section" id="sd-promos">
+        <div class="sd-head"><div><h1>Kode Promo</h1><p class="sd-sub">Buat diskon untuk menarik pembeli</p></div><button class="btn btn-primary btn-sm" onclick="toggleSellerPromoForm()"><i class="fas fa-plus"></i> <span id="sdPromoBtnLabel">Buat Promo</span></button></div>
+        <div class="sd-card sd-collapse" id="sdPromoForm">
+          <h3><i class="fas fa-tags" style="color:var(--accent2)"></i> Promo Baru</h3>
+          <div class="sd-form-grid">
+            <input class="form-input" id="sellerPromoCode" placeholder="Kode (mis. SALE10)" style="text-transform:uppercase">
+            <input class="form-input" id="sellerPromoDiscount" type="number" placeholder="Diskon %" min="1" max="100">
+            <input class="form-input" id="sellerPromoProduct" type="number" placeholder="ID produk (0 = semua)">
+            <input class="form-input" id="sellerPromoMax" type="number" placeholder="Maks pemakaian (0 = tak terbatas)">
+          </div>
+          <div style="display:flex;gap:8px;margin-top:12px">
+            <button class="btn btn-primary btn-sm" onclick="createSellerPromo()"><i class="fas fa-check"></i> Simpan</button>
+            <button class="btn btn-outline btn-sm" onclick="toggleSellerPromoForm()">Batal</button>
+          </div>
         </div>
         <div id="sellerPromoList"></div>
-      </div>
-      <!-- Seller Orders -->
-      <div style="margin-bottom:20px">
-        <h3 style="font-size:15px;font-weight:700;margin-bottom:10px"><i class="fas fa-shopping-bag" style="color:var(--secondary)"></i> Orders</h3>
-        <div id="sellerOrdersList"></div>
-        <button class="btn btn-outline btn-sm" onclick="loadSellerOrders()" style="font-size:11px"><i class="fas fa-sync"></i> Refresh</button>
-      </div>
-      <!-- My Products List -->
-      <div id="sellerProductsList"></div>
+      </section>
+
+      <!-- ============ SETTINGS ============ -->
+      <section class="sd-section" id="sd-settings">
+        <div class="sd-head"><div><h1>Pengaturan</h1><p class="sd-sub">Informasi akun seller kamu</p></div></div>
+        <div class="sd-card" style="max-width:560px">
+          <div class="sd-set-card">
+            <div class="sd-user-av" id="sdSetAvatar" style="width:62px;height:62px;font-size:22px;border-radius:18px">?</div>
+            <div style="flex:1;min-width:0">
+              <b style="font-size:16px" id="sdSetName">-</b>
+              <div style="font-size:12px;color:var(--text-muted);margin-top:2px" id="sdSetEmail">-</div>
+              <div style="margin-top:8px"><span class="sd-badge" style="background:rgba(143,184,159,.16);color:#8fb89f"><i class="fas fa-check-circle"></i> Verified Seller</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="sd-card" style="max-width:560px;margin-top:14px">
+          <h3 style="font-size:13px;font-weight:700;margin:0 0 12px"><i class="fas fa-question-circle" style="color:var(--secondary)"></i> Panduan Singkat</h3>
+          <ul class="sd-guide">
+            <li>Tambah produk di tab <b>Produk</b> — produk direview admin sebelum tampil di Public Store.</li>
+            <li>Produk yang <b>disetujui</b> bisa dibeli dan menjadi pesanan di tab <b>Pesanan</b>.</li>
+            <li>Gunakan <b>Chat</b> untuk berkomunikasi dengan pembeli produk kamu.</li>
+            <li>Buat <b>promo</b> diskon agar produk lebih menarik.</li>
+          </ul>
+        </div>
+        <div class="sd-card" style="max-width:560px;margin-top:14px;display:flex;justify-content:space-between;align-items:center;gap:12px">
+          <div><b style="font-size:13px">Keluar</b><div style="font-size:11px;color:var(--text-muted);margin-top:2px">Sign out dari akun kamu</div></div>
+          <button class="btn btn-danger btn-sm" onclick="handleLogout()"><i class="fas fa-sign-out-alt"></i> Logout</button>
+        </div>
+      </section>
+    </main>
+  </div>
+</div>
+
+<!-- SELLER EDIT PRODUCT MODAL -->
+<div class="modal-overlay" id="sellerEditProductModal" onclick="if(event.target===this)closeSellerEditProduct()">
+  <div class="modal-content sd-edit-modal">
+    <div class="sd-modal-head">
+      <h3><i class="fas fa-edit" style="color:var(--secondary)"></i> Edit Produk</h3>
+      <button class="modal-close" onclick="closeSellerEditProduct()">&times;</button>
     </div>
-    <!-- Edit Product Modal -->
-    <div class="glass" id="sellerEditProductModal" style="display:none;padding:20px;border-radius:var(--radius-lg);border:1px solid var(--glass-border2);margin-bottom:20px">
-      <h3 style="font-size:15px;margin-bottom:12px">Edit Product</h3>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
-        <input class="form-input" id="editSpName" placeholder="Product name">
-        <input class="form-input" id="editSpPrice" placeholder="Price">
-        <textarea class="form-input" id="editSpDesc" placeholder="Description" rows="2" style="grid-column:1/-1"></textarea>
-        <input class="form-input" id="editSpImage" placeholder="Image URL">
-        <input class="form-input" id="editSpVideo" placeholder="Video URL (YouTube/Vimeo)">
-        <input class="form-input" id="editSpLink" placeholder="Link">
-        <select class="form-input" id="editSpCategory"><option value="other">Other</option><option value="digital">Digital</option><option value="asset">Asset</option><option value="service">Service</option></select>
-      </div>
-      <div style="display:flex;gap:8px;margin-top:12px">
-        <button class="btn btn-primary btn-sm" onclick="saveSellerEditProduct()">Save</button>
-        <button class="btn btn-outline btn-sm" onclick="document.getElementById('sellerEditProductModal').style.display='none'">Cancel</button>
-      </div>
+    <div class="sd-form-grid">
+      <input class="form-input" id="editSpName" placeholder="Nama produk">
+      <input class="form-input" id="editSpPrice" placeholder="Harga">
+      <textarea class="form-input full" id="editSpDesc" placeholder="Deskripsi" rows="2"></textarea>
+      <input class="form-input" id="editSpImage" placeholder="URL gambar">
+      <input class="form-input" id="editSpVideo" placeholder="URL video (YouTube/Vimeo)">
+      <input class="form-input" id="editSpLink" placeholder="Link">
+      <select class="form-input full" id="editSpCategory"><option value="other">Other</option><option value="digital">Digital</option><option value="asset">Asset</option><option value="service">Service</option></select>
     </div>
-    <!-- Pending application message -->
-    <div id="sellerPendingSection" style="display:none">
-      <div class="glass" style="padding:24px;text-align:center;border-radius:var(--radius-lg);border:1px solid var(--glass-border2)">
-        <i class="fas fa-hourglass-half" style="font-size:32px;color:var(--accent2);margin-bottom:12px"></i>
-        <h3 style="font-size:16px">Application Pending</h3>
-        <p style="font-size:13px;color:var(--text-muted)">Your application is being reviewed by admin.</p>
-      </div>
+    <div style="display:flex;gap:8px;margin-top:14px;justify-content:flex-end">
+      <button class="btn btn-outline btn-sm" onclick="closeSellerEditProduct()">Batal</button>
+      <button class="btn btn-primary btn-sm" onclick="saveSellerEditProduct()"><i class="fas fa-check"></i> Simpan</button>
     </div>
   </div>
 </div>
@@ -6389,112 +6651,223 @@ function addPublicToCartByIndex(i) {
   if (p) addPublicToCart(p);
 }
 
-// ============ SELLER DASHBOARD ============
+// ============ SELLER DASHBOARD PRO ============
+var _sd = { products: [], orders: [], chats: [], promos: [], productFilter: 'all', orderFilter: 'all', chatFilter: 'all' };
+var sellerEditProductId = null;
+
+function sellerStatusColor(status) {
+  return { pending: '#c9ad72', approved: '#8fb89f', rejected: '#c96f6f', processing: '#c9ad72', completed: '#8fb89f', cancelled: '#cd8489' }[status] || '#c0a878';
+}
+function sellerBadge(status) {
+  return '<span class="sd-badge" style="background:'+sellerStatusColor(status)+'22;color:'+sellerStatusColor(status)+'">'+esc(status||'-')+'</span>';
+}
+function fmtRp(n) { return 'Rp ' + Math.round(n||0).toLocaleString('id-ID'); }
+function sdImgFallback(el) { if (el) el.outerHTML = '<div class="sd-prod-img blank"><i class="fas fa-image"></i></div>'; }
+function sdRowImgFallback(el) { if (el) el.outerHTML = '<div class="sd-row-img"><i class="fas fa-image"></i></div>'; }
+
+function switchSellerTab(tab) {
+  document.querySelectorAll('#page-seller .sd-nav-item').forEach(i => i.classList.toggle('active', i.dataset.sd === tab));
+  document.querySelectorAll('#page-seller .sd-section').forEach(s => s.classList.remove('active'));
+  var sec = document.getElementById('sd-'+tab);
+  if (sec) sec.classList.add('active');
+  if (tab === 'overview') renderSellerOverview();
+  if (tab === 'products') loadSellerProducts();
+  if (tab === 'orders') loadSellerOrders();
+  if (tab === 'chats') loadSellerMyChats();
+  if (tab === 'promos') loadSellerPromos();
+}
+function toggleSellerAddForm(force) {
+  var f = document.getElementById('sdAddForm');
+  if (!f) return;
+  var open = force === undefined ? f.classList.contains('sd-collapse') : !!force;
+  f.classList.toggle('sd-collapse', !open);
+  var lbl = document.getElementById('sdAddBtnLabel');
+  if (lbl) lbl.textContent = open ? 'Tutup' : 'Tambah Produk';
+}
+function toggleSellerPromoForm(force) {
+  var f = document.getElementById('sdPromoForm');
+  if (!f) return;
+  var open = force === undefined ? f.classList.contains('sd-collapse') : !!force;
+  f.classList.toggle('sd-collapse', !open);
+  var lbl = document.getElementById('sdPromoBtnLabel');
+  if (lbl) lbl.textContent = open ? 'Tutup' : 'Buat Promo';
+}
+function setSellerProductFilter(f) {
+  _sd.productFilter = f;
+  document.querySelectorAll('#sdProductFilters .sd-chip').forEach(c => c.classList.toggle('active', c.dataset.sdPf === f));
+  renderSellerProducts();
+}
+function setSellerOrderFilter(f) {
+  _sd.orderFilter = f;
+  document.querySelectorAll('#sdOrderFilters .sd-chip').forEach(c => c.classList.toggle('active', c.dataset.sdOf === f));
+  renderSellerOrders();
+}
+function setSellerChatFilter(f) {
+  _sd.chatFilter = f;
+  document.querySelectorAll('#sd-chats .sd-subtabs .sd-chip').forEach(c => c.classList.toggle('active', c.dataset.sdCf === f));
+  renderSellerChats();
+}
+
+function renderSellerSidebar() {
+  var u = APP.user || {};
+  var name = u.name || u.email || '-';
+  var em = u.email || '-';
+  var av = u.avatar || '';
+  var init = (name === '-' ? '?' : name).charAt(0).toUpperCase();
+  var style = av ? 'background-image:url("'+av+'");background-size:cover;background-position:center;color:transparent' : '';
+  var els = ['sdUserAvatar', 'sdSetAvatar'];
+  for (var i = 0; i < els.length; i++) {
+    var el = document.getElementById(els[i]);
+    if (!el) continue;
+    el.style.cssText = style;
+    if (!av) el.textContent = init;
+  }
+  var n = document.getElementById('sdUserName'); if (n) n.textContent = name;
+  var e = document.getElementById('sdUserEmail'); if (e) e.textContent = em;
+  var sn = document.getElementById('sdSetName'); if (sn) sn.textContent = name;
+  var se = document.getElementById('sdSetEmail'); if (se) se.textContent = em;
+}
+
 async function loadSellerDashboard() {
   if (!APP.isLoggedIn || !APP.user) { navigateTo('login'); return; }
-  const isVerified = APP.user?.verified_tag == 1 || APP.user?.role === 'admin' || APP.user?.email === 'Bamsj37@gmail.com';
-  document.getElementById('sellerApplySection').style.display = isVerified ? 'none' : 'block';
+  var isVerified = APP.user.verified_tag == 1 || APP.user.role === 'admin' || APP.user.email === 'Bamsj37@gmail.com';
+  var gate = document.getElementById('sellerGate');
+  var shell = document.getElementById('sellerShell');
+  if (!gate || !shell) return;
   if (isVerified) {
-    document.getElementById('sellerStatusSection').style.display = 'block';
-    document.getElementById('sellerPendingSection').style.display = 'none';
+    gate.style.display = 'none';
+    shell.style.display = 'flex';
+    renderSellerSidebar();
     await loadSellerProducts();
     await loadSellerMyChats();
     loadSellerPromos();
     loadSellerOrders();
+    switchSellerTab('overview');
   } else {
-    // Check if has pending application
+    shell.style.display = 'none';
+    gate.style.display = 'flex';
+    var apply = document.getElementById('sellerApplySection');
+    var pending = document.getElementById('sellerPendingSection');
+    var showApply = function() { apply.style.display = 'block'; pending.style.display = 'none'; };
+    var showPending = function() { apply.style.display = 'none'; pending.style.display = 'block'; };
     try {
-      const apps = await api('/admin-store/applications', { cache: false });
-      const myApp = (apps.applications||[]).find(a => a.user_id == APP.user.id);
-      if (myApp && myApp.status === 'pending') {
-        document.getElementById('sellerApplySection').style.display = 'none';
-        document.getElementById('sellerPendingSection').style.display = 'block';
-        document.getElementById('sellerStatusSection').style.display = 'none';
-      } else {
-        document.getElementById('sellerApplySection').style.display = 'block';
-        document.getElementById('sellerPendingSection').style.display = 'none';
-        document.getElementById('sellerStatusSection').style.display = 'none';
-      }
-    } catch {
-      document.getElementById('sellerApplySection').style.display = 'block';
-      document.getElementById('sellerPendingSection').style.display = 'none';
-      document.getElementById('sellerStatusSection').style.display = 'none';
-    }
+      var apps = await api('/admin-store/applications', { cache: false });
+      var myApp = (apps.applications||[]).find(a => a.user_id == APP.user.id);
+      if (myApp && myApp.status === 'pending') showPending(); else showApply();
+    } catch { showApply(); }
   }
 }
-async function loadSellerMyChats() {
-  const list = document.getElementById('sellerMyChatsList');
-  try {
-    const d = await api('/seller/my-chats');
-    const all = [...(d.as_customer||[]), ...(d.as_seller||[])];
-    list.innerHTML = all.length ? all.map(c => {
-      const preview = c.last_message ? c.last_message.text.slice(0,50) : 'No messages';
-      const partner = c.customer_id == APP.user?.id ? 'Seller' : 'Customer';
-      return '<div class="glass" style="padding:10px 14px;border-radius:var(--radius);border:1px solid var(--glass-border);margin-bottom:6px;cursor:pointer;font-size:12px" onclick="openSellerChatByChatId('+c.id+')"><div style="display:flex;justify-content:space-between"><strong>'+c.product_name||'Product'+'</strong> <span style="font-size:10px;color:var(--text-dim)">#'+c.id+'</span></div><div style="color:var(--text-muted);font-size:11px">'+preview+'</div></div>';
-    }).join('') : '<div style="font-size:12px;color:var(--text-dim);padding:12px">Belum ada chat</div>';
-  } catch {}
+
+function updateSellerNavCounts() {
+  var set = function(id, v) { var el = document.getElementById(id); if (el) el.textContent = v; };
+  set('sdNavCountProducts', (_sd.products||[]).length);
+  set('sdNavCountOrders', (_sd.orders||[]).length);
+  set('sdNavCountChats', (_sd.chats||[]).length);
+  set('sdNavCountPromos', (_sd.promos||[]).length);
 }
-async function openSellerChatByChatId(chatId) {
-  if (!APP.isLoggedIn) return;
-  try {
-    const detail = await api('/seller/chats/' + chatId);
-    document.getElementById('sellerChatProductName').textContent = 'Product: ' + (detail.chat.product_name || 'Unknown');
-    document.getElementById('sellerChatWith').textContent = 'Chat with ' + (detail.chat.seller?.id == APP.user.id ? detail.chat.customer?.name || 'Customer' : detail.chat.seller?.name || 'Seller');
-    sellerChatId = chatId;
-    document.getElementById('sellerChatModal').classList.add('open');
-    renderSellerChatMessages(detail.chat.messages || []);
-    if (sellerChatPoll) clearInterval(sellerChatPoll);
-    sellerChatPoll = setInterval(() => loadSellerChatMessages(), window.IS_LOW_END ? 5000 : 3000);
-  } catch {}
+
+function renderSellerOverview() {
+  var products = _sd.products || [];
+  var orders = _sd.orders || [];
+  var chats = _sd.chats || [];
+  var promos = _sd.promos || [];
+  var approved = products.filter(p => p.status === 'approved').length;
+  var pendingOrd = 0, completedOrd = 0, revenue = 0;
+  orders.forEach(o => {
+    try {
+      var items = JSON.parse(o.items || '[]').filter(i => String(i.sellerId) === String(APP.user.id));
+      var t = items.reduce((s,i) => s + (parseFloat(String(i.price).replace(/[^0-9]/g,''))||0)*(i.qty||1), 0);
+      revenue += t;
+      if (o.status === 'pending') pendingOrd++;
+      if (o.status === 'completed') completedOrd++;
+    } catch {}
+  });
+  var activePromos = promos.filter(p => p.active).length;
+  var set = function(id, v) { var el = document.getElementById(id); if (el) el.textContent = v; };
+  set('sdStatProducts', products.length);
+  set('sdStatProductsSub', approved + ' disetujui');
+  set('sdStatOrders', orders.length);
+  set('sdStatOrdersSub', pendingOrd + ' pending');
+  set('sdStatRevenue', fmtRp(revenue));
+  set('sdStatRevenueSub', completedOrd + ' selesai');
+  set('sdStatChats', chats.length);
+  set('sdStatChatsSub', activePromos + ' promo aktif');
+
+  var recOrders = document.getElementById('sdRecentOrders');
+  if (recOrders) {
+    recOrders.innerHTML = orders.slice(0,4).map(o => {
+      var names = '-';
+      try { names = JSON.parse(o.items||'[]').filter(i => String(i.sellerId) === String(APP.user.id)).map(i => i.name).join(', '); } catch {}
+      return '<div class="sd-row"><div class="sd-row-img"><i class="fas fa-shopping-bag"></i></div>'
+        + '<div class="sd-row-main"><div class="sd-row-title">#'+o.id+' '+esc(names)+'</div><div class="sd-row-sub">'+esc(o.customer_name||'Guest')+' &middot; '+new Date(o.created_at).toLocaleDateString('id-ID')+'</div></div>'
+        + '<div class="sd-row-r">'+sellerBadge(o.status)+'</div></div>';
+    }).join('') || '<div class="sd-empty"><i class="fas fa-shopping-bag"></i>Belum ada pesanan.</div>';
+  }
+  var recProducts = document.getElementById('sdRecentProducts');
+  if (recProducts) {
+    recProducts.innerHTML = products.slice(0,4).map(p => {
+      var img = p.image ? '<img src="'+p.image+'" alt="" class="sd-row-img" loading="lazy" onerror="sdRowImgFallback(this)">' : '<div class="sd-row-img"><i class="fas fa-image"></i></div>';
+      return '<div class="sd-row" style="cursor:pointer" onclick="openSellerEditProduct('+p.id+')">'+img
+        + '<div class="sd-row-main"><div class="sd-row-title">'+esc(p.name)+'</div><div class="sd-row-sub">'+esc(p.price||'Gratis')+'</div></div>'
+        + '<div class="sd-row-r">'+sellerBadge(p.status)+'</div></div>';
+    }).join('') || '<div class="sd-empty"><i class="fas fa-box-open"></i>Belum ada produk.</div>';
+  }
+  updateSellerNavCounts();
 }
+
 async function loadSellerProducts() {
-  const list = document.getElementById('sellerProductsList');
   try {
-    const d = await api('/seller/my-products');
-    const products = d.products || [];
-    const statusColors = { pending: '#c9ad72', approved: '#8fb89f', rejected: '#c96f6f' };
-    list.innerHTML = products.length ? products.map(p => `
-      <div class="glass" style="padding:14px 18px;border-radius:var(--radius-lg);border:1px solid var(--glass-border);margin-bottom:10px">
-        <div style="display:flex;gap:12px">
-          ${p.image ? '<img src="'+p.image+'" alt="'+esc(p.name)+'" style="width:60px;height:60px;object-fit:cover;border-radius:var(--radius);flex-shrink:0" loading="lazy" onerror="this.style.display=\'none\'">' : ''}
-          <div style="flex:1;min-width:0">
-            <div style="font-weight:600;font-size:14px">${p.name}</div>
-            <div style="font-size:11px;color:var(--text-muted)">${p.price} · ${p.category||'other'}</div>
-            ${p.description ? '<div style="font-size:10px;color:var(--text-dim);margin-top:4px">'+p.description+'</div>' : ''}
-            ${p.link ? '<div style="margin-top:2px"><a href="'+p.link+'" target="_blank" style="font-size:10px;color:var(--primary)"><i class="fas fa-external-link-alt"></i> Link</a></div>' : ''}
-            <div style="margin-top:6px;display:flex;gap:6px;align-items:center">
-              <span style="padding:2px 8px;border-radius:4px;font-size:9px;font-weight:600;background:${statusColors[p.status]}22;color:${statusColors[p.status]}">${p.status}</span>
-              ${p.admin_note ? '<span style="font-size:9px;color:var(--accent)">Note: '+p.admin_note+'</span>' : ''}
-            </div>
-          </div>
-          <div style="display:flex;flex-direction:column;gap:4px;flex-shrink:0">
-            <button class="btn btn-outline btn-sm" style="padding:3px 8px;font-size:9px" onclick="openSellerEditProduct(${p.id})"><i class="fas fa-edit"></i></button>
-            <button class="btn btn-danger btn-sm" style="padding:3px 8px;font-size:9px" onclick="deleteSellerProduct(${p.id})"><i class="fas fa-trash"></i></button>
-          </div>
-        </div>
-      </div>
-    `).join('') : '<div class="empty-state"><img src="/mascot/maskot-ngantuk-tidur-di-laptop.png" alt="Ngantuk" style="width:200px;height:200px;object-fit:contain;margin:0 auto 8px" loading="lazy"/><h3>Belum ada produk</h3><p>Tambahkan produk di atas.</p></div>';
-  } catch { showToast('Failed to load products', 'error'); }
+    var d = await api('/seller/my-products', { cache: false });
+    _sd.products = d.products || [];
+  } catch { showToast('Gagal memuat produk', 'error'); }
+  renderSellerProducts();
+  renderSellerOverview();
+  updateSellerNavCounts();
 }
-var sellerEditProductId = null;
+function renderSellerProducts() {
+  var list = document.getElementById('sellerProductsList');
+  if (!list) return;
+  var prods = _sd.products.filter(p => _sd.productFilter === 'all' ? true : p.status === _sd.productFilter);
+  if (!prods.length) {
+    list.innerHTML = '<div class="sd-empty"><i class="fas fa-box-open"></i>' + (_sd.products.length ? 'Tidak ada produk dengan status ini.' : 'Belum ada produk. Klik "Tambah Produk" untuk mulai berjualan.') + '</div>';
+    return;
+  }
+  list.innerHTML = '<div class="sd-prod-grid">' + prods.map(p => {
+    var img = p.image ? '<img class="sd-prod-img" src="'+p.image+'" alt="'+esc(p.name)+'" loading="lazy" onerror="sdImgFallback(this)">' : '<div class="sd-prod-img blank"><i class="fas fa-image"></i></div>';
+    return '<div class="sd-prod-card">'+img+'<div class="sd-prod-body"><div class="sd-prod-name">'+esc(p.name)+'</div>'
+      + '<div class="sd-prod-meta">'+esc(p.price||'Gratis')+' &middot; '+esc(p.category||'other')+'</div>'
+      + (p.description ? '<div class="sd-prod-desc">'+esc(p.description)+'</div>' : '')
+      + '<div class="sd-prod-foot">'+sellerBadge(p.status)+'<div class="sd-row-act">'
+      + '<button class="btn btn-outline btn-xs" title="Edit" onclick="openSellerEditProduct('+p.id+')"><i class="fas fa-edit"></i></button>'
+      + '<button class="btn btn-danger btn-xs" title="Hapus" onclick="deleteSellerProduct('+p.id+')"><i class="fas fa-trash"></i></button>'
+      + '</div></div></div></div>';
+  }).join('') + '</div>';
+}
+
 async function openSellerEditProduct(id) {
   try {
-    const d = await api('/seller/my-products');
-    const p = (d.products || []).find(x => x.id == id);
+    var d = await api('/seller/my-products', { cache: false });
+    var p = (d.products||[]).find(x => x.id == id);
     if (!p) return;
     sellerEditProductId = id;
     document.getElementById('editSpName').value = p.name || '';
     document.getElementById('editSpPrice').value = p.price || '';
     document.getElementById('editSpDesc').value = p.description || '';
     document.getElementById('editSpImage').value = p.image || '';
+    document.getElementById('editSpVideo').value = p.video_url || '';
     document.getElementById('editSpLink').value = p.link || '';
     document.getElementById('editSpCategory').value = p.category || 'other';
-    document.getElementById('sellerEditProductModal').style.display = 'block';
+    document.getElementById('sellerEditProductModal').classList.add('open');
   } catch {}
+}
+function closeSellerEditProduct() {
+  var m = document.getElementById('sellerEditProductModal');
+  if (m) m.classList.remove('open');
+  document.body.style.overflow = '';
 }
 async function saveSellerEditProduct() {
   if (!sellerEditProductId) return;
-  const body = {
+  var body = {
     name: document.getElementById('editSpName').value.trim(),
     price: document.getElementById('editSpPrice').value.trim() || 'Gratis',
     description: document.getElementById('editSpDesc').value.trim(),
@@ -6505,43 +6878,200 @@ async function saveSellerEditProduct() {
   };
   try {
     await api('/seller/products/'+sellerEditProductId, { method: 'PUT', body });
-    document.getElementById('sellerEditProductModal').style.display = 'none';
-    showToast('Product updated!', 'success');
+    closeSellerEditProduct();
+    showToast('Produk berhasil diupdate', 'success');
     loadSellerProducts();
-  } catch (e) { showToast(e.message || 'Failed', 'error'); }
+  } catch (e) { showToast(e.message || 'Gagal update', 'error'); }
 }
 async function addSellerProduct() {
   if (!antiSpam('addSellerProduct', 2000)) return;
-  const name = document.getElementById('spName').value.trim();
-  if (!name) return showToast('Product name required', 'error');
-  const price = document.getElementById('spPrice').value.trim() || 'Gratis';
-  const description = document.getElementById('spDesc').value.trim();
-  const image = document.getElementById('spImage').value.trim();
-  const video_url = document.getElementById('spVideo').value.trim();
-  const link = document.getElementById('spLink').value.trim();
-  const category = document.getElementById('spCategory').value;
+  var name = document.getElementById('spName').value.trim();
+  if (!name) return showToast('Nama produk wajib diisi', 'error');
+  var price = document.getElementById('spPrice').value.trim() || 'Gratis';
+  var description = document.getElementById('spDesc').value.trim();
+  var image = document.getElementById('spImage').value.trim();
+  var video_url = document.getElementById('spVideo').value.trim();
+  var link = document.getElementById('spLink').value.trim();
+  var category = document.getElementById('spCategory').value;
   try {
     await api('/seller/products', { method: 'POST', body: { name, price, description, image, video_url, link, category } });
-    document.getElementById('spName').value = ''; document.getElementById('spDesc').value = ''; document.getElementById('spImage').value = ''; document.getElementById('spVideo').value = ''; document.getElementById('spLink').value = '';
-    showToast('Product submitted for review!', 'success');
+    document.getElementById('spName').value = ''; document.getElementById('spPrice').value = 'Gratis'; document.getElementById('spDesc').value = ''; document.getElementById('spImage').value = ''; document.getElementById('spVideo').value = ''; document.getElementById('spLink').value = '';
+    toggleSellerAddForm(false);
+    showToast('Produk dikirim untuk review! (+5 XP)', 'success');
     loadSellerProducts();
-  } catch (e) { showToast(e.message || 'Failed', 'error'); }
+  } catch (e) { showToast(e.message || 'Gagal menambah produk', 'error'); }
 }
 async function deleteSellerProduct(id) {
-  if (!confirm('Delete this product?')) return;
-  try { await api('/seller/products/'+id, { method: 'DELETE' }); loadSellerProducts(); } catch { showToast('Failed', 'error'); }
+  if (!confirm('Hapus produk ini?')) return;
+  try { await api('/seller/products/'+id, { method: 'DELETE' }); loadSellerProducts(); } catch { showToast('Gagal menghapus', 'error'); }
 }
+
+async function loadSellerMyChats() {
+  try {
+    var d = await api('/seller/my-chats', { cache: false });
+    _sd.chats = [...(d.as_customer||[]), ...(d.as_seller||[])];
+  } catch {}
+  renderSellerChats();
+  renderSellerOverview();
+  updateSellerNavCounts();
+}
+function renderSellerChats() {
+  var list = document.getElementById('sellerMyChatsList');
+  if (!list) return;
+  var uid = Number(APP.user?.id);
+  var chats = _sd.chats.filter(c => {
+    if (_sd.chatFilter === 'all') return true;
+    return _sd.chatFilter === 'as_seller' ? Number(c.seller_id) === uid : Number(c.customer_id) === uid;
+  });
+  if (!chats.length) {
+    list.innerHTML = '<div class="sd-empty"><i class="fas fa-comment-dots"></i>' + (_sd.chats.length ? 'Tidak ada chat pada filter ini.' : 'Belum ada chat.') + '</div>';
+    return;
+  }
+  list.innerHTML = chats.map(c => {
+    var msgs = (c.last_message && c.last_message.text) ? c.last_message.text : 'Belum ada pesan';
+    var isSellerSide = Number(c.seller_id) === uid;
+    var label = isSellerSide ? 'Pembeli' : 'Penjual';
+    return '<div class="sd-row" style="cursor:pointer" onclick="openSellerChatByChatId('+c.id+')">'
+      + '<div class="sd-row-img"><i class="fas fa-user"></i></div>'
+      + '<div class="sd-row-main"><div class="sd-row-title">'+esc(c.product_name ? (isSellerSide ? 'Sold: ' : 'Bought: ') + c.product_name : c.product_name)+'</div><div class="sd-row-sub">'+esc(String(msgs).slice(0,70))+'</div></div>'
+      + '<div class="sd-row-r"><span class="sd-badge" style="background:rgba(143,166,188,.16);color:#8fa6bc">'+label+'</span><div style="font-size:9.5px;color:var(--text-dim);margin-top:4px;text-align:right">#'+c.id+'</div></div>'
+      + '</div>';
+  }).join('');
+}
+async function openSellerChatByChatId(chatId) {
+  if (!APP.isLoggedIn) return;
+  try {
+    var detail = await api('/seller/chats/' + chatId);
+    document.getElementById('sellerChatProductName').textContent = 'Product: ' + (detail.chat.product_name || 'Unknown');
+    var isSellerSide = Number(detail.chat.seller && detail.chat.seller.id) === Number(APP.user.id);
+    var other = isSellerSide ? detail.chat.customer : detail.chat.seller;
+    window._sellerChatOther = other || null;
+    document.getElementById('sellerChatWith').textContent = 'Chat with ' + (other && other.name ? other.name : 'User');
+    sellerChatId = chatId;
+    document.getElementById('sellerChatModal').classList.add('open');
+    renderSellerChatMessages(detail.chat.messages || []);
+    if (sellerChatPoll) clearInterval(sellerChatPoll);
+    sellerChatPoll = setInterval(() => loadSellerChatMessages(), window.IS_LOW_END ? 5000 : 3000);
+  } catch {}
+}
+
+async function loadSellerOrders() {
+  try {
+    var d = await api('/seller/orders', { cache: false });
+    _sd.orders = d.orders || [];
+  } catch { showToast('Gagal memuat pesanan', 'error'); }
+  renderSellerOrders();
+  renderSellerOverview();
+  updateSellerNavCounts();
+}
+function renderSellerOrders() {
+  var list = document.getElementById('sellerOrdersList');
+  if (!list) return;
+  var orders = _sd.orders.filter(o => _sd.orderFilter === 'all' ? true : o.status === _sd.orderFilter);
+  if (!orders.length) {
+    list.innerHTML = '<div class="sd-empty"><i class="fas fa-shopping-bag"></i>' + (_sd.orders.length ? 'Tidak ada pesanan dengan status ini.' : 'Belum ada pesanan untuk produk kamu.') + '</div>';
+    return;
+  }
+  list.innerHTML = orders.map(o => {
+    var items = [];
+    try { items = JSON.parse(o.items || '[]').filter(i => String(i.sellerId) === String(APP.user.id)); } catch {}
+    var names = items.map(i => i.name).join(', ');
+    var total = items.reduce((s,i) => s + (parseFloat(String(i.price).replace(/[^0-9]/g,''))||0)*(i.qty||1), 0);
+    return '<div class="sd-card" style="padding:14px;margin-bottom:10px">'
+      + '<div class="sd-order">'
+      + '<div style="flex:1;min-width:0">'
+      + '<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap"><b style="font-size:13px">Order #'+o.id+'</b>'+sellerBadge(o.status)+'</div>'
+      + '<div style="font-size:11px;color:var(--text-dim);margin-top:4px">'+esc(names||'-')+'</div>'
+      + '<div style="font-size:10.5px;color:var(--text-muted);margin-top:2px">'+esc(o.customer_name||'Guest')+' &middot; '+new Date(o.created_at).toLocaleDateString('id-ID')+'</div>'
+      + '</div>'
+      + '<div style="text-align:right;flex-shrink:0">'
+      + '<div style="font-weight:800;font-size:14px;color:var(--primary)">'+fmtRp(total)+'</div>'
+      + '<select class="form-input" style="padding:4px 8px;font-size:11px;width:auto;margin-top:6px" onchange="updateSellerOrderStatus('+o.id+',this.value)">'
+      + '<option value="pending"'+(o.status==='pending'?' selected':'')+'>Pending</option>'
+      + '<option value="processing"'+(o.status==='processing'?' selected':'')+'>Diproses</option>'
+      + '<option value="completed"'+(o.status==='completed'?' selected':'')+'>Selesai</option>'
+      + '<option value="cancelled"'+(o.status==='cancelled'?' selected':'')+'>Batal</option>'
+      + '</select>'
+      + '</div>'
+      + '</div></div>';
+  }).join('');
+}
+async function updateSellerOrderStatus(id, status) {
+  try {
+    await api('/seller/orders/' + id + '/status', { method: 'PUT', body: { status } });
+    showToast('Status pesanan diupdate', 'success');
+    loadSellerOrders();
+  } catch { showToast('Gagal update status', 'error'); }
+}
+
+async function loadSellerPromos() {
+  try {
+    var d = await api('/seller-promos', { cache: false });
+    _sd.promos = d.promos || [];
+  } catch { _sd.promos = []; }
+  renderSellerPromos();
+  renderSellerOverview();
+  updateSellerNavCounts();
+}
+function renderSellerPromos() {
+  var list = document.getElementById('sellerPromoList');
+  if (!list) return;
+  if (!_sd.promos.length) {
+    list.innerHTML = '<div class="sd-empty"><i class="fas fa-tags"></i>Belum ada kode promo. Buat untuk menarik lebih banyak pembeli.</div>';
+    return;
+  }
+  list.innerHTML = _sd.promos.map(p => {
+    var c = p.active ? '#8fb89f' : '#c05e63';
+    var used = p.used_count || 0;
+    var max = p.max_uses ? p.max_uses : '<i class="fas fa-infinity"></i>';
+    return '<div class="sd-row">'
+      + '<div class="sd-row-img" style="background:rgba(192,168,120,.14);color:#c0a878"><i class="fas fa-percent"></i></div>'
+      + '<div class="sd-row-main"><div class="sd-row-title" style="letter-spacing:.5px;font-family:monospace;font-size:13px">'+esc(p.code)+'</div>'
+      + '<div class="sd-row-sub">'+p.discount+'% OFF '+((p.product_id && p.product_id != 0) ? '(produk #'+p.product_id+')' : '(semua produk)')+' &middot; Terpakai '+used+'/'+max+'</div></div>'
+      + '<div class="sd-row-r"><span class="sd-badge" style="background:'+c+'22;color:'+c+'">'+(p.active?'Aktif':'Nonaktif')+'</span>'
+      + '<div class="sd-row-act" style="margin-top:6px;justify-content:flex-end">'
+      + '<button class="btn btn-outline btn-xs" title="Aktif/Nonaktif" onclick="toggleSellerPromo('+p.id+','+(p.active?0:1)+')"><i class="fas fa-power-off"></i></button>'
+      + '<button class="btn btn-outline btn-xs" style="color:var(--accent)" title="Hapus" onclick="deleteSellerPromo('+p.id+')"><i class="fas fa-trash"></i></button>'
+      + '</div></div></div>';
+  }).join('');
+}
+async function createSellerPromo() {
+  var code = document.getElementById('sellerPromoCode') && document.getElementById('sellerPromoCode').value.trim().toUpperCase();
+  var discount = parseInt(document.getElementById('sellerPromoDiscount').value) || 0;
+  var productId = parseInt(document.getElementById('sellerPromoProduct').value) || 0;
+  var maxUses = parseInt(document.getElementById('sellerPromoMax').value) || 0;
+  if (!code || discount < 1) return showToast('Kode dan diskon wajib diisi', 'error');
+  if (discount > 100) return showToast('Maks diskon 100%', 'error');
+  try {
+    await api('/seller-promos', { method: 'POST', body: { code, discount, product_id: productId, max_uses: maxUses } });
+    showToast('Kode promo dibuat!', 'success');
+    document.getElementById('sellerPromoCode').value = '';
+    document.getElementById('sellerPromoDiscount').value = '';
+    document.getElementById('sellerPromoProduct').value = '0';
+    document.getElementById('sellerPromoMax').value = '';
+    toggleSellerPromoForm(false);
+    loadSellerPromos();
+  } catch (e) { showToast(e.message || 'Gagal membuat promo', 'error'); }
+}
+async function toggleSellerPromo(id, active) {
+  try { await api('/seller-promos/' + id, { method: 'PUT', body: { active } }); loadSellerPromos(); } catch {}
+}
+async function deleteSellerPromo(id) {
+  if (!confirm('Hapus kode promo ini?')) return;
+  try { await api('/seller-promos/' + id, { method: 'DELETE' }); loadSellerPromos(); } catch {}
+}
+
 async function submitSellerApplication() {
   if (!antiSpam('sellerApply', 3000)) return;
-  const name = document.getElementById('sellerApplyName').value.trim();
-  const reason = document.getElementById('sellerApplyReason').value.trim();
-  const portfolio = document.getElementById('sellerApplyPortfolio').value.trim();
-  if (!name || !reason) return showToast('Name and reason required', 'error');
+  var name = document.getElementById('sellerApplyName').value.trim();
+  var reason = document.getElementById('sellerApplyReason').value.trim();
+  var portfolio = document.getElementById('sellerApplyPortfolio').value.trim();
+  if (!name || !reason) return showToast('Nama dan alasan wajib diisi', 'error');
   try {
     await api('/seller/apply', { method: 'POST', body: { name, reason, portfolio } });
-    showToast('Application submitted!', 'success');
+    showToast('Pengajuan terkirim! Admin akan meninjau.', 'success');
     loadSellerDashboard();
-  } catch (e) { showToast(e.message || 'Failed', 'error'); }
+  } catch (e) { showToast(e.message || 'Gagal mengirim pengajuan', 'error'); }
 }
 
 // ============ ADMIN/STORE CHAT ============
@@ -6788,67 +7318,7 @@ function dismissAnnouncement() {
   }
 }
 
-// ============ SELLER PROMO CODES ============
-async function loadSellerPromos() {
-  const list = document.getElementById('sellerPromoList');
-  if (!list) return;
-  try {
-    const d = await api('/seller-promos');
-    const promos = d.promos || [];
-    list.innerHTML = promos.length ? promos.map(p => {
-      const statusColor = p.active ? '#8fb89f' : '#c05e63';
-      const used = p.used_count || 0;
-      const max = p.max_uses || '&infin;';
-      return '<div class="glass" style="padding:12px;border-radius:var(--radius);border:1px solid var(--glass-border);display:flex;justify-content:space-between;align-items:center;gap:8px"><div style="flex:1;min-width:0"><div style="font-weight:700;font-size:14px;letter-spacing:1px">' + p.code + '</div><div style="font-size:11px;color:var(--text-dim)">' + p.discount + '% OFF ' + (p.product_id && p.product_id != 0 ? '(product #' + p.product_id + ')' : '(all products)') + ' &middot; Used: ' + used + '/' + max + '</div></div><div style="display:flex;gap:4px;align-items:center"><span style="font-size:10px;padding:2px 8px;border-radius:4px;background:' + statusColor + '22;color:' + statusColor + '">' + (p.active ? 'Active' : 'Inactive') + '</span><button class="btn btn-outline btn-xs" onclick="toggleSellerPromo(' + p.id + ',' + (p.active ? 0 : 1) + ')"><i class="fas fa-power-off"></i></button><button class="btn btn-outline btn-xs" style="color:var(--accent)" onclick="deleteSellerPromo(' + p.id + ')"><i class="fas fa-trash"></i></button></div></div>';
-    }).join('') : '<div style="text-align:center;padding:20px;color:var(--text-dim);font-size:13px">Belum ada promo code. Buat di atas.</div>';
-  } catch { list.innerHTML = '<div style="padding:20px;text-align:center;color:var(--text-dim)">Gagal memuat promo.</div>'; }
-}
-async function createSellerPromo() {
-  const code = document.getElementById('sellerPromoCode')?.value.trim().toUpperCase();
-  const discount = parseInt(document.getElementById('sellerPromoDiscount')?.value) || 0;
-  const productId = parseInt(document.getElementById('sellerPromoProduct')?.value) || 0;
-  const maxUses = parseInt(document.getElementById('sellerPromoMax')?.value) || 0;
-  if (!code || discount < 1) return showToast('Code and discount required', 'error');
-  if (discount > 100) return showToast('Max discount 100%', 'error');
-  try {
-    await api('/seller-promos', { method: 'POST', body: { code, discount, product_id: productId, max_uses: maxUses } });
-    showToast('Promo code created!', 'success');
-    document.getElementById('sellerPromoCode').value = '';
-    document.getElementById('sellerPromoDiscount').value = '';
-    document.getElementById('sellerPromoProduct').value = '0';
-    document.getElementById('sellerPromoMax').value = '';
-    loadSellerPromos();
-  } catch (e) { showToast(e.message || 'Failed', 'error'); }
-}
-async function toggleSellerPromo(id, active) {
-  try { await api('/seller-promos/' + id, { method: 'PUT', body: { active } }); loadSellerPromos(); } catch {}
-}
-async function deleteSellerPromo(id) {
-  if (!confirm('Delete this promo code?')) return;
-  try { await api('/seller-promos/' + id, { method: 'DELETE' }); loadSellerPromos(); } catch {}
-}
-
-// ============ SELLER ORDERS ============
-async function loadSellerOrders() {
-  const list = document.getElementById('sellerOrdersList');
-  if (!list) return;
-  try {
-    const d = await api('/seller/orders');
-    const orders = d.orders || [];
-    if (!orders.length) { list.innerHTML = '<div style="font-size:13px;color:var(--text-dim);padding:12px">Belum ada order.</div>'; return; }
-    list.innerHTML = orders.map(o => {
-      const items = JSON.parse(o.items || '[]');
-      const myItems = items.filter(i => String(i.sellerId) === String(APP.user?.id));
-      const names = myItems.map(i => i.name).join(', ');
-      const total = myItems.reduce((sum, i) => sum + (parseFloat(String(i.price).replace(/[^0-9]/g,'')) || 0) * (i.qty || 1), 0);
-      const statusColor = o.status === 'completed' ? '#8fb89f' : o.status === 'processing' ? '#c9ad72' : o.status === 'cancelled' ? '#cd8489' : '#c0a878';
-      return '<div class="glass" style="padding:12px;border-radius:var(--radius);border:1px solid var(--glass-border);margin-bottom:8px"><div style="display:flex;justify-content:space-between;align-items:start;gap:8px"><div style="flex:1;min-width:0"><div style="font-weight:600;font-size:13px">#' + o.id + ' - ' + names + '</div><div style="font-size:11px;color:var(--text-dim)">' + (o.customer_name || 'Guest') + ' &middot; ' + new Date(o.created_at).toLocaleDateString() + '</div></div><div style="text-align:right"><div style="font-weight:600;font-size:13px;color:var(--primary)">Rp ' + (o.total || 0).toLocaleString('id-ID') + '</div><select class="form-input" style="padding:3px 6px;font-size:11px;width:auto;margin-top:4px" onchange="updateSellerOrderStatus(' + o.id + ',this.value)"><option value="pending" ' + (o.status === 'pending' ? 'selected' : '') + '>Pending</option><option value="processing" ' + (o.status === 'processing' ? 'selected' : '') + '>Processing</option><option value="completed" ' + (o.status === 'completed' ? 'selected' : '') + '>Completed</option><option value="cancelled" ' + (o.status === 'cancelled' ? 'selected' : '') + '>Cancelled</option></select></div></div></div>';
-    }).join('');
-  } catch { list.innerHTML = '<div style="font-size:13px;color:var(--text-dim);padding:12px">Gagal load orders.</div>'; }
-}
-async function updateSellerOrderStatus(id, status) {
-  try { await api('/seller/orders/' + id + '/status', { method: 'PUT', body: { status } }); showToast('Status diupdate', 'success'); loadSellerOrders(); } catch {}
-}
+// ============ SELLER PROMO CODES & ORDERS (moved into SELLER DASHBOARD PRO block above) ============
 
 // ============ ADMIN ANNOUNCEMENTS ============
 async function loadAdminAnnouncements() {
