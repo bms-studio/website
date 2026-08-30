@@ -354,7 +354,7 @@ body.pt-anim #pageTransition .pt-label{opacity:1;transform:translate(-50%,-50%) 
 .mobile-nav.open{display:flex}
 
 /* PAGES */
-.page{display:none;min-height:100vh;padding-top:var(--nav-height);opacity:0;transform:translateY(10px)}
+.page{position:relative;display:none;min-height:100vh;padding-top:var(--nav-height);opacity:0;transform:translateY(10px)}
 .page.active{display:block;animation:pageEnter 0.5s var(--ease-out) forwards}
 @keyframes pageEnter{to{opacity:1;transform:translateY(0)}}
 
@@ -633,6 +633,19 @@ body.pt-anim #pageTransition .pt-label{opacity:1;transform:translate(-50%,-50%) 
 .reveal{opacity:0;transform:translateY(24px);transition:opacity 0.7s var(--ease-out),transform 0.7s var(--ease-out)}
 .reveal.visible{opacity:1;transform:translateY(0)}
 .reveal.visible[data-tilt]{transition:opacity 0.7s var(--ease-out),transform 0.18s ease-out}
+
+/* MASCOT RESPONSIVE */
+.mascot-hide-mobile{pointer-events:none}
+@media(max-width:1500px){.mascot-hide-mobile img{width:140px!important;height:140px!important}}
+@media(max-width:1200px){.mascot-hide-mobile img{width:110px!important;height:110px!important}}
+@media(max-width:900px){.mascot-hide-mobile img{width:80px!important;height:80px!important}}
+@media(max-width:600px){.mascot-hide-mobile img{width:56px!important;height:56px!important}}
+@media(max-width:480px){.mascot-hide-mobile{display:none}}
+.mascot-cta img{width:200px!important;height:200px!important}
+@media(max-width:1500px){.mascot-cta img{width:180px!important;height:180px!important}}
+@media(max-width:1200px){.mascot-cta img{width:160px!important;height:160px!important}}
+@media(max-width:900px){.mascot-cta img{width:140px!important;height:140px!important}}
+@media(max-width:600px){.mascot-cta{display:none}}
 
 /* ABOUT */
 .banner-page{position:relative;padding:48px 20px;text-align:center;border-bottom:1px solid var(--glass-border);overflow:hidden;min-height:280px;display:flex;align-items:center;justify-content:center}
@@ -2010,7 +2023,7 @@ input,textarea,select{cursor:text}
         <a class="btn btn-outline btn-lg" onclick="navigateTo('store')">Explore Store</a>
       </div>
     </div>
-    <div style="position:absolute;right:6%;bottom:8%;z-index:2;display:flex;gap:12;align-items:flex-end" class="mascot-hide-mobile"><img src="/mascot/maskot-hi-menyapa-waving.png" alt="Hi" style="width:190px;height:190px;object-fit:contain;filter:drop-shadow(0 12px 24px rgba(0,0,0,.25))" loading="lazy"/><img src="/mascot/maskot-hore-semangat-lompat.png" alt="Hore" style="width:150px;height:150px;object-fit:contain;filter:drop-shadow(0 12px 24px rgba(0,0,0,.25));margin-bottom:20px" loading="lazy"/></div>
+    <div style="position:absolute;right:5%;bottom:8%;z-index:2" class="mascot-hide-mobile"><img src="/mascot/maskot-hi-menyapa-waving.png" alt="Hi" style="width:240px;height:240px;object-fit:contain;filter:drop-shadow(0 12px 24px rgba(0,0,0,.25))" loading="lazy"/></div>
         <div class="hero-scroll"><span class="mouse"></span><span>Scroll</span></div>
   </section>
 
@@ -2053,29 +2066,32 @@ input,textarea,select{cursor:text}
     </div>
   </section>
 
-  <section class="section section-gradient" style="background:var(--bg-2);padding:80px 20px;max-width:none">
+  <section class="section section-gradient" style="background:var(--bg-2);padding:80px 20px;max-width:none;position:relative">
     <div style="max-width:1200px;margin:0 auto">
       <h2 class="section-title" data-eyebrow="Services">Featured <span class="text-gradient">Services</span></h2>
       <p class="section-desc">Layanan pengembangan Roblox unggulan dari BMS STUDIO.</p>
       <div class="services-grid" id="featuredServices"></div>
     </div>
+    <div style="position:absolute;right:16px;top:16px;z-index:2;pointer-events:none" class="mascot-hide-mobile"><img src="/mascot/maskot-cool-santai-minum.png" alt="Cool" style="width:170px;height:170px;object-fit:contain" loading="lazy"/></div>
   </section>
 
-  <section class="section">
+  <section class="section" style="position:relative">
     <h2 class="section-title" data-eyebrow="Store">From <span class="text-gradient">BMS STORE</span></h2>
     <p class="section-desc">Produk digital terbaru dan terlaris.</p>
     <div class="assets-grid" id="featuredProducts"></div>
     <div style="text-align:center;margin-top:28px">
       <a class="btn btn-outline" onclick="navigateTo('store')">Lihat Semua Produk</a>
     </div>
+    <div style="position:absolute;left:16px;top:16px;z-index:2;pointer-events:none" class="mascot-hide-mobile"><img src="/mascot/maskot-happy-belanja-bawa-tas.png" alt="Happy" style="width:170px;height:170px;object-fit:contain" loading="lazy"/></div>
   </section>
 
-  <section class="section" style="background:var(--bg-2);padding:80px 20px;max-width:none">
+  <section class="section" style="background:var(--bg-2);padding:80px 20px;max-width:none;position:relative">
     <div style="max-width:1200px;margin:0 auto">
       <h2 class="section-title" data-eyebrow="Testimonials">What Our <span class="text-gradient">Clients Say</span></h2>
       <p class="section-desc">Testimonial dan review dari pelanggan kami.</p>
       <div class="testi-grid" id="testimonialsGrid"></div>
     </div>
+    <div style="position:absolute;right:16px;top:16px;z-index:2" class="mascot-hide-mobile"><img src="/mascot/maskot-love-peluk-hati.png" alt="Love" style="width:180px;height:180px;object-fit:contain" loading="lazy"/></div>
   </section>
 
   <!-- TOP PRODUCTS / BEST SELLER -->
@@ -2087,7 +2103,7 @@ input,textarea,select{cursor:text}
     </div>
   </section>
 
-  <section class="section" style="text-align:center">
+  <section class="section" style="text-align:center;position:relative">
     <h2 class="section-title" data-eyebrow="Let's Talk">Ready to Start <span class="text-gradient">Your Project</span>?</h2>
     <p class="section-desc">Hubungi kami dan wujudkan ide Anda.</p>
     <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
@@ -2562,11 +2578,12 @@ function v7ToggleFaq(el){
 </script>
 
   <!-- v7 tech stack -->
-  <section class="section v7-tech">
+  <section class="section v7-tech" style="position:relative">
     <div class="v7-tech-head reveal">
       <h2 class="section-title">Tech <span class="text-gradient">Stack</span></h2>
       <p class="section-desc">Teknologi yang kami kuasai untuk hasil terbaik.</p>
     </div>
+    <div style="position:absolute;right:16px;top:16px;z-index:2;pointer-events:none" class="mascot-hide-mobile"><img src="/mascot/maskot-fokus-kerja-laptop.png" alt="Fokus" style="width:180px;height:180px;object-fit:contain" loading="lazy"/></div>
     <div class="v7-tech-grid" id="v7Tech">
       <div class="v7-skill reveal" data-v="95"><div class="v7-skill-top"><span><i class="fas fa-bolt v7-fa"></i> Lua / Luau</span><b>95%</b></div><div class="v7-skill-bar"><div class="v7-skill-fill"></div></div></div>
       <div class="v7-skill reveal" data-v="90"><div class="v7-skill-top"><span><i class="fab fa-js-square v7-fa"></i> JavaScript</span><b>90%</b></div><div class="v7-skill-bar"><div class="v7-skill-fill"></div></div></div>
@@ -2605,13 +2622,14 @@ function v7ToggleFaq(el){
   </section>
 
   <!-- v7 cta -->
-  <section class="v7-cta reveal">
+  <section class="v7-cta reveal" style="position:relative">
     <div class="v7-cta-inner">
       <div class="v7-cta-glow"></div>
       <h2>Siap memulai project Anda?</h2>
       <p>Konsultasi gratis — tim kami siap membantu mewujudkan ide Anda.</p>
       <a href="#" class="btn btn-primary" onclick="navigateTo('contact');return false"><i class="fas fa-paper-plane"></i> Hubungi Kami</a>
     </div>
+    <div style="position:absolute;left:16px;bottom:16px;z-index:2" class="mascot-hide-mobile mascot-cta"><img src="/mascot/maskot-ngantuk-tidur-di-laptop.png" alt="Ngantuk" style="width:200px;height:200px;object-fit:contain" loading="lazy"/></div>
   </section>
 </div>
 
@@ -2625,6 +2643,7 @@ function v7ToggleFaq(el){
       <h1 class="hero-title" style="font-size:30px">Our <span class="text-gradient">Services</span></h1>
       <p style="color:var(--text-muted);max-width:460px;margin:10px auto 0">11 layanan profesional untuk kebutuhan project Anda.</p>
     </div>
+    <div style="position:absolute;right:5%;bottom:10%;z-index:3" class="mascot-hide-mobile"><img src="/mascot/maskot-cool-santai-minum.png" alt="Cool" style="width:220px;height:220px;object-fit:contain" loading="lazy"/></div>
   </div>
   <section class="section"><div class="services-grid" id="allServices"></div></section>
 </div>
@@ -2639,6 +2658,7 @@ function v7ToggleFaq(el){
       <h1 class="hero-title" style="font-size:30px">Our <span class="text-gradient">Portfolio</span></h1>
       <p style="color:var(--text-muted);max-width:460px;margin:10px auto 0">Beberapa project yang telah kami kerjakan.</p>
     </div>
+    <div style="position:absolute;right:5%;bottom:10%;z-index:3" class="mascot-hide-mobile"><img src="/mascot/maskot-hore-semangat-lompat.png" alt="Hore" style="width:220px;height:220px;object-fit:contain" loading="lazy"/></div>
   </div>
   <section class="section"><div class="portfolio-grid" id="portfolioGrid"></div></section>
 </div>
@@ -2649,7 +2669,7 @@ function v7ToggleFaq(el){
     <img src="https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3amhub2ltZ3pmcG5sbHQ5NWppcGY3czVheTNwdGRlMjZ6bHQyYTd6aSZlcD12MV9naWZzX3NlYXJjaCZjdD1n/jsrEC3RoSTEkijz85J/giphy.gif" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0.12" onerror="this.style.display='none'">
     <div class="orb orb-1" style="width:300px;height:300px;opacity:0.2"></div>
     <div style="position:relative;z-index:2">
-      <div style="position:absolute;right:5%;bottom:10px;opacity:0.95" class="mascot-hide-mobile"><img src="/mascot/maskot-happy-belanja-bawa-tas.png" alt="Happy" style="width:150px;height:150px;object-fit:contain" loading="lazy"/></div>
+      <div style="position:absolute;right:5%;bottom:10px;opacity:0.95" class="mascot-hide-mobile"><img src="/mascot/maskot-happy-belanja-bawa-tas.png" alt="Happy" style="width:220px;height:220px;object-fit:contain" loading="lazy"/></div>
         <h1 class="hero-title" style="font-size:30px">BMS <span class="text-gradient">STORE</span></h1>
       <p style="color:var(--text-muted);max-width:460px;margin:0 auto">Produk digital dan tools pengembangan Roblox.</p>
       <div class="store-type-tabs">
@@ -2684,6 +2704,7 @@ function v7ToggleFaq(el){
       </div>
       <button class="btn btn-primary" style="margin-top:14px" onclick="goSell()"><i class="fas fa-store-alt"></i> Jual di BMS</button>
     </div>
+    <div style="position:absolute;right:5%;bottom:10px;opacity:0.95" class="mascot-hide-mobile"><img src="/mascot/maskot-happy-belanja-bawa-tas.png" alt="Happy" style="width:200px;height:200px;object-fit:contain" loading="lazy"/></div>
   </div>
   <section class="section" style="padding-top:32px">
     <div class="ps-toolbar">
@@ -2721,8 +2742,8 @@ function v7ToggleFaq(el){
     <img class="bg-img" src="https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3OXZiZGhuYnRodzR0bmtrb28zbW52OXAxb3BqanV0dDlibXRqb2FwciZlcD12MV9naWZzX3NlYXJjaCZjdD1n/eHdZZgmLheaqRT6kVX/giphy.gif" alt="" onerror="this.style.display='none'">
     <div class="overlay"></div>
     <div class="floating-shape s1"></div>
+    <div style="position:absolute;right:5%;bottom:10px;opacity:0.95;z-index:3" class="mascot-hide-mobile"><img src="/mascot/maskot-bingung-bertanya.png" alt="Bingung" style="width:220px;height:220px;object-fit:contain" loading="lazy"/></div>
     <div class="content">
-      <div style="position:absolute;right:4%;top:20px;opacity:0.85" class="mascot-hide-mobile"><img src="/mascot/maskot-bingung-bertanya.png" alt="Bingung" style="width:140px;height:140px;object-fit:contain" loading="lazy"/></div>
         <h1 class="hero-title" style="fontSize:30px">Contact <span class="text-gradient">Us</span></h1>
       <p style="color:var(--text-muted);max-width:460px;margin:10px auto 0">Hubungi kami untuk konsultasi atau pertanyaan.</p>
     </div>
@@ -2799,6 +2820,7 @@ function v7ToggleFaq(el){
           <div class="v5-rotate" aria-hidden="true">
             <span>Develop.</span><span>Design.</span><span>Deploy.</span><span>Scale.</span>
           </div>
+          <div style="position:absolute;right:-10px;bottom:-20px;z-index:2" class="mascot-hide-mobile"><img src="/mascot/maskot-hi-menyapa-waving.png" alt="Hi" style="width:210px;height:210px;object-fit:contain" loading="lazy"/></div>
         </div>
         <div class="v5-chips" aria-hidden="true">
           <div class="v5-chip c1"><div class="v5-chip-inner"><i class="fas fa-gamepad"></i></div></div>
@@ -2931,8 +2953,9 @@ function togglePwd(el){
 
 <!-- CART -->
 <div class="page" id="page-cart">
-  <section class="section" style="padding-top:32px">
+  <section class="section" style="padding-top:32px;position:relative">
     <h1 class="section-title" style="font-size:24px">Shopping <span class="text-gradient">Cart</span></h1>
+    <div style="position:absolute;right:16px;top:16px;z-index:2" class="mascot-hide-mobile"><img src="/mascot/maskot-happy-belanja-bawa-tas.png" alt="Happy" style="width:190px;height:190px;object-fit:contain" loading="lazy"/></div>
     <div class="cart-section">
       <div id="cartItems" class="cart-items"></div>
       <div id="cartEmpty" class="empty-state">
@@ -3002,7 +3025,8 @@ function togglePwd(el){
 
 <!-- PROFILE -->
 <div class="page" id="page-profile">
-  <div style="max-width:860px;margin:0 auto;padding:0 16px">
+  <div style="max-width:860px;margin:0 auto;padding:0 16px;position:relative">
+    <div style="position:absolute;right:12px;top:8px;z-index:1;pointer-events:none" class="mascot-hide-mobile"><img src="/mascot/maskot-love-peluk-hati.png" alt="Love" style="width:110px;height:110px;object-fit:contain;opacity:0.85" loading="lazy"/></div>
     <!-- PROFILE HEADER -->
     <div class="glass" style="border-radius:var(--radius-xl);overflow:hidden;border:1px solid var(--glass-border);margin-top:24px">
       <div id="profileBanner" style="height:140px;background:var(--gradient-1);background-size:cover;background-position:center;position:relative;cursor:pointer" onclick="document.getElementById('bannerInput').click()">
@@ -3090,7 +3114,8 @@ function togglePwd(el){
 
 <!-- CHAT -->
 <div class="page" id="page-chat">
-  <section class="section" style="padding-top:24px">
+  <section class="section" style="padding-top:24px;position:relative">
+    <div style="position:absolute;right:16px;top:16px;z-index:1;pointer-events:none" class="mascot-hide-mobile"><img src="/mascot/maskot-hore-semangat-lompat.png" alt="Hore" style="width:180px;height:180px;object-fit:contain;opacity:0.9" loading="lazy"/></div>
     <div class="chat-page-container">
       <div class="chat-header">
         <div class="chat-h-icon"><i class="fas fa-comments"></i></div>
@@ -3109,6 +3134,7 @@ function togglePwd(el){
 
 <!-- ADMIN -->
 <div class="page" id="page-admin">
+  <div style="position:absolute;right:16px;top:20px;z-index:2;pointer-events:none" class="mascot-hide-mobile"><img src="/mascot/maskot-serius-lipat-tangan.png" alt="Serius" style="width:190px;height:190px;object-fit:contain;opacity:0.9" loading="lazy"/></div>
   <div class="admin-layout">
     <div class="admin-sidebar">
       <div class="admin-sidebar-item active" data-tab="dashboard" onclick="switchAdminTab('dashboard')"><i class="fas fa-chart-pie"></i> Dashboard</div>
@@ -3519,7 +3545,8 @@ function togglePwd(el){
 
 <!-- SELLER DASHBOARD -->
 <div class="page" id="page-seller">
-  <div style="max-width:800px;margin:0 auto;padding:24px">
+  <div style="max-width:800px;margin:0 auto;padding:24px;position:relative">
+    <div style="position:absolute;right:16px;top:16px;z-index:1;pointer-events:none" class="mascot-hide-mobile"><img src="/mascot/maskot-fokus-kerja-laptop.png" alt="Fokus" style="width:190px;height:190px;object-fit:contain;opacity:0.92" loading="lazy"/></div>
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px">
       <h2 style="font-size:22px;font-weight:700"><i class="fas fa-store-alt" style="color:var(--primary)"></i> Seller Dashboard</h2>
       <button class="btn btn-outline btn-sm" onclick="navigateTo('profile')">Back to Profile</button>
@@ -3894,19 +3921,24 @@ async function request(path, options = {}, config = {}) {
 
 // Stale-While-Revalidate: respons instan dari cache + refresh background tanpa delay
 const _swrInflight = {};
+const _apiRefreshers = {};
+function onApiRefresh(path, fn) {
+  if (!_apiRefreshers[path]) _apiRefreshers[path] = [];
+  _apiRefreshers[path].push(fn);
+}
 async function api(path, options = {}) {
   const { headers: optHeaders, cache = true, method = 'GET', ...rest } = options;
   const config = { headers: { 'Content-Type': 'application/json', ...optHeaders }, credentials: 'include', method, ...rest };
   if (config.body && typeof config.body === 'object') config.body = JSON.stringify(config.body);
 
-  const cacheKey = 'api_cache_' + path;
+  const cacheKey = 'api_cache_v2_' + path;
 
   if (method !== 'GET') {
     // Invalidate all caches on mutation (POST/PUT/DELETE)
     try {
       const keys = Object.keys(localStorage);
       for (const key of keys) {
-        if (key.startsWith('api_cache_')) localStorage.removeItem(key);
+        if (key.indexOf('api_cache_') === 0) localStorage.removeItem(key);
       }
     } catch {}
     return request(path, options, config);
@@ -3918,11 +3950,14 @@ async function api(path, options = {}) {
       if (cached) {
         const { data, time } = JSON.parse(cached);
         const age = Date.now() - time;
-        if (age < 30000) return data; // fresh: langsung dari cache
+        if (age < 10000) return data; // fresh: langsung dari cache
         // stale (30s-5m): balas instan, refresh di background
         if (!_swrInflight[cacheKey] && age < 300000) {
           _swrInflight[cacheKey] = request(path, options, config)
-            .then(fresh => { try { localStorage.setItem(cacheKey, JSON.stringify({ data: fresh, time: Date.now() })); } catch {} })
+            .then(fresh => {
+              try { localStorage.setItem(cacheKey, JSON.stringify({ data: fresh, time: Date.now() })); } catch {}
+              try { const fns = _apiRefreshers[path]; if (fns) fns.forEach(function(fn){ try { fn(fresh); } catch(e){} }); } catch {}
+            })
             .catch(() => {})
             .finally(() => { delete _swrInflight[cacheKey]; });
         }
@@ -4416,6 +4451,7 @@ async function renderTestimonials() {
       c.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--text-dim);font-size:13px">Belum ada testimonial. Jadilah yang pertama!</div>';
     }
   } catch { c.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--text-dim)">Gagal memuat testimonial</div>'; }
+  setTimeout(initRevealObserver, 100);
 }
 
 // ============ STORE ============
@@ -6314,7 +6350,7 @@ async function renderPublicProducts() {
       const r = p.avg_rating ? Math.round(Number(p.avg_rating)) : 0;
       const starsHtml = r ? '<div class="rating-stars">'+Array.from({length:5}, (_,i) => '<i class="fas fa-star'+(i<r?'':' empty')+'"></i>').join('')+'</div>' : '<div class="rating-stars" style="opacity:.35">Belum ada rating</div>';
       const catLabel = p.category ? '<span class="ps-cat-badge">'+p.category+'</span>' : '';
-      return '<div class="asset-card reveal ps-card" onclick="openPublicProductModal('+i+')"><div class="asset-thumb" style="height:150px">'+(p.image?'<img src="'+p.image+'" alt="" loading="lazy" onerror="this.parentElement.innerHTML=\'<i class=\\\\\'fas fa-box\\\\\'></i>\'">':'<i class="fas fa-box"></i>')+'</div><div class="asset-body"><div style="font-size:11px;color:var(--secondary);margin-bottom:4px;display:flex;align-items:center;gap:4px"><div style="width:18px;height:18px;border-radius:50%;background:var(--gradient-1);display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:700;color:#fff;flex-shrink:0;overflow:hidden" '+sellerAvStyle+'>'+sellerInitial+'</div>'+ (p.seller_name || p.seller_email || 'Unknown') +'</div><h3>'+p.name+'</h3>'+starsHtml+'<div class="desc" style="-webkit-line-clamp:2">'+(p.description||'')+'</div></div><div class="asset-footer"><div><span class="asset-price">'+p.price+'</span>'+catLabel+'</div><div style="display:flex;gap:4px"><button class="asset-add" onclick="event.stopPropagation();shareProduct('+p.id+',\'public\')" title="Salin link"><i class="fas fa-link"></i></button><button class="asset-add" onclick="event.stopPropagation();addPublicToCartByIndex('+i+')" title="Add to cart"><i class="fas fa-cart-plus"></i></button><button class="asset-add" onclick="event.stopPropagation();openSellerChat('+p.id+')" title="Chat seller"><i class="fas fa-comment"></i></button></div></div></div>';
+      return '<div class="asset-card reveal ps-card" onclick="openPublicProductModal('+i+')"><div class="asset-thumb" style="height:150px">'+(p.image?'<img src="'+p.image+'" alt="" loading="lazy" onerror="this.parentElement.innerHTML=\'<i class=&quot;fas fa-box&quot;></i>\'">':'<i class="fas fa-box"></i>')+'</div><div class="asset-body"><div style="font-size:11px;color:var(--secondary);margin-bottom:4px;display:flex;align-items:center;gap:4px"><div style="width:18px;height:18px;border-radius:50%;background:var(--gradient-1);display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:700;color:#fff;flex-shrink:0;overflow:hidden" '+sellerAvStyle+'>'+sellerInitial+'</div>'+ (p.seller_name || p.seller_email || 'Unknown') +'</div><h3>'+p.name+'</h3>'+starsHtml+'<div class="desc" style="-webkit-line-clamp:2">'+(p.description||'')+'</div></div><div class="asset-footer"><div><span class="asset-price">'+p.price+'</span>'+catLabel+'</div><div style="display:flex;gap:4px"><button class="asset-add" onclick="event.stopPropagation();shareProduct('+p.id+',\'public\')" title="Salin link"><i class="fas fa-link"></i></button><button class="asset-add" onclick="event.stopPropagation();addPublicToCartByIndex('+i+')" title="Add to cart"><i class="fas fa-cart-plus"></i></button><button class="asset-add" onclick="event.stopPropagation();openSellerChat('+p.id+')" title="Chat seller"><i class="fas fa-comment"></i></button></div></div></div>';
     }).join('');
     setTimeout(initRevealObserver, 100);
   } catch {}
@@ -6437,7 +6473,7 @@ async function loadSellerProducts() {
           </div>
         </div>
       </div>
-    `).join('') : '<div class="empty-state"><i class="fas fa-box"></i><h3>Belum ada produk</h3><p>Tambahkan produk di atas.</p></div>';
+    `).join('') : '<div class="empty-state"><img src="/mascot/maskot-ngantuk-tidur-di-laptop.png" alt="Ngantuk" style="width:200px;height:200px;object-fit:contain;margin:0 auto 8px" loading="lazy"/><h3>Belum ada produk</h3><p>Tambahkan produk di atas.</p></div>';
   } catch { showToast('Failed to load products', 'error'); }
 }
 var sellerEditProductId = null;
@@ -6877,6 +6913,9 @@ document.addEventListener('DOMContentLoaded', async function() {
   renderServices('allServices');
   renderPortfolio();
   renderTestimonials();
+  // Re-render otomatis saat cache SWR dapat data segar (perbaiki avatar stale dari cache lama)
+  onApiRefresh('/testimonials', function(){ try { renderTestimonials(); } catch(e){} });
+  onApiRefresh('/seller/products', function(){ try { loadTopSellers(); } catch(e){} });
   // Parallelize all async API calls
   await Promise.all([
     checkSession(),
@@ -7446,6 +7485,55 @@ document.addEventListener('DOMContentLoaded', async function() {
     console.log('%cBMS Platform', 'font-size:30px;font-weight:800;font-family:sans-serif');
     console.log('%cKonten situs ini dilindungi. Fitur inspeksi hanya untuk developer berwenang.', 'color:#93ab9e;font-size:12px');
   } catch {}
+})();
+</script>
+<script>
+/* ============ URL ROUTER (akses langsung halaman via path) ============
+   Sebelumnya SPA hanya bisa berpindah lewat tombol (navigateTo); path
+   seperti /login, /register, /store tidak menampilkan halamannya.
+   Router ini membuat halaman tampil sesuai URL saat dibuka langsung,
+   plus dukungan tombol back/forward. */
+(function(){
+  var ROUTES = {
+    '' : 'home', '/': 'home',
+    '/home': 'home', '/about': 'about', '/services': 'services', '/portfolio': 'portfolio',
+    '/store': 'store', '/publicstore': 'publicstore', '/contact': 'contact',
+    '/login': 'login', '/register': 'register', '/cart': 'cart', '/profile': 'profile',
+    '/admin': 'admin', '/chat': 'chat', '/seller': 'seller'
+  };
+  function currentPage(){
+    var p = (window.location.pathname || '/').toLowerCase();
+    if (p.length > 1 && p.charAt(p.length - 1) === '/') p = p.slice(0, -1);
+    return ROUTES[p] || 'home';
+  }
+  function runRoute(){
+    if (typeof navigateTo !== 'function') return;
+    var page = currentPage();
+    window.__routedPage = page;
+    if (page === 'register'){
+      navigateTo('login');
+      if (typeof switchAuthTab === 'function') switchAuthTab('register');
+      return;
+    }
+    if (page === 'home' && window.location.pathname === '/') return;
+    navigateTo(page);
+  }
+  document.addEventListener('click', function(e){
+    if (!e.target || typeof e.target.closest !== 'function') return;
+    var a = e.target.closest('a[href]');
+    if (!a || a.target === '_blank' || a.hasAttribute('download')) return;
+    var href = a.getAttribute('href') || '';
+    var path = href.indexOf('?') > -1 ? href.split('?')[0] : href;
+    if (path.charAt(0) !== '/' || path.indexOf('//') === 0) return;
+    if (!(path in ROUTES)) return;
+    e.preventDefault();
+    if (window.history && history.pushState) history.pushState(null, '', href);
+    try { scrollTo(0, 0); } catch (err) {}
+    runRoute();
+  });
+  window.addEventListener('popstate', runRoute);
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', runRoute);
+  else runRoute();
 })();
 </script>
 </body>

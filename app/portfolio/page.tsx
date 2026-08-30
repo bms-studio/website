@@ -17,12 +17,14 @@ export default function PortfolioPage() {
     try{ await api("/portfolio",{method:"POST",body:form}); setForm({title:'',desc:'',category:'Web',color:'#e6e3dc',image:'',tags:''}); setMsg("Ditambah!"); load() }catch(err:any){ setMsg(err.message)}
   }
   return (
-    <div style={{maxWidth:1200,margin:'0 auto',padding:'80px 20px',position:'relative'}}>
-      <div style={{position:'absolute',right:10,top:20,opacity:0.9}}>
-        <Mascot src="/mascot/maskot-hore-semangat-lompat.png" size={200} alt="Hore" />
+    <div style={{maxWidth:1200,margin:'0 auto',padding:'80px 20px'}}>
+      <div style={{display:'flex',alignItems:'center',gap:24,flexWrap:'wrap'}}>
+        <Mascot src="/mascot/maskot-hore-semangat-lompat.png" size={190} alt="Hore" />
+        <div style={{flex:'1 1 320px'}}>
+          <h1 style={{fontSize:36,fontWeight:800,fontFamily:'Syne'}}>Our <span style={{background:'var(--gradient-1)',WebkitBackgroundClip:'text',WebkitTextFillColor:'transparent'}}>Portfolio</span></h1>
+          <p style={{color:'var(--text-muted)',marginTop:8}}>Beberapa project yang telah kami kerjakan.</p>
+        </div>
       </div>
-      <h1 style={{fontSize:36,fontWeight:800,fontFamily:'Syne'}}>Our <span style={{background:'var(--gradient-1)',WebkitBackgroundClip:'text',WebkitTextFillColor:'transparent'}}>Portfolio</span></h1>
-      <p style={{color:'var(--text-muted)',marginTop:8}}>Beberapa project yang telah kami kerjakan.</p>
       {isAdmin && (
         <form onSubmit={add} style={{marginTop:20,padding:16,border:'1px solid var(--glass-border)',borderRadius:16,background:'var(--glass)',display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(160px,1fr))',gap:8}}>
           <input placeholder="Title" value={form.title} onChange={e=>setForm({...form,title:e.target.value})} required style={{padding:'10px 12px',borderRadius:8,border:'1px solid var(--glass-border)',background:'var(--bg-3)',color:'var(--text)'}}/>

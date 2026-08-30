@@ -25,7 +25,10 @@ export default function CartPage(){
 
   return (
     <div style={{maxWidth:800,margin:'0 auto',padding:'80px 20px'}}>
-      <h1 style={{fontSize:28,fontWeight:800,fontFamily:'Syne'}}>Keranjang</h1>
+      <div style={{display:'flex',alignItems:'center',gap:16,flexWrap:'wrap'}}>
+        <Mascot src="/mascot/maskot-lets-go-semangat.png" size={140} alt="Lets Go" />
+        <h1 style={{fontSize:28,fontWeight:800,fontFamily:'Syne'}}>Keranjang</h1>
+      </div>
       {!cart.length ? (
         <div style={{textAlign:'center',padding:'40px 20px'}}>
           <Mascot src="/mascot/maskot-happy-belanja-bawa-tas.png" size={240} alt="Happy" style={{margin:'0 auto 16px'}}/>

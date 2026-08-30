@@ -30,7 +30,7 @@ export default function LoginPage() {
         <button type="submit" className="btn btn-primary">Sign In</button>
         {msg && <p style={{fontSize:12,color:'var(--text-muted)',textAlign:'center'}}>{msg}</p>}
       </form>
-      <p style={{textAlign:'center',fontSize:12,marginTop:16,color:'var(--text-muted)'}}>Belum punya akun? <Link href="/login" style={{color:'var(--primary)',textDecoration:'underline'}}>Daftar di SPA lama</Link> (register migrasi soon)</p>
+      <p style={{textAlign:'center',fontSize:12,marginTop:16,color:'var(--text-muted)'}}>Belum punya akun? <Link href="/register" style={{color:'var(--primary)',textDecoration:'underline'}}>Daftar</Link></p>
     </div>
   )
 }

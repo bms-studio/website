@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react"
 import { api } from "@/lib/api"
 import { useStore } from "@/lib/store"
+import { Mascot } from "@/components/mascot/Mascot"
 
 export default function ChatPage(){
   const {isLoggedIn}=useStore()
@@ -25,7 +26,10 @@ export default function ChatPage(){
 
   return (
     <div style={{maxWidth:700,margin:'0 auto',padding:'80px 20px'}}>
-      <h1 style={{fontSize:28,fontWeight:800,fontFamily:'Syne'}}>Community <span style={{background:'var(--gradient-1)',WebkitBackgroundClip:'text',WebkitTextFillColor:'transparent'}}>Chat</span></h1>
+      <div style={{display:'flex',alignItems:'center',gap:16,flexWrap:'wrap'}}>
+        <Mascot src="/mascot/maskot-hore-semangat-lompat.png" size={150} alt="Hore" />
+        <h1 style={{fontSize:28,fontWeight:800,fontFamily:'Syne'}}>Community <span style={{background:'var(--gradient-1)',WebkitBackgroundClip:'text',WebkitTextFillColor:'transparent'}}>Chat</span></h1>
+      </div>
       <div style={{marginTop:20,border:'1px solid var(--glass-border)',borderRadius:16,overflow:'hidden',background:'var(--bg-2)',height:420,display:'flex',flexDirection:'column'}}>
         <div style={{flex:1,overflowY:'auto',padding:16,display:'flex',flexDirection:'column',gap:8}}>
           {loading? <p style={{textAlign:'center',color:'var(--text-muted)'}}>Loading...</p> : chats.map((c:any)=>(

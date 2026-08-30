@@ -1,7 +1,7 @@
 "use client"
-import { Mascot } from "@/components/mascot/Mascot"
 import { useEffect, useState } from "react"
 import { api } from "@/lib/api"
+import { Mascot } from "@/components/mascot/Mascot"
 
 type Tab = "assets"|"users"|"orders"|"messages"|"promos"|"sellerapps"
 
@@ -36,8 +36,13 @@ export default function AdminPage(){
 
   return (
     <div style={{maxWidth:1200,margin:'0 auto',padding:'80px 20px'}}>
-      <h1 style={{fontSize:28,fontWeight:800,fontFamily:'Syne'}}>Admin <span style={{background:'var(--gradient-1)',WebkitBackgroundClip:'text',WebkitTextFillColor:'transparent'}}>Panel</span></h1>
-      <p style={{color:'var(--text-muted)'}}>Kelola BMS Platform — proteksi server aktif.</p>
+      <div style={{display:'flex',alignItems:'center',gap:16,flexWrap:'wrap'}}>
+        <Mascot src="/mascot/maskot-fokus-kerja-laptop.png" size={160} alt="Fokus" />
+        <div>
+          <h1 style={{fontSize:28,fontWeight:800,fontFamily:'Syne'}}>Admin <span style={{background:'var(--gradient-1)',WebkitBackgroundClip:'text',WebkitTextFillColor:'transparent'}}>Panel</span></h1>
+          <p style={{color:'var(--text-muted)'}}>Kelola BMS Platform — proteksi server aktif.</p>
+        </div>
+      </div>
 
       <div style={{display:'flex',gap:8,marginTop:16,flexWrap:'wrap'}}>
         {(["assets","users","orders","messages","promos","sellerapps"] as Tab[]).map(t=>(

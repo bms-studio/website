@@ -35,12 +35,14 @@ export default function SellerPage(){
   if(!isLoggedIn) return <div style={{maxWidth:700,margin:'80px auto',padding:20,textAlign:'center'}}><h2>Login sebagai seller</h2><p style={{color:'var(--text-muted)'}}>Hanya user terverifikasi bisa jual. <a href="/login" style={{color:'var(--primary)'}}>Login</a></p></div>
 
   return (
-    <div style={{maxWidth:1000,margin:'0 auto',padding:'80px 20px',position:'relative'}}>
-      <div style={{position:'absolute',right:10,top:10,opacity:0.9}} className="mascot-hide-mobile">
-        <Mascot src="/mascot/maskot-fokus-kerja-laptop.png" size={200} alt="Fokus" />
+    <div style={{maxWidth:1000,margin:'0 auto',padding:'80px 20px'}}>
+      <div style={{display:'flex',alignItems:'center',gap:20,flexWrap:'wrap'}}>
+        <Mascot src="/mascot/maskot-fokus-kerja-laptop.png" size={190} alt="Fokus" />
+        <div style={{flex:'1 1 320px'}}>
+          <h1 style={{fontSize:28,fontWeight:800,fontFamily:'Syne'}}>Seller <span style={{background:'var(--gradient-1)',WebkitBackgroundClip:'text',WebkitTextFillColor:'transparent'}}>Dashboard</span></h1>
+          <p style={{color:'var(--text-muted)'}}>Kelola produk Public Store — {products.length} produk</p>
+        </div>
       </div>
-      <h1 style={{fontSize:28,fontWeight:800,fontFamily:'Syne'}}>Seller <span style={{background:'var(--gradient-1)',WebkitBackgroundClip:'text',WebkitTextFillColor:'transparent'}}>Dashboard</span></h1>
-      <p style={{color:'var(--text-muted)'}}>Kelola produk Public Store — {products.length} produk</p>
 
       <form onSubmit={submit} style={{marginTop:20,padding:16,border:'1px solid var(--glass-border)',borderRadius:16,background:'var(--glass)',display:'grid',gap:10}}>
         <h3 style={{fontWeight:700}}>Tambah Produk</h3>
@@ -68,7 +70,7 @@ export default function SellerPage(){
             </div>
           </div>
         ))}
-        {!products.length && <div style={{gridColumn:'1/-1',textAlign:'center',padding:'30px 20px'}}><Mascot src="/mascot/maskot-ngantuk-tidur-di-laptop.png" size={180} alt="Ngantuk" style={{margin:'0 auto 12px'}}/><p style={{color:'var(--text-muted)'}}>Belum ada produk. Tambah di atas — jangan ngantuk!</p></div>}
+        {!products.length && <div style={{gridColumn:'1/-1',textAlign:'center',padding:'30px 20px'}}><Mascot src="/mascot/maskot-ngantuk-tidur-di-laptop.png" size={220} alt="Ngantuk" style={{margin:'0 auto 12px'}}/><p style={{color:'var(--text-muted)'}}>Belum ada produk. Tambah di atas — jangan ngantuk!</p></div>}
       </div>
     </div>
   )

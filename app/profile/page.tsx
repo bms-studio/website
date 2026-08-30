@@ -2,6 +2,7 @@
 import { useStore } from "@/lib/store"
 import { useEffect, useState } from "react"
 import { api } from "@/lib/api"
+import { Mascot } from "@/components/mascot/Mascot"
 
 export default function ProfilePage(){
   const {user,isLoggedIn,loading,refreshAuth}=useStore()
@@ -26,14 +27,17 @@ export default function ProfilePage(){
 
   return (
     <div style={{maxWidth:700,margin:'0 auto',padding:'80px 20px'}}>
-      <div style={{display:'flex',gap:16,alignItems:'center'}}>
-        <div style={{width:72,height:72,borderRadius:'50%',background:'var(--gradient-1)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:28,fontWeight:800,color:'#fff',overflow:'hidden'}}>
-          {user?.avatar ? <img src={user.avatar} alt="" style={{width:'100%',height:'100%',objectFit:'cover'}}/> : (user?.name||'U')[0].toUpperCase()}
-        </div>
-        <div>
-          <h1 style={{fontSize:22,fontWeight:800}}>{user?.name}</h1>
-          <p style={{color:'var(--text-muted)',fontSize:13}}>{user?.email} · {user?.role}</p>
-          <p style={{fontSize:12,marginTop:4}}>XP: {user?.xp||0}</p>
+      <div style={{display:'flex',alignItems:'center',gap:16,flexWrap:'wrap'}}>
+        <Mascot src="/mascot/maskot-love-peluk-hati.png" size={150} alt="Love" />
+        <div style={{display:'flex',gap:16,alignItems:'center'}}>
+          <div style={{width:72,height:72,borderRadius:'50%',background:'var(--gradient-1)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:28,fontWeight:800,color:'#fff',overflow:'hidden',flexShrink:0}}>
+            {user?.avatar ? <img src={user.avatar} alt="" style={{width:'100%',height:'100%',objectFit:'cover'}}/> : (user?.name||'U')[0].toUpperCase()}
+          </div>
+          <div>
+            <h1 style={{fontSize:22,fontWeight:800}}>{user?.name}</h1>
+            <p style={{color:'var(--text-muted)',fontSize:13}}>{user?.email} · {user?.role}</p>
+            <p style={{fontSize:12,marginTop:4}}>XP: {user?.xp||0}</p>
+          </div>
         </div>
       </div>
       <div style={{marginTop:24,padding:16,border:'1px solid var(--glass-border)',borderRadius:16,background:'var(--glass)'}}>

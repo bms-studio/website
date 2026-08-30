@@ -1894,3 +1894,7 @@ input,textarea,select{cursor:text}
 @media(max-width:768px){ .mascot-hide-mobile{ display:none } }
 .low-end .mascot-float{ animation:none !important; }
 .low-end .mascot-float img{ filter: none !important; }
+/* Maskot dekoratif: sembunyikan juga di layar menengah agar tidak menimpa konten */
+.mascot-hide-md{ display:block }
+@media(max-width:1024px){ .mascot-hide-md{ display:none } }
+

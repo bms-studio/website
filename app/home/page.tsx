@@ -23,8 +23,11 @@ export default function HomePage() {
         <div className="floating-shape s1" /><div className="floating-shape s2" /><div className="floating-shape s3" />
         <div className="particles"><div className="particle" /><div className="particle" /><div className="particle" /><div className="particle" /><div className="particle" /><div className="particle" /><div className="particle" /><div className="particle" /></div>
         <canvas id="threeCanvas" />
-        <div style={{position:'absolute',right:'4%',bottom:'6%',zIndex:2}} className="mascot-hide-mobile">
+        <div style={{position:'absolute',left:'4%',bottom:'10%',zIndex:2}} className="mascot-hide-md">
           <Mascot src="/mascot/maskot-hi-menyapa-waving.png" size={260} alt="Hi" />
+        </div>
+        <div style={{position:'absolute',right:'4%',bottom:'10%',zIndex:2}} className="mascot-hide-md">
+          <Mascot src="/mascot/maskot-hore-semangat-lompat.png" size={170} alt="Hore" />
         </div>
         <div className="hero-content" style={{position:'relative',zIndex:3}}>
           <div className="hero-badge"><i className="fas fa-bolt" /> BMS Platform</div>
@@ -89,8 +92,8 @@ export default function HomePage() {
       </section>
 
       <section className="section" style={{background:'var(--bg-2)',padding:'80px 20px',maxWidth:'none',position:'relative',overflow:'hidden'}}>
-        <div style={{position:'absolute',right:'4%',top:'10%',opacity:0.9}} className="mascot-hide-mobile">
-          <Mascot src="/mascot/maskot-love-peluk-hati.png" size={200} alt="Love" />
+        <div style={{position:'absolute',left:'4%',top:'8%',opacity:0.9}} className="mascot-hide-md">
+          <Mascot src="/mascot/maskot-love-peluk-hati.png" size={170} alt="Love" />
         </div>
         <div style={{maxWidth:1200,margin:'0 auto',position:'relative',zIndex:2}}>
           <h2 className="section-title" data-eyebrow="Testimonials">What Our <span className="text-gradient">Clients Say</span></h2>
@@ -103,12 +106,12 @@ export default function HomePage() {
       </section>
 
       <section style={{padding:'60px 20px',maxWidth:1000,margin:'40px auto',background:'linear-gradient(135deg,rgba(230,227,220,.08),rgba(150,172,159,.06))',border:'1px solid rgba(255,255,255,.08)',borderRadius:24,display:'flex',alignItems:'center',gap:24,flexWrap:'wrap',justifyContent:'center',position:'relative',overflow:'hidden'}}>
-        <Mascot src="/mascot/maskot-lets-go-semangat.png" size={220} alt="Lets Go" />
         <div style={{flex:1,minWidth:240,textAlign:'center'}}>
           <h2 style={{fontSize:28,fontWeight:800,fontFamily:'Syne'}}>Siap mulai project?</h2>
           <p style={{color:'var(--text-muted)',marginTop:8,fontSize:15}}>Konsultasi gratis — tim BMS siap bantu wujudkan ide kamu.</p>
           <Link href="/contact" className="btn btn-primary" style={{marginTop:16,display:'inline-flex'}}>Hubungi Kami →</Link>
         </div>
+        <Mascot src="/mascot/maskot-lets-go-semangat.png" size={220} alt="Lets Go" />
       </section>
     </div>
   )
