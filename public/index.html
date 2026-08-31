@@ -5620,7 +5620,7 @@ function initRevealObserver() {
 // ============ FEATURED HOME ============
 async function loadFeaturedProducts() {
   const grid = document.getElementById('featuredProducts');
-  if (grid) showLoading(grid, 'card');
+  if (grid && !SIGS['featprod']) showLoading(grid, 'card');
   try {
     const data = await api('/assets?store_type=store');
     const products = (data.assets || []).slice(0, 4);
@@ -7386,6 +7386,11 @@ document.addEventListener('DOMContentLoaded', async function() {
   // Re-render otomatis saat cache SWR dapat data segar (perbaiki avatar stale dari cache lama)
   onApiRefresh('/testimonials', function(){ try { renderTestimonials(); } catch(e){} });
   onApiRefresh('/seller/products', function(){ try { loadTopSellers(); } catch(e){} });
+  onApiRefresh('/assets?store_type=store', function(){
+    try { loadFeaturedProducts(); } catch(e){}
+    try { loadTopProducts(); } catch(e){}
+    try { renderAssets(); } catch(e){}
+  });
   // Parallelize all async API calls
   await Promise.all([
     checkSession(),
