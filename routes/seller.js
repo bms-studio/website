@@ -154,10 +154,10 @@ router.get('/chats/:id', authenticateSession, async (req, res) => {
     if (!chat.rows.length) return res.status(404).json({ error: 'Chat not found' });
     const c = chat.rows[0];
     if (c.customer_id != req.user.id && c.seller_id != req.user.id) return res.status(403).json({ error: 'Not your chat' });
-    const product = await q('SELECT name FROM public_products WHERE id = ?', [c.product_id]);
+    const product = await q('SELECT id, name, price, image, link FROM public_products WHERE id = ?', [c.product_id]);
     const customer = await q('SELECT id, name, email, avatar FROM users WHERE id = ?', [c.customer_id]);
     const seller = await q('SELECT id, name, email, avatar FROM users WHERE id = ?', [c.seller_id]);
-    res.json({ chat: { ...c, messages: JSON.parse(c.messages || '[]'), product_name: product.rows[0]?.name, customer: customer.rows[0], seller: seller.rows[0] } });
+    res.json({ chat: { ...c, messages: JSON.parse(c.messages || '[]'), product: product.rows[0] || null, product_name: product.rows[0]?.name, customer: customer.rows[0], seller: seller.rows[0] } });
   } catch { res.status(500).json({ error: 'Server error' }); }
 });
 

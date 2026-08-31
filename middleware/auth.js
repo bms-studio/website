@@ -1,5 +1,5 @@
 const { q } = require('../database/db');
-const { generateSessionToken, COOKIE_OPTIONS, isOwnerEmail } = require('../utils/auth-utils');
+const { generateSessionToken, COOKIE_OPTIONS, sessionExpiresISO, isOwnerEmail } = require('../utils/auth-utils');
 
 async function authenticateSession(req, res, next) {
   const sessionToken = req.cookies?.session;
@@ -16,6 +16,16 @@ async function authenticateSession(req, res, next) {
       return res.status(401).json({ error: 'Session expired' });
     }
     req.user = user;
+    // Sliding session: perpanjang sesi aktif biar tidak logout tiba-tiba (user minta: kalau tidak logout, tetap login)
+    try {
+      const now = Date.now();
+      const exp = user.session_expires ? new Date(user.session_expires).getTime() : 0;
+      if (!user.session_expires || (exp - now) < (15 * 24 * 60 * 60 * 1000)) {
+        const newExp = sessionExpiresISO();
+        await q('UPDATE users SET session_expires = ? WHERE id = ?', [newExp, user.id]);
+        res.cookie('session', sessionToken, COOKIE_OPTIONS);
+      }
+    } catch {}
     next();
   } catch {
     return res.status(500).json({ error: 'Server error' });

@@ -216,6 +216,53 @@ ul{list-style:none}
 .chat-input-area input:focus{border-color:var(--primary)}
 .chat-input-area button{width:40px;height:40px;border-radius:50%;border:none;background:var(--gradient-1);color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:transform 0.2s}
 .chat-input-area button:hover{transform:scale(1.05)}
+
+/* ===== SELLER CHAT UI NEW (BMS THEME) ===== */
+.sc-overlay{position:fixed;inset:0;background:rgba(4,4,6,0.72);z-index:9999;display:none;align-items:center;justify-content:center;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+.sc-overlay.open{display:flex}
+.sc-card{width:720px;max-width:94vw;max-height:86vh;min-height:480px;display:flex;flex-direction:column;background:linear-gradient(160deg,rgba(22,22,28,0.96),rgba(10,10,13,0.98));border:1px solid rgba(230,227,220,0.14);border-top-color:rgba(255,255,255,0.18);border-radius:20px;overflow:hidden;box-shadow:inset 0 1px 0 rgba(255,255,255,0.08),0 30px 90px rgba(0,0,0,0.6);animation:scIn 0.3s cubic-bezier(.16,1,.3,1);position:relative}
+.sc-card::before{content:'';position:absolute;top:-120px;right:-80px;width:320px;height:320px;background:radial-gradient(circle,rgba(147,171,158,0.14),transparent 65%);pointer-events:none;z-index:0}
+@keyframes scIn{from{opacity:0;transform:translateY(18px) scale(.97)}to{opacity:1;transform:translateY(0) scale(1)}}
+.sc-head{display:flex;align-items:center;gap:14px;padding:16px 20px;background:linear-gradient(135deg,rgba(230,227,220,0.07),rgba(147,171,158,0.03));border-bottom:1px solid rgba(230,227,220,0.08);flex-shrink:0;position:relative;z-index:1}
+.sc-avatar{width:44px;height:44px;border-radius:50%;background:var(--gradient-1);display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:700;color:#fff;flex-shrink:0;background-size:cover;background-position:center;border:2px solid rgba(230,227,220,0.25);box-shadow:0 4px 16px rgba(230,227,220,0.18)}
+.sc-head-info{flex:1;min-width:0}
+.sc-head-name{font-size:15px;font-weight:700;letter-spacing:-0.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sc-head-sub{font-size:11px;color:var(--text-muted);display:flex;align-items:center;gap:6px}
+.sc-online{width:6px;height:6px;border-radius:50%;background:#8fb89f;display:inline-block;box-shadow:0 0 0 3px rgba(143,184,159,0.18);animation:scPulse 1.8s ease-in-out infinite}
+@keyframes scPulse{0%,100%{opacity:1}50%{opacity:0.4}}
+.sc-close{width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:var(--text-muted);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;transition:all 0.25s;flex-shrink:0;backdrop-filter:blur(8px)}
+.sc-close:hover{background:rgba(255,255,255,0.12);color:#fff;border-color:rgba(230,227,220,0.3);transform:rotate(90deg)}
+.sc-product{display:flex;align-items:center;gap:12px;padding:10px 20px;margin:10px 14px 0;background:linear-gradient(135deg,rgba(230,227,220,0.06),rgba(147,171,158,0.03));border:1px solid rgba(230,227,220,0.12);border-radius:14px;flex-shrink:0;position:relative;z-index:1}
+.sc-product img{width:44px;height:44px;border-radius:10px;object-fit:cover;background:var(--bg-4);flex-shrink:0;border:1px solid rgba(255,255,255,0.08)}
+.sc-prod-info{flex:1;min-width:0}
+.sc-prod-name{font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sc-prod-price{font-size:11px;color:var(--secondary);font-weight:600;margin-top:1px}
+.sc-prod-btn{width:32px;height:32px;border-radius:10px;border:1px solid rgba(230,227,220,0.16);background:rgba(255,255,255,0.05);color:var(--text-muted);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:12px;transition:all 0.25s;flex-shrink:0}
+.sc-prod-btn:hover{background:var(--gradient-1);color:#fff;border-color:transparent;transform:translateX(2px)}
+.sc-msgs{flex:1;overflow-y:auto;padding:16px 20px;display:flex;flex-direction:column;gap:10px;position:relative;z-index:1}
+.sc-msgs::-webkit-scrollbar{width:5px}
+.sc-msgs::-webkit-scrollbar-track{background:transparent}
+.sc-msgs::-webkit-scrollbar-thumb{background:var(--glass-border2);border-radius:4px}
+.sc-msgs::-webkit-scrollbar-thumb:hover{background:rgba(230,227,220,0.25)}
+.sc-msg{display:flex;align-items:flex-end;gap:8px;max-width:78%;animation:scMsgIn 0.22s ease-out}
+@keyframes scMsgIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.sc-msg.me{flex-direction:row-reverse;align-self:flex-end}
+.sc-msg.other{align-self:flex-start}
+.sc-msg .sc-msg-av{width:28px;height:28px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff;background-size:cover;background-position:center;background-color:var(--bg-4);border:1px solid rgba(255,255,255,0.1)}
+.sc-msg .sc-msg-body{display:flex;flex-direction:column}
+.sc-msg .sc-msg-name{font-size:10px;font-weight:600;color:var(--text-dim);margin-bottom:3px;padding:0 4px}
+.sc-msg .sc-msg-text{padding:10px 15px;border-radius:16px;font-size:13px;line-height:1.55;word-break:break-word;position:relative;box-shadow:0 2px 10px rgba(0,0,0,0.12)}
+.sc-msg.me .sc-msg-text{background:linear-gradient(135deg,#e6e3dc,#a3b3a7);color:#101014;font-weight:500;border-bottom-right-radius:4px}
+.sc-msg.other .sc-msg-text{background:rgba(255,255,255,0.055);border:1px solid rgba(255,255,255,0.09);color:var(--text);border-bottom-left-radius:4px;backdrop-filter:blur(8px)}
+.sc-msg .sc-msg-time{font-size:9px;color:var(--text-dim);opacity:0.65;margin-top:3px;padding:0 4px}
+.sc-msg.me .sc-msg-time{text-align:right}
+.sc-input{display:flex;gap:10px;padding:14px 20px 16px;border-top:1px solid rgba(230,227,220,0.08);flex-shrink:0;position:relative;z-index:1;background:linear-gradient(0deg,rgba(10,10,13,0.6),transparent)}
+.sc-input input{flex:1;padding:11px 18px;border-radius:24px;border:1px solid rgba(230,227,220,0.14);background:rgba(255,255,255,0.04);color:var(--text);font-size:13px;outline:none;font-family:'Inter',sans-serif;transition:border-color 0.25s, box-shadow 0.25s}
+.sc-input input::placeholder{color:var(--text-dim)}
+.sc-input input:focus{border-color:rgba(230,227,220,0.45);box-shadow:0 0 0 3px rgba(230,227,220,0.08)}
+.sc-input button{width:42px;height:42px;border-radius:50%;border:none;background:var(--gradient-1);color:#101014;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all 0.25s;box-shadow:0 4px 16px rgba(230,227,220,0.2)}
+.sc-input button:hover{transform:scale(1.1) rotate(-8deg);box-shadow:0 6px 22px rgba(230,227,220,0.32)}
+.sc-msg.sc-pending{opacity:0.5;transform:scale(0.98)}
 .public-chat-btn{position:fixed;bottom:80px;left:28px;width:52px;height:52px;border-radius:50%;background:var(--gradient-1);color:#fff;font-size:20px;cursor:pointer;z-index:998;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 24px rgba(230,227,220,0.25);transition:transform 0.3s}
 .public-chat-btn:hover{transform:scale(1.05)}
 .public-chat-btn .badge{position:absolute;top:-2px;right:-2px;width:18px;height:18px;background:var(--accent);border-radius:50%;font-size:9px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700}
@@ -4082,17 +4129,28 @@ function togglePwd(el){
 </div>
 
 <!-- SELLER CHAT MODAL -->
-<div class="profile-viewer-overlay" id="sellerChatModal" onclick="if(event.target===this)closeSellerChat()">
-  <div class="profile-viewer-card" style="width:440px;padding:0;overflow:hidden">
-    <div style="background:var(--gradient-1);padding:16px 20px;display:flex;align-items:center;gap:12px;position:relative">
-      <div style="width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:center;color:#fff;font-size:16px"><i class="fas fa-store-alt"></i></div>
-      <div style="flex:1"><div style="font-weight:700;font-size:15px;color:#fff" id="sellerChatProductName">Chat</div><div style="font-size:11px;color:rgba(255,255,255,0.7)" id="sellerChatWith">Seller</div></div>
-      <button class="pv-close" onclick="closeSellerChat()" style="color:#fff;opacity:0.8;font-size:22px">&times;</button>
+<div class="sc-overlay" id="sellerChatModal" onclick="if(event.target===this)closeSellerChat()">
+  <div class="sc-card">
+    <div class="sc-head">
+      <div class="sc-avatar" id="scAvatar">?</div>
+      <div class="sc-head-info">
+        <div class="sc-head-name" id="scHeadName">Private Chat</div>
+        <div class="sc-head-sub" id="scHeadSub"><span class="sc-online"></span> Chat Produk</div>
+      </div>
+      <button class="sc-close" onclick="closeSellerChat()" title="Tutup"><i class="fas fa-times"></i></button>
     </div>
-    <div style="padding:16px;height:360px;overflow-y:auto;display:flex;flex-direction:column;gap:4px;background:var(--bg-2)" id="sellerChatMessages"></div>
-    <div style="display:flex;gap:8px;padding:12px 16px;border-top:1px solid var(--glass-border);background:var(--bg-3)">
-      <input type="text" id="sellerChatInput" placeholder="Type a message..." style="flex:1;padding:10px 16px;border-radius:24px;border:1px solid var(--glass-border);background:var(--bg);color:var(--text);font-size:13px;outline:none" onkeydown="if(event.key==='Enter')sendSellerMsg()">
-      <button onclick="sendSellerMsg()" style="width:40px;height:40px;border-radius:50%;border:none;background:var(--gradient-1);color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center"><i class="fas fa-paper-plane"></i></button>
+    <div class="sc-product" id="scProductBar" style="display:none">
+      <img id="scProdImg" alt="" onerror="this.style.display='none'">
+      <div class="sc-prod-info">
+        <div class="sc-prod-name" id="scProdName">Produk</div>
+        <div class="sc-prod-price" id="scProdPrice">-</div>
+      </div>
+      <button class="sc-prod-btn" id="scProdBtn" onclick="openScProduct()" title="Lihat produk"><i class="fas fa-arrow-right"></i></button>
+    </div>
+    <div class="sc-msgs" id="sellerChatMessages"></div>
+    <div class="sc-input">
+      <input type="text" id="sellerChatInput" placeholder="Tulis pesan..." autocomplete="off" onkeydown="if(event.key==='Enter')sendSellerMsg()">
+      <button onclick="sendSellerMsg()"><i class="fas fa-paper-plane"></i></button>
     </div>
   </div>
 </div>
@@ -5191,8 +5249,34 @@ function buildShareUrl(params) {
   return u.toString();
 }
 function shareLink(url, title) {
-  if (navigator.share) { navigator.share({ title: title || 'BMS Platform', url }).catch(() => {}); return; }
-  navigator.clipboard.writeText(url).then(() => showToast('Link disalin!', 'success')).catch(() => showToast('Gagal menyalin link', 'error'));
+  if (navigator.share) {
+    navigator.share({ title: title || 'BMS Platform', url }).then(() => showToast('Link dibagikan!', 'success')).catch(() => {
+      fallbackCopy(url);
+    });
+    return;
+  }
+  fallbackCopy(url);
+  function fallbackCopy(text) {
+    if (navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard.writeText(text).then(() => showToast('Link disalin!', 'success')).catch(() => execCopy(text));
+    } else {
+      execCopy(text);
+    }
+  }
+  function execCopy(text) {
+    try {
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      const ok = document.execCommand('copy');
+      document.body.removeChild(ta);
+      if (ok) showToast('Link disalin!', 'success');
+      else showToast('Gagal menyalin link', 'error');
+    } catch { showToast('Gagal menyalin link', 'error'); }
+  }
 }
 function shareProduct(id, type) {
   shareLink(buildShareUrl(type === 'public' ? { product: id, type: 'public' } : { product: id }), 'Produk BMS Platform');
@@ -5248,7 +5332,7 @@ async function openStoreProductModal(id) {
       (tags ? '<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px">' + tags + '</div>' : '') +
       '<p style="font-size:13px;color:var(--text-muted);line-height:1.7;margin-bottom:18px">' + esc(p.description || 'Tidak ada deskripsi.') + '</p>' +
       '<div style="display:flex;gap:8px;flex-wrap:wrap">' + cta +
-      '<button class="btn btn-outline" onclick="shareProduct(' + (isPublic ? '\'' + p.id + '\',\'public\'' : 'p.id') + ')"><i class="fas fa-share-alt"></i> Bagikan</button>' +
+      '<button class="btn btn-outline" onclick="shareProduct(' + (isPublic ? '\'' + p.id + '\',\'public\'' : p.id) + ')"><i class="fas fa-share-alt"></i> Bagikan</button>' +
       '</div>';
   } catch (err) {
     body.innerHTML = '<div style="text-align:center;padding:30px;color:var(--text-muted)"><i class="fas fa-triangle-exclamation" style="color:#cd8489"></i> ' + esc(err.message || 'Gagal memuat produk') + '</div>';
@@ -7029,7 +7113,11 @@ async function loadSellerSettings() {
     _sellerLinksData = { socials: Array.isArray(d.socials) ? d.socials : [], webhook: (d.webhook || '') };
     renderSellerSocialRows();
     document.getElementById('sdWebhookInput').value = _sellerLinksData.webhook;
-  } catch { showToast('Gagal memuat pengaturan', 'error'); }
+  } catch(e) {
+    console.error('loadSellerSettings', e);
+    if (e&&e.message&&(e.message.includes('Session expired')||e.message.includes('Unauthorized'))) return;
+    showToast('Gagal memuat pengaturan: ' + ((e&&e.message)||'unknown'), 'error');
+  }
 }
 function renderSellerSocialRows() {
   const wrap = document.getElementById('sdSocRows');
@@ -7303,11 +7391,21 @@ function renderSellerOverview() {
   updateSellerNavCounts();
 }
 
+var _sellerLoadFailCount = 0;
 async function loadSellerProducts() {
   try {
     var d = await api('/seller/my-products', { cache: false });
     _sd.products = d.products || [];
-  } catch { showToast('Gagal memuat produk', 'error'); }
+    _sellerLoadFailCount = 0;
+  } catch(e) {
+    console.error('loadSellerProducts', e);
+    _sellerLoadFailCount++;
+    if (e&&e.message&&(e.message.includes('Session expired')||e.message.includes('Unauthorized'))) {
+      if (_sellerLoadFailCount === 1) { showToast('Sesi habis, silakan login kembali', 'error'); setTimeout(()=>navigateTo('login'), 800); }
+      return;
+    }
+    showToast('Gagal memuat produk: ' + ((e&&e.message)||'unknown'), 'error');
+  }
   renderSellerProducts();
   renderSellerOverview();
   updateSellerNavCounts();
@@ -7430,14 +7528,19 @@ async function openSellerChatByChatId(chatId) {
   if (!APP.isLoggedIn) return;
   try {
     var detail = await api('/seller/chats/' + chatId);
-    document.getElementById('sellerChatProductName').textContent = 'Product: ' + (detail.chat.product_name || 'Unknown');
-    var isSellerSide = Number(detail.chat.seller && detail.chat.seller.id) === Number(APP.user.id);
-    var other = isSellerSide ? detail.chat.customer : detail.chat.seller;
+    var c = detail.chat;
+    var isSellerSide = Number(c.seller && c.seller.id) === Number(APP.user.id);
+    var other = isSellerSide ? c.customer : c.seller;
     window._sellerChatOther = other || null;
-    document.getElementById('sellerChatWith').textContent = 'Chat with ' + (other && other.name ? other.name : 'User');
+    var av = document.getElementById('scAvatar');
+    if (av) av.setAttribute('style', scAvatarHtml(other && other.avatar, (other && (other.name || other.email)) || 'User'));
+    document.getElementById('scHeadName').textContent = (other && (other.name || other.email)) || 'Private Chat';
+    var sub = document.getElementById('scHeadSub');
+    if (sub) sub.innerHTML = '<span class="sc-online"></span> Chat ' + (c.product_name || 'Produk');
+    scFillProduct(c.product);
     sellerChatId = chatId;
     document.getElementById('sellerChatModal').classList.add('open');
-    renderSellerChatMessages(detail.chat.messages || []);
+    renderSellerChatMessages(c.messages || []);
     if (sellerChatPoll) clearInterval(sellerChatPoll);
     sellerChatPoll = setInterval(() => loadSellerChatMessages(), window.IS_LOW_END ? 5000 : 3000);
   } catch {}
@@ -7447,7 +7550,11 @@ async function loadSellerOrders() {
   try {
     var d = await api('/seller/orders', { cache: false });
     _sd.orders = d.orders || [];
-  } catch { showToast('Gagal memuat pesanan', 'error'); }
+  } catch(e) {
+    console.error('loadSellerOrders', e);
+    if (e&&e.message&&(e.message.includes('Session expired')||e.message.includes('Unauthorized'))) return;
+    showToast('Gagal memuat pesanan: ' + ((e&&e.message)||'unknown'), 'error');
+  }
   renderSellerOrders();
   renderSellerOverview();
   updateSellerNavCounts();
@@ -7577,24 +7684,51 @@ async function openAdminChat(productId, productType) {
 // ============ SELLER CHAT ============
 var sellerChatId = null;
 var sellerChatPoll = null;
+var _scProduct = null;
+function scAvatarHtml(url, name) {
+  const initial = (name || '?').charAt(0).toUpperCase();
+  return url ? 'background-image:url(' + url + ');background-size:cover;background-position:center' : '';
+}
+function scFillProduct(prod) {
+  _scProduct = prod || null;
+  const bar = document.getElementById('scProductBar');
+  if (!bar) return;
+  if (prod) {
+    const img = document.getElementById('scProdImg');
+    if (img) { img.src = prod.image || ''; img.style.display = prod.image ? '' : 'none'; }
+    document.getElementById('scProdName').textContent = prod.name || 'Produk';
+    document.getElementById('scProdPrice').textContent = prod.price || 'Gratis';
+    bar.style.display = 'flex';
+  } else {
+    bar.style.display = 'none';
+  }
+}
+function openScProduct() {
+  if (!_scProduct) return;
+  closeSellerChat();
+  setTimeout(() => openStoreProductModal('pub:' + _scProduct.id), 100);
+}
 async function openSellerChat(productId) {
   if (!APP.isLoggedIn) { showToast('Login dulu untuk chat seller', 'error'); navigateTo('login'); return; }
   try {
     const d = await api('/seller/chats', { method: 'POST', body: { productId } });
     const chat = d.chat;
     if (!chat) return;
-    // Fetch chat details
     const detail = await api('/seller/chats/' + chat.id);
-    document.getElementById('sellerChatProductName').textContent = 'Product: ' + (detail.chat.product_name || 'Unknown');
-    const isSeller = detail.chat.seller?.id == APP.user.id;
-    document.getElementById('sellerChatWith').textContent = 'Chat with ' + (isSeller ? detail.chat.customer?.name || 'Customer' : detail.chat.seller?.name || 'Seller');
-    window._sellerChatOther = isSeller ? detail.chat.customer : detail.chat.seller;
+    const c = detail.chat;
+    const isSeller = c.seller?.id == APP.user.id;
+    const other = isSeller ? c.customer : c.seller;
+    window._sellerChatOther = other || null;
+    const av = document.getElementById('scAvatar');
+    if (av) av.setAttribute('style', scAvatarHtml(other && other.avatar, (other && (other.name || other.email)) || 'User'));
+    document.getElementById('scHeadName').textContent = (other && (other.name || other.email)) || 'Private Chat';
+    document.getElementById('scHeadSub') && (document.getElementById('scHeadSub').innerHTML = '<span class="sc-online"></span> Chat ' + (c.product_name || 'Produk'));
+    scFillProduct(c.product);
     sellerChatId = chat.id;
     document.getElementById('sellerChatModal').classList.add('open');
-    renderSellerChatMessages(detail.chat.messages || []);
-    // Poll
+    renderSellerChatMessages(c.messages || []);
     if (sellerChatPoll) clearInterval(sellerChatPoll);
-    sellerChatPoll = setInterval(() => loadSellerChatMessages(), window.IS_LOW_END ? 5000 : 3000);
+    sellerChatPoll = setInterval(() => loadSellerChatMessages(), window.IS_LOW_END ? 2000 : 1500);
   } catch (e) { showToast(e.message || 'Failed', 'error'); }
 }
 function closeSellerChat() {
@@ -7605,6 +7739,7 @@ async function loadSellerChatMessages() {
   if (!sellerChatId) return;
   try {
     const d = await api('/seller/chats/' + sellerChatId);
+    if (d.chat && d.chat.product) scFillProduct(d.chat.product);
     renderSellerChatMessages(d.chat.messages || []);
   } catch {}
 }
@@ -7612,29 +7747,41 @@ function renderSellerChatMessages(messages) {
   const container = document.getElementById('sellerChatMessages');
   if (!container) return;
   const otherUser = window._sellerChatOther || null;
-  if (!messages || !messages.length) { container.innerHTML = '<div style="text-align:center;color:var(--text-dim);padding:40px 20px;font-size:13px"><i class="fas fa-comment-dots" style="font-size:28px;display:block;margin-bottom:8px;opacity:0.3"></i>Belum ada pesan</div>'; return; }
+  if (!messages || !messages.length) { container.innerHTML = '<div style="text-align:center;color:var(--text-dim);padding:40px 20px;font-size:13px"><i class="fas fa-comment-dots" style="font-size:28px;display:block;margin-bottom:8px;opacity:0.3"></i>Belum ada pesan.<br><span style="font-size:11px;opacity:0.7">Tanyakan produk ini ke penjual</span></div>'; _scLastKey = ''; return; }
+  // anti-flicker: skip re-render jika tidak ada perubahan
+  const key = messages.map(m => m.sender_id + ':' + m.time + ':' + m.text).join('|');
+  if (key === window._scLastKey && container.scrollTop + container.clientHeight >= container.scrollHeight - 30) return;
+  window._scLastKey = key;
   container.innerHTML = messages.map(m => {
     const isMe = m.sender_id == APP.user?.id;
-    const otherAvatar = otherUser?.avatar || '';
-    const otherName = (otherUser?.name || otherUser?.email || 'User').charAt(0).toUpperCase();
-    const myAvatar = APP.user?.avatar || '';
-    const myName = (APP.user?.name || 'You').charAt(0).toUpperCase();
-    const avUrl = isMe ? myAvatar : otherAvatar;
+    const otherName = (otherUser && (otherUser.name || otherUser.email)) || 'User';
+    const myName = (APP.user && (APP.user.name || APP.user.email)) || 'You';
+    const avUrl = isMe ? (APP.user && APP.user.avatar) : (otherUser && otherUser.avatar);
     const avStyle = avUrl ? 'background-image:url('+avUrl+');background-size:cover;background-position:center' : '';
-    const initial = avUrl ? '' : (isMe ? myName : otherName);
+    const initial = avUrl ? '' : (isMe ? myName.charAt(0).toUpperCase() : otherName.charAt(0).toUpperCase());
     const time = m.time ? new Date(m.time).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}) : '';
-    return '<div class="chat-bubble '+(isMe?'is-me':'is-other')+'"><div class="cb-avatar" style="'+avStyle+'background-color:var(--bg-4)">'+initial+'</div><div class="cb-body"><div class="cb-name">'+(isMe ? (APP.user?.name||'You') : (otherUser?.name||otherUser?.email||'User'))+'</div><div class="cb-text">'+m.text+'</div><div class="cb-time">'+time+'</div></div></div>';
+    return '<div class="sc-msg '+(isMe?'me':'other')+'"><div class="sc-msg-av" style="'+avStyle+'background-color:var(--bg-4)">'+initial+'</div><div class="sc-msg-body"><div class="sc-msg-name">'+(isMe ? myName : otherName)+'</div><div class="sc-msg-text">'+m.text+'</div><div class="sc-msg-time">'+time+'</div></div></div>';
   }).join('');
   container.scrollTop = container.scrollHeight;
 }
 async function sendSellerMsg() {
-  if (!antiSpam('sendSellerMsg', 1500)) return;
+  if (!antiSpam('sendSellerMsg', 1200)) return;
   const input = document.getElementById('sellerChatInput');
   const text = input.value.trim();
   if (!text || !sellerChatId) return;
   input.value = '';
+  // Optimistik: tampilkan pesan langsung tanpa nunggu server (terasa instan)
+  const container = document.getElementById('sellerChatMessages');
+  if (container && !window._scLastKey) container.innerHTML = '';
+  const meName = (APP.user && (APP.user.name || APP.user.email)) || 'You';
+  const meAv = APP.user && APP.user.avatar;
+  const meAvStyle = meAv ? 'background-image:url('+meAv+');background-size:cover;background-position:center' : '';
+  const now = new Date();
+  container.insertAdjacentHTML('beforeend', '<div class="sc-msg me sc-pending"><div class="sc-msg-av" style="'+meAvStyle+'background-color:var(--bg-4)">'+(meAv?'':meName.charAt(0).toUpperCase())+'</div><div class="sc-msg-body"><div class="sc-msg-name">'+meName+'</div><div class="sc-msg-text">'+text+'</div><div class="sc-msg-time">'+now.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})+'</div></div></div>');
+  container.scrollTop = container.scrollHeight;
   try {
     await api('/seller/chats/'+sellerChatId+'/message', { method: 'POST', body: { text } });
+    const pend = container.querySelector('.sc-pending'); if (pend) pend.classList.remove('sc-pending');
     await loadSellerChatMessages();
   } catch { showToast('Failed to send', 'error'); }
 }
