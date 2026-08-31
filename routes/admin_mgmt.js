@@ -2,7 +2,9 @@
 const { q } = require('../database/db');
 const { isValidMedia } = require('../utils/validate');
 const { authenticateSession, requireAdmin, isOwnerById } = require('../middleware/auth');
+const { isOwnerEmail } = require('../utils/auth-utils');
 const traffic = require('../utils/traffic');
+const { sendJson, buildWebhookPayload, isSafeWebhookUrl, isSafeLinkUrl, parseSocials } = require('../utils/webhooks');
 const router = express.Router();
 
 const USER_EDITABLE_FIELDS = {
@@ -41,12 +43,21 @@ router.post('/set-role', authenticateSession, requireAdmin, async (req, res) => 
 
 router.put('/profile', authenticateSession, async (req, res) => {
   try {
+    const canUseGif = req.user.role === 'admin' || parseInt(req.user.verified_tag, 10) == 1 ||
+      isOwnerEmail(req.user.email) || (parseInt(req.user.xp, 10) || 0) >= 50;
     const updates = [];
     const params = [];
     for (const [key, column] of Object.entries(USER_EDITABLE_FIELDS)) {
       if (req.body[key] !== undefined) {
+        const val = String(req.body[key]);
+        if (key === 'avatar' || key === 'banner') {
+          if (/^data:image\/gif;base64,/i.test(val)) {
+            if (!canUseGif) return res.status(403).json({ error: 'GIF khusus akun XP 50+, Seller, atau Admin' });
+          }
+          if (!isValidMedia(val, 6000000)) return res.status(400).json({ error: 'Media tidak valid' });
+        }
         updates.push(`${column} = ?`);
-        params.push(String(req.body[key]).slice(0, key === 'avatar' || key === 'banner' ? 3000000 : 5000));
+        params.push(val.slice(0, key === 'avatar' || key === 'banner' ? 6000000 : 5000));
       }
     }
     if (!updates.length) return res.json({ success: true });
@@ -76,6 +87,16 @@ router.get('/public/:id', async (req, res) => {
     } catch {}
     const tagsResult = await q('SELECT id, tag FROM tags WHERE user_id = ?', [req.params.id]);
     profile.tags = tagsResult.rows;
+    // Social buttons seller (publik) — webhook TIDAK pernah diekspos ke publik
+    try {
+      const linkRow = await q('SELECT socials FROM user_links WHERE user_id = ?', [req.params.id]);
+      profile.socials = linkRow.rows.length ? parseSocials(linkRow.rows[0].socials) : [];
+    } catch { profile.socials = []; }
+    // Seller rating (publik)
+    try {
+      const s = await q('SELECT AVG(rating) as avg_rating, COUNT(*) as total FROM seller_ratings WHERE seller_id = ?', [req.params.id]);
+      profile.seller_rating = s.rows[0] ? { avg_rating: s.rows[0].avg_rating || 0, total: s.rows[0].total || 0 } : { avg_rating: 0, total: 0 };
+    } catch { profile.seller_rating = { avg_rating: 0, total: 0 }; }
     res.json({ profile });
   } catch { res.status(500).json({ error: 'Server error' }); }
 });
@@ -107,6 +128,70 @@ router.put('/profile-user', authenticateSession, requireAdmin, async (req, res) 
     params.push(userId);
     await q('UPDATE users SET ' + updates.join(', ') + ' WHERE id = ?', params);
     res.json({ success: true });
+  } catch { res.status(500).json({ error: 'Server error' }); }
+});
+
+// ====== WEB CONFIG (site social buttons & admin webhooks) — admin/owner only ======
+
+router.get('/settings-web', authenticateSession, requireAdmin, async (req, res) => {
+  try {
+    const r = await q('SELECT key, value FROM site_config WHERE key IN (?, ?)', ['site_buttons', 'admin_webhooks']);
+    const map = {};
+    for (const row of r.rows) map[row.key] = row.value;
+    let buttons = [];
+    let webhooks = [];
+    try { buttons = JSON.parse(map.site_buttons || '[]'); } catch { buttons = []; }
+    try { webhooks = JSON.parse(map.admin_webhooks || '[]'); } catch { webhooks = []; }
+    if (!Array.isArray(buttons)) buttons = [];
+    if (!Array.isArray(webhooks)) webhooks = [];
+    res.json({ buttons, webhooks: webhooks.filter(u => isSafeWebhookUrl(u)) });
+  } catch { res.status(500).json({ error: 'Server error' }); }
+});
+
+router.put('/settings-web', authenticateSession, requireAdmin, async (req, res) => {
+  try {
+    const { buttons, webhooks } = req.body;
+    const cleanButtons = [];
+    if (Array.isArray(buttons)) {
+      for (const b of buttons) {
+        if (b && isSafeLinkUrl(b.url)) {
+          cleanButtons.push({ label: String(b.label || 'link').trim().slice(0, 40) || 'link', url: String(b.url).trim() });
+        }
+        if (cleanButtons.length >= 12) break;
+      }
+    }
+    const cleanWebhooks = [];
+    if (Array.isArray(webhooks)) {
+      for (const u of webhooks) {
+        if (isSafeWebhookUrl(u)) cleanWebhooks.push(String(u).trim());
+        if (cleanWebhooks.length >= 10) break;
+      }
+    }
+    const sets = {
+      site_buttons: JSON.stringify(cleanButtons),
+      admin_webhooks: JSON.stringify(cleanWebhooks)
+    };
+    for (const [k, v] of Object.entries(sets)) {
+      await q('INSERT INTO site_config (key, value) VALUES (?, ?) ON CONFLICT(key) DO UPDATE SET value = excluded.value', [k, v]);
+    }
+    res.json({ success: true, message: 'Pengaturan web disimpan!' });
+  } catch { res.status(500).json({ error: 'Server error' }); }
+});
+
+router.post('/settings-web/test-admin', authenticateSession, requireAdmin, async (req, res) => {
+  try {
+    const url = String((req.body && req.body.webhook) || '').trim();
+    if (!isSafeWebhookUrl(url)) return res.status(400).json({ error: 'Webhook harus URL https yang valid' });
+    const out = await sendJson(url, buildWebhookPayload(url, {
+      event: 'test',
+      type: 'admin',
+      app: 'BMS Platform',
+      title: 'Test Notifikasi Admin',
+      message: 'Test notifikasi admin dari pengaturan web — webhook admin aktif.',
+      timestamp: new Date().toISOString()
+    }));
+    if (out.ok) res.json({ success: true, message: 'Test webhook terkirim (status ' + out.status + ')' });
+    else res.status(502).json({ error: 'Webhook gagal dihubungi' + (out.status ? ' (status ' + out.status + ')' : '') });
   } catch { res.status(500).json({ error: 'Server error' }); }
 });
 

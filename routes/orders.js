@@ -1,6 +1,7 @@
 const express = require('express');
 const { q } = require('../database/db');
 const { authenticateSession, requireAdmin } = require('../middleware/auth');
+const { notifyOrder } = require('../utils/webhooks');
 
 const router = express.Router();
 
@@ -39,6 +40,8 @@ router.post('/', async (req, res) => {
       [userId, JSON.stringify(items), total || 0, 'pending', customer_name || '', customer_email || '', customer_contact || '', payment_method || '', store_type || '']
     );
     const order = await q('SELECT * FROM orders WHERE id = ?', [r.lastInsertRowid]);
+    // Notif webhook: seller (item miliknya saja) + admin (semua item). Tidak boleh menggagalkan order.
+    try { await notifyOrder(order.rows[0], items); } catch {}
     res.json({ order: order.rows[0] });
   } catch (err) {
     res.status(500).json({ error: 'Server error' });

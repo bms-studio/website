@@ -2,6 +2,8 @@
 const { q } = require('../database/db');
 const { isValidMedia, isValidVideoUrl } = require('../utils/validate');
 const { authenticateSession } = require('../middleware/auth');
+const { isOwnerEmail } = require('../utils/auth-utils');
+const { sendJson, buildWebhookPayload, isSafeWebhookUrl, parseSocials } = require('../utils/webhooks');
 const router = express.Router();
 
 // Get all approved public products
@@ -211,6 +213,52 @@ router.put('/orders/:id/status', authenticateSession, async (req, res) => {
     if (!hasItem) return res.status(403).json({ error: 'Not your order' });
     await q('UPDATE orders SET status = ? WHERE id = ?', [status, req.params.id]);
     res.json({ success: true });
+  } catch { res.status(500).json({ error: 'Server error' }); }
+});
+
+// ====== SELLER SETTINGS (social buttons & webhook notifikasi) ======
+
+function isSellerIdentity(user) {
+  return user.role === 'admin' || user.verified_tag == 1 || isOwnerEmail(user.email);
+}
+
+router.get('/settings', authenticateSession, async (req, res) => {
+  try {
+    const r = await q('SELECT socials, webhook FROM user_links WHERE user_id = ?', [req.user.id]);
+    const row = r.rows[0];
+    res.json({ socials: row ? parseSocials(row.socials) : [], webhook: (row && row.webhook) || '' });
+  } catch { res.status(500).json({ error: 'Server error' }); }
+});
+
+router.put('/settings', authenticateSession, async (req, res) => {
+  try {
+    if (!isSellerIdentity(req.user)) return res.status(403).json({ error: 'Khusus akun seller' });
+    const { socials, webhook } = req.body;
+    const cleanSocials = Array.isArray(socials) ? parseSocials(JSON.stringify(socials), 12) : [];
+    const cleanWebhook = String(webhook == null ? '' : webhook).trim();
+    if (cleanWebhook && !isSafeWebhookUrl(cleanWebhook)) return res.status(400).json({ error: 'Webhook harus URL https yang valid' });
+    await q(
+      "INSERT INTO user_links (user_id, socials, webhook, updated_at) VALUES (?, ?, ?, datetime('now')) ON CONFLICT(user_id) DO UPDATE SET socials = excluded.socials, webhook = excluded.webhook, updated_at = excluded.updated_at",
+      [req.user.id, JSON.stringify(cleanSocials), cleanWebhook]
+    );
+    res.json({ success: true, message: 'Pengaturan disimpan!' });
+  } catch { res.status(500).json({ error: 'Server error' }); }
+});
+
+router.post('/settings/test-webhook', authenticateSession, async (req, res) => {
+  try {
+    const url = String((req.body && req.body.webhook) || '').trim();
+    if (!isSafeWebhookUrl(url)) return res.status(400).json({ error: 'Webhook harus URL https yang valid' });
+    const out = await sendJson(url, buildWebhookPayload(url, {
+      event: 'test',
+      type: 'seller',
+      app: 'BMS Platform',
+      title: 'Test Notifikasi Seller',
+      message: 'Test notifikasi dari dashboard seller BMS — jika kamu melihat pesan ini, webhook kamu aktif.',
+      timestamp: new Date().toISOString()
+    }));
+    if (out.ok) res.json({ success: true, message: 'Test webhook terkirim (status ' + out.status + ')' });
+    else res.status(502).json({ error: 'Webhook gagal dihubungi' + (out.status ? ' (status ' + out.status + ')' : '') });
   } catch { res.status(500).json({ error: 'Server error' }); }
 });
 

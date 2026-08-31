@@ -10,7 +10,8 @@ const PUBLIC_KEYS = [
   'dev_name', 'dev_handle', 'dev_bio', 'dev_location', 'dev_email', 'dev_website', 'dev_joined',
   'dev_social_discord', 'dev_social_youtube', 'dev_social_github', 'dev_social_tiktok', 'dev_social_instagram',
   'dev_stat_repos', 'dev_stat_projects', 'dev_stat_followers', 'dev_stat_years',
-  'dev_langs'
+  'dev_langs',
+  'site_buttons'
 ];
 
 router.get('/', async (req, res) => {
